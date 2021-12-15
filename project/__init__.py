@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 
@@ -11,11 +11,22 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-
+   # db.create_all()
     db.init_app(app)
-    from .models import User
+
+    Migrate(app,db)
+    from .models import User, File, Project
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
+
+    from .userproject import userproject as userproject_blueprint
+    app.register_blueprint(userproject_blueprint)
+    
+    from .file import file as file_blueprint
+    app.register_blueprint(file_blueprint)
+
+
+
     path = os.getcwd()
     UPLOAD_FOLDER = os.path.join(path, 'uploads')
 

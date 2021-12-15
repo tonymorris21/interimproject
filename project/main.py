@@ -12,7 +12,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 # https://github.com/shuhaowu/projecto/tree/master/projecto/apiv1/files
 # https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications
-
+# https://github.com/AmolMavuduru/AutoML-HackUTD19
 @main.route('/')
 def index():
 	return render_template('index.html')
@@ -25,8 +25,8 @@ def profile():
 
 @main.route('/profile', methods=['POST'])
 def upload_file():
-    if request.method == 'POST':
-        
+    if request.method == 'POST':   
+    
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
@@ -34,12 +34,7 @@ def upload_file():
         if file.filename == '':
             flash('No file selected for uploading')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-            print( "",current_user.email,filename)
-            flash('File successfully uploaded')
-            return redirect('/profile')
+            
         else:
             flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
             return redirect(request.url)

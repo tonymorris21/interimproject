@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<!doctype html>
+<title>Files Upload</title>
+
+<h1 class="title">
+  Welcome, {{ name }}!
+</h1>
+<form method="post" action="/userproject" enctype="multipart/form-data">
+    <dl>
+        <p>
+            <input class="input is-large" type="name" name="name" placeholder="Name" autofocus="">
+        </p>
+    </dl>
+    <p>
+        <input type="submit" value="Submit">
+    </p>
+</form>
+
+{% endblock %}

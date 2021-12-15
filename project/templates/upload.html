@@ -1,6 +1,11 @@
-﻿
 <!doctype html>
-<title>Python Flask Multiple Files Upload Example</title>
+<title>Files Upload</title>
+{% extends "base.html" %}
+{% block content %}
+<h1 class="title">
+  Welcome, {{ projectName }}!
+</h1>
+
 <p>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -12,7 +17,7 @@
     {% endif %}
     {% endwith %}
 </p>
-<form method="post" action="/" enctype="multipart/form-data">
+<form method="post" action="/upload" enctype="multipart/form-data">
     <dl>
         <p>
             <input type="file" name="file" autocomplete="off" required>
@@ -22,3 +27,4 @@
         <input type="submit" value="Submit">
     </p>
 </form>
+{% endblock %}
