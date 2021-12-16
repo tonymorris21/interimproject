@@ -13,6 +13,7 @@ def allowed_file(filename):
 # https://github.com/shuhaowu/projecto/tree/master/projecto/apiv1/files
 # https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications
 # https://github.com/AmolMavuduru/AutoML-HackUTD19
+#https://stackoverflow.com/questions/62682674/how-to-get-dynamic-html-table-entries-in-a-form-to-flask
 @main.route('/')
 def index():
 	return render_template('index.html')
