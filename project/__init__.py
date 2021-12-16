@@ -21,11 +21,11 @@ def create_app():
 
     from .userproject import userproject as userproject_blueprint
     app.register_blueprint(userproject_blueprint)
-    
     from .file import file as file_blueprint
     app.register_blueprint(file_blueprint)
 
-
+    from .filedata import filedata as filedata_blueprint
+    app.register_blueprint(filedata_blueprint)
 
     path = os.getcwd()
     UPLOAD_FOLDER = os.path.join(path, 'uploads')

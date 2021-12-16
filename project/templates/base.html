@@ -23,11 +23,6 @@
         Home
     </a>
     {% if current_user.is_authenticated %}
-    <a href="{{ url_for('file.upload') }}" class="navbar-item">
-        Upload
-    </a>
-    {% endif %}
-    {% if current_user.is_authenticated %}
     <a href="{{ url_for('userproject.project') }}" class="navbar-item">
         Project
     </a>
