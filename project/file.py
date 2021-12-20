@@ -9,9 +9,11 @@ from werkzeug.utils import secure_filename
 from flask import current_app
 file = Blueprint('file', __name__)
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','csv'])
+ALLOWED_EXTENSIONS = set(['csv'])
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower()
+    in ALLOWED_EXTENSIONS
+
 @file.route('/upload')
 def upload():
     return render_template('upload.html', name=current_user.name)
@@ -31,9 +33,12 @@ def upload_file():
             file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             print( "",current_user.email,filename)
             flash('File successfully uploaded')
-            new_file = File(projectid=current_user.id, name=filename, location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+
+            new_file = File(projectid=current_user.id, name=filename
+            location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             db.session.add(new_file)
             db.session.commit()
+
             session['filename'] = filename
             session['filelocation'] = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             return redirect(url_for('filedata.file_data'))
