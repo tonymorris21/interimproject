@@ -17,17 +17,17 @@ def login_post():
 
     user = User.query.filter_by(email=email).first()
 
-
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login'))  
+        return redirect(url_for('auth.login'))
 
     login_user(user, remember=remember)
+    
     return redirect(url_for('file.upload'))
 @auth.route('/signup')
 def signup():
     return render_template('signup.html')
-	
+
 @auth.route('/signup', methods=['POST'])
 def signup_post():
 
@@ -41,7 +41,6 @@ def signup_post():
         return redirect(url_for('auth.signup'))
 
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
-
 
     db.session.add(new_user)
     db.session.commit()

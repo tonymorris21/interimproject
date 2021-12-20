@@ -18,10 +18,9 @@ def createproject():
 
     name = request.form.get('name')
 
-
     new_project = Project(userid=current_user.id, projectName=name)
-
 
     db.session.add(new_project)
     db.session.commit()
+
     return render_template('upload.html', projectName = name)
