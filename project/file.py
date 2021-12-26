@@ -11,8 +11,7 @@ file = Blueprint('file', __name__)
 
 ALLOWED_EXTENSIONS = set(['csv'])
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower()
-    in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @file.route('/upload')
 def upload():
@@ -20,7 +19,7 @@ def upload():
 
 @file.route('/upload', methods=['POST'])
 def upload_file():
-    if request.method == 'POST':   
+    if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
@@ -34,8 +33,7 @@ def upload_file():
             print( "",current_user.email,filename)
             flash('File successfully uploaded')
 
-            new_file = File(projectid=current_user.id, name=filename
-            location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            new_file = File(projectid=current_user.id, name=filename, location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             db.session.add(new_file)
             db.session.commit()
 

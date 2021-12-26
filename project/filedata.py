@@ -21,8 +21,7 @@ def file_data():
     print(filename)
     df = pd.read_csv(filelocation)
     print(list(df.columns))
-    print(len(df.columns))
+    print(df.isnull().sum())
     numcolumns = len(df.columns)
-    numrows = len(df.rows)
-
+    numrows = df.shape[0]
     return render_template('filedata.html',columns = list(df.columns),numcolumns = numcolumns, datasetname = filename, numrows =numrows)
