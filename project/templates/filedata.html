@@ -3,17 +3,38 @@
 {% block content %}
 <div class="column is-4 is-offset-4">
     <h3 class="title">Login</h3>
-    <div class="box">
-    <table>
-        {% for col in columns %}
-             <tr>
-                   <td> {{ col}} </td>
-            </tr>
+    <form id = "myform" action = "{{ url_for('train.train_data') }}">
+    <select id = "target" name = "target">
+        <option value="{{target[0]}}" selected>{{target[0]}}</option>
+        {% for target in target[1:] %}
+          <option value="{{target}}">{{target}}</option>
         {% endfor %}
-          </table>
-          <a href="{{ url_for('train.train_data') }}" class="navbar-item">
-            Project
-        </a>
-    </div>
+      </select>
+    </form>
+
+    <table>
+      <tr>
+          {% for col in column_names %}
+          <th>{{col}}</th>
+          {% endfor %}
+      </tr>
+      {% for row in row_data %}
+      <tr>
+          {% for col, row_ in zip(column_names, row) %}
+          {% if col == check_box %}
+          <td>
+<button></button>>
+          </td>
+          {% else %}
+          <td>{{row_}}</td>
+          {% endif %}
+          {% endfor %}
+      </tr>
+      {% endfor %}
+  
+  </table>
+  
+          <input type="submit" form="myform" value="Train"/>
+
 </div>
 {% endblock %}

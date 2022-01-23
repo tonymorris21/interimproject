@@ -18,10 +18,27 @@ def file_data():
 
     filename = session['filename']
     filelocation = session['filelocation']
-    print(filename)
+   # print(filename)
     df = pd.read_csv(filelocation)
-    print(list(df.columns))
-    print(df.isnull().sum())
+    #print(list(df.columns))
+    #print(df.isnull().sum())
     numcolumns = len(df.columns)
     numrows = df.shape[0]
-    return render_template('filedata.html',columns = list(df.columns),numcolumns = numcolumns, datasetname = filename, numrows =numrows)
+    dataTypeDict = dict(df.dtypes)
+    tbl = zip(list(df.columns),list(df.dtypes))
+#https://flutterq.com/how-to-show-a-pandas-dataframe-into-a-existing-flask-html-table/
+    test = df.isna().sum()
+    print(test)
+    dataframe = pd.DataFrame(
+        {
+            "Column Name" : list(df.columns),
+            "Data type" : list(df.dtypes),
+            "Missing(Count)" : list(df.isna().sum()),
+            "Distinct Values": list(df.nunique())
+        }
+    )
+    dataframe.insert(2, "Nullable", 'Checkbox')
+    tables=[dataframe.to_html(index=False,classes='data')]
+    body = ''
+    target = list(df.columns)
+    return render_template('filedata.html',column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = list(df.columns),dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows)

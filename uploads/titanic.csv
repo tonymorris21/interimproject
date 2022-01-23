@@ -1,7 +1,7 @@
-Pclass,Name,Sex,Age,SibSp,Parch,Fare
+Pclass,Name,Sex,Age,SibSp,Parch,Fare,
 0,3,Mr. Owen Harris Braund,male,22,1,0,7.25
-1,1,Mrs. John Bradley (Florence Briggs Thayer) Cumings,female,38,1,0,71.2833
-1,3,Miss. Laina Heikkinen,female,26,0,0,7.925
+1,1,Mrs. John Bradley (Florence Briggs Thayer) Cumings,,38,1,0,71.2833
+1,3,Miss. Laina Heikkinen,,26,0,0,7.925
 1,1,Mrs. Jacques Heath (Lily May Peel) Futrelle,female,35,1,0,53.1
 0,3,Mr. William Henry Allen,male,35,0,0,8.05
 0,3,Mr. James Moran,male,27,0,0,8.4583
