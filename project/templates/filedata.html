@@ -10,7 +10,7 @@
           <option value="{{target}}">{{target}}</option>
         {% endfor %}
       </select>
-    </form>
+
 
     <table>
       <tr>
@@ -23,7 +23,7 @@
           {% for col, row_ in zip(column_names, row) %}
           {% if col == check_box %}
           <td>
-<button></button>>
+            <input type="checkbox" id="one_checkbox" name="one_checkbox" value="{{ row.column_names }}">
           </td>
           {% else %}
           <td>{{row_}}</td>
@@ -33,7 +33,7 @@
       {% endfor %}
   
   </table>
-  
+</form>
           <input type="submit" form="myform" value="Train"/>
 
 </div>
