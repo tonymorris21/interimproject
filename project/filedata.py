@@ -41,4 +41,5 @@ def file_data():
     tables=[dataframe.to_html(index=False,classes='data')]
     body = ''
     target = list(df.columns)
+
     return render_template('filedata.html',column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = list(df.columns),dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows)

@@ -1,40 +1,92 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="column is-4 is-offset-4">
-    <h3 class="title">Login</h3>
-    <form id = "myform" action = "{{ url_for('train.train_data') }}">
-    <select id = "target" name = "target">
+<style>
+tr,th,table {
+  padding-right:120px;
+}
+table{
+  margin-top:5%;
+}
+form{
+  margin-left:80px;
+  width:100%;
+}
+h1 {
+  font-size:40px;
+  margin-left:9.2em;
+  white-space: nowrap;
+}
+select{ 
+  margin-left:30em;
+}
+#submit{
+  font-size:20px;
+  margin-left:25em;
+}
+
+td a {
+  padding-left:3em;
+
+}
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+  </style>
+
+<div class="column is-2 is-offset-1">
+
+    <form  id = "myform" action = "{{ url_for('train.train_data') }}">
+
+
+
+
+    <table class ="center">
+      <h1 >File Data</h1>
+      <select id = "target" name = "target">
         <option value="{{target[0]}}" selected>{{target[0]}}</option>
         {% for target in target[1:] %}
           <option value="{{target}}">{{target}}</option>
         {% endfor %}
       </select>
-
-
-    <table>
-      <tr>
-          {% for col in column_names %}
-          <th>{{col}}</th>
-          {% endfor %}
-      </tr>
-      {% for row in row_data %}
-      <tr>
-          {% for col, row_ in zip(column_names, row) %}
-          {% if col == check_box %}
-          <td>
-            <input type="checkbox" id="one_checkbox" name="one_checkbox" value="{{ row.column_names }}">
-          </td>
-          {% else %}
-          <td>{{row_}}</td>
+      <tr >
+        {% for col in column_names %}
+        <th >{{col}}</th>
+        {% endfor %}
+    </tr>
+    {% for row in row_data %}
+    <tr >
+        {% for col, row_ in zip(column_names, row) %}
+          {%if col == "Column Name" %}
+<td> <input type="text" id="columnname" name="columnname" value="{{ row_ }}"></input></td>
+          {%endif%}
+        {%if col == "Missing(Count)"%}
+         <td  >{{row_}}
+    <small>
+      <br>
+            <input type="checkbox" id="mean" name="mean" value="{{ row[0] }}">Mean</input>
+            <input type="checkbox" id="mode" name="mode" value="{{ row[0] }}">Mode</input>
+       </small>
+        </td>
+         {%endif%}
+        {% if col == check_box %}
+        <td >
+          <input type="checkbox" id="nullable" name="nullable" value="{{ row[0] }}">
+        </td>
+        {% elif col != "Missing(Count)"%}
+          {% if col != "Column Name" %}
+            <td ><p>{{row_}}</p></td>
           {% endif %}
-          {% endfor %}
-      </tr>
-      {% endfor %}
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
   
   </table>
 </form>
-          <input type="submit" form="myform" value="Train"/>
+          <input id="submit"style = "text-align: center"; type="submit" form="myform" value="Train"/>
 
 </div>
 {% endblock %}
