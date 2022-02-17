@@ -23,7 +23,7 @@ def login_post():
 
     login_user(user, remember=remember)
     
-    return redirect(url_for('file.upload'))
+    return redirect(url_for('userproject.project'))
 @auth.route('/signup')
 def signup():
     return render_template('signup.html')

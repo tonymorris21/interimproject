@@ -17,7 +17,7 @@ h1 {
   margin-left:9.2em;
   white-space: nowrap;
 }
-select{ 
+select{
   margin-left:30em;
 }
 #submit{
@@ -59,7 +59,7 @@ td a {
     <tr >
         {% for col, row_ in zip(column_names, row) %}
           {%if col == "Column Name" %}
-<td> <input type="text" id="columnname" name="columnname" value="{{ row_ }}"></input></td>
+<td> <input type="text" id="columname" name={{row_}} value="{{ row_ }}"></input></td>
           {%endif%}
         {%if col == "Missing(Count)"%}
          <td  >{{row_}}
@@ -83,7 +83,7 @@ td a {
     </tr>
     {% endfor %}
 
-  
+ 
   </table>
 </form>
           <input id="submit"style = "text-align: center"; type="submit" form="myform" value="Train"/>

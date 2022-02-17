@@ -1,14 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+
+    #text{
+        font-size:20px;
+    }
+</style>
 <div class="column is-4 is-offset-4">
 
     <div class="box">
             <p><b>Accuracy</b>  {{accuracy}}</p>
             {% for table in tables %}
-            {{ table|safe }}
-          {% endfor %}
-          <img src="data:image/png;base64, {{ plot_url }}">
+                {{ table |safe }}
+            {% endfor %}
+
+          <img src="data:image/png;base64, {{ confusion_matrix }}">
     </div>
 </div>
 {% endblock %}

@@ -32,14 +32,14 @@ def upload_file():
             file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             print( "",current_user.email,filename)
             flash('File successfully uploaded')
-
-            new_file = File(projectid=current_user.id, name=filename, location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            projectid = session['projectid']
+            new_file = File(projectid=projectid, name=filename, location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             db.session.add(new_file)
             db.session.commit()
-
+            projectname = session['projectname']
             session['filename'] = filename
             session['filelocation'] = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            return redirect(url_for('filedata.file_data'))
+            return redirect(url_for('userproject.projectinfo',projectname = projectname))
         else:
             flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
             return redirect(url_for('main.index'))

@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 main = Blueprint('main', __name__)
 from flask import current_app
-
+from flask_login import current_user
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
@@ -16,7 +16,10 @@ def allowed_file(filename):
 #https://stackoverflow.com/questions/62682674/how-to-get-dynamic-html-table-entries-in-a-form-to-flask
 @main.route('/')
 def index():
-	return render_template('index.html')
+    if current_user.is_authenticated:
+	    return render_template('index.html')
+    else:
+        return render_template('login.html')
 
 @main.route('/profile')
 

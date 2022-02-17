@@ -35,21 +35,17 @@
    
 
     <div id="tablecontainer"class ="container">
-        <a id= "createproject" href="/createproject" class="button">Create Project</a>
-        
-    <table>
-        <tr><th>Project Name</th>
-        <th>Date Created </th>
-        <th>Status </th></tr>
-    {% if data is defined and data|length > 0 %}
-    
-    {% for row in data %}
-        <tr><td><a href="{{ '/project/%s'%row.projectName}}">{{row.projectName}}</a></td></tr>
-    {%endfor%}
-    
-    {% endif %}
-    </table>
 
+    <form method="post" action="/userproject" enctype="multipart/form-data">
+        <dl>
+            <p>
+                <input class="input is-large" type="name" name="name" placeholder="Name" autofocus="">
+            </p>
+        </dl>
+        <p>
+            <input type="submit" value="Submit">
+        </p>
+    </form>
 </div>
 
 {% endblock %}

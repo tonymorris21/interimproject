@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
+from sqlalchemy import *
+
 db = SQLAlchemy()
 
 def create_app():
@@ -11,8 +13,10 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-   # db.create_all()
+    #db.create_all()
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
 
     Migrate(app,db)
     from .models import User, File, Project

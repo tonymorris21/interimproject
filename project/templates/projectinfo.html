@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  .box{
+    margin-top:5em;
+    width:12em;
+    height:10em;
+    margin-right:4em;
+    display:inline-block;
+  }
+</style>
+<h2 class="subtitle">
+  <div class =links>
+    <a href="/upload">Upload Dataset</a>
+  </div>
+  <h1>Datasets</h1>
+  {%for files in file %}
+  <div class="box">
+    <h1>File Name: {{files.name}}</h1>
+    <h1>Date created:</h1>
+      <a href="{{ '/filedata/%s'%files.fileid}}">View Dataset Info </a>
+      
+  </div>
+{%endfor%}
+<h1>Models</h1>
+    {%if model %}
+      {%for x in model %}
+      <div class="box">
+      <h1>Model Id: {{x.modelid}}</h1>
+        <p><b>Accuracy:</b> {{x.accuracy}}</p>
+        <h1>Date created:</h1>
+        <a href="{{ '/model/%s'%x.modelid}}">View Model Evaluation</a>
+      
+    </div>
+      {%endfor%}
+    {%endif%}
+
+</h2>
+{% endblock %}
