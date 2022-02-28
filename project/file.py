@@ -36,10 +36,9 @@ def upload_file():
             new_file = File(projectid=projectid, name=filename, location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             db.session.add(new_file)
             db.session.commit()
-            projectname = session['projectname']
             session['filename'] = filename
             session['filelocation'] = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            return redirect(url_for('userproject.projectinfo',projectname = projectname))
+            return redirect(url_for('userproject.projectinfo',projectid = projectid))
         else:
             flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
             return redirect(url_for('main.index'))

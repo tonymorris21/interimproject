@@ -2,8 +2,14 @@
 
 {% block content %}
 <style>
+.stretch{
+  margin-left:100px;
+}
 tr,th,table {
-  padding-right:120px;
+  font-size:14px;
+  width: 100%;
+
+  white-space: nowrap;
 }
 table{
   margin-top:5%;
@@ -33,60 +39,95 @@ td a {
   margin-left: auto;
   margin-right: auto;
 }
+input{
+  width:20px;
+}
   </style>
-
-<div class="column is-2 is-offset-1">
+<script type="text/javascript">
+   $(document).ready(function(){
+    $(".clickable-row").click(function() {
+        var featurename = $(this).attr("data-id");
+        var fileid = $(this).attr("fileid");
+        var url = "/filedata/"+fileid + "/" + featurename
+        console.log(featurename,fileid);
+        $.ajax({
+                        url: url,
+                        type: 'post',
+                        data: {fileid: fileid, featurename: featurename},
+                        success: function(plot_url){ 
+                            test = "data:image/png;base64,"+plot_url
+                            console.log(test)
+                            
+                            $('.modal-body #img').attr('src', "data:image/png;base64,"+plot_url)
+                            $('#exampleModalCenter').modal('show'); 
+                        }
+                    });
+    });
+});
+</script>
+<div class="stretch">
 
     <form  id = "myform" action = "{{ url_for('train.train_data') }}">
+      <table class="table table-hover" >
+        <h1>Continuous Features</h1>
+        <tr class="thead-dark">
+          {% for col in continouscolumnnames %}
+          <th >{{col}}</th>
+          {% endfor %}
+      </tr>
+      {% for row in continousrow_data %}
+ 
+      
+      <p>{{fileid}}</p>
+      <p>{{row[0]}}</p>
 
-
-
-
-    <table class ="center">
-      <h1 >File Data</h1>
-      <select id = "target" name = "target">
-        <option value="{{target[0]}}" selected>{{target[0]}}</option>
-        {% for target in target[1:] %}
-          <option value="{{target}}">{{target}}</option>
-        {% endfor %}
-      </select>
-      <tr >
-        {% for col in column_names %}
+      <tr class='clickable-row' fileid = '{{fileid}}' data-id='{{row[0]}}' >
+        {% for col, row_ in zip(continouscolumnnames, row) %}
+    
+      
+              <td ><p>{{row_}}</p></td>
+          {% endfor %}
+      </tr>
+      {% endfor %}
+      </table>
+      <table class="table table-hover">
+        <h1>Categorical Features</h1>
+      <tr class="thead-dark" >
+        {% for col in categoricalcolumnnames %}
         <th >{{col}}</th>
         {% endfor %}
-    </tr>
-    {% for row in row_data %}
-    <tr >
-        {% for col, row_ in zip(column_names, row) %}
-          {%if col == "Column Name" %}
-<td> <input type="text" id="columname" name={{row_}} value="{{ row_ }}"></input></td>
-          {%endif%}
-        {%if col == "Missing(Count)"%}
-         <td  >{{row_}}
-    <small>
-      <br>
-            <input type="checkbox" id="mean" name="mean" value="{{ row[0] }}">Mean</input>
-            <input type="checkbox" id="mode" name="mode" value="{{ row[0] }}">Mode</input>
-       </small>
-        </td>
-         {%endif%}
-        {% if col == check_box %}
-        <td >
-          <input type="checkbox" id="nullable" name="nullable" value="{{ row[0] }}">
-        </td>
-        {% elif col != "Missing(Count)"%}
-          {% if col != "Column Name" %}
+      </tr>
+      {% for row in categoricalrow_data %}
+      <tr class='clickable-row'  fileid = '{{fileid}}' data-id='{{row[0]}}'>
+        {% for col, row_ in zip(categoricalcolumnnames, row) %}
             <td ><p>{{row_}}</p></td>
-          {% endif %}
-        {% endif %}
         {% endfor %}
-    </tr>
-    {% endfor %}
+      </tr>
+      {% endfor %}
+      <input id="submit"style = "text-align: center"; type="submit" form="myform" value="Train"/>
+      </table>
+      </form>
+</div>
 
- 
-  </table>
-</form>
-          <input id="submit"style = "text-align: center"; type="submit" form="myform" value="Train"/>
 
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <img src="data:image/jpeg;base64" id="img" alt="Chart" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

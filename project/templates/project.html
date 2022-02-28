@@ -44,7 +44,7 @@
     {% if data is defined and data|length > 0 %}
     
     {% for row in data %}
-        <tr><td><a href="{{ '/project/%s'%row.projectName}}">{{row.projectName}}</a></td></tr>
+        <tr><td><a href="{{ '/project/%s'%row.projectid}}">{{row.projectName}}</a></td></tr>
     {%endfor%}
     
     {% endif %}
