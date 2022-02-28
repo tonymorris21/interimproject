@@ -41,28 +41,29 @@ def createproject():
     db.session.add(new_project)
     db.session.commit()
     session['projectid'] = projectid
-    return projectinfo(name)
+    return projectinfo(projectid)
 
 @userproject.route('/createproject')
 def projectcreate():
 
     return render_template('createproject.html')
 
-@userproject.route('/project/<projectname>')
-def projectinfo(projectname):
-    projectid = session['projectid']
-    session['projectname'] = projectname
-    print(projectid)
+@userproject.route('/project/<projectid>')
+def projectinfo(projectid):
+
+    print("Projectid",projectid)
     model = Model.query.filter_by(projectid=projectid).all()
     file = File.query.filter_by(projectid=projectid).all()
-
+    project = Project.query.filter_by(projectid=projectid).all()
+    print("Project 0",project[0].projectName)
+    session['projectname'] = project[0].projectName
     for row in model:
         print ("Name: ",row.accuracy)
     #confusion_matrix = model.confusion_matrix
    # accuracy = model.accuracy
     if len(model) >0 :
 
-        return render_template('projectinfo.html',file =file,model =model , projectname = projectname)
+        return render_template('projectinfo.html',file =file,model =model , projectname = project[0].projectName)
     if len(file)<0:
         return render_template('projectinfo.html', file = file,model=model)
     return render_template('projectinfo.html',file = file,model=model)
@@ -86,4 +87,6 @@ def modelinfo(modelid):
 def object_as_dict(obj):
     return {c.key: getattr(obj, c.key)
             for c in inspect(obj).mapper.column_attrs}
+
+
 
