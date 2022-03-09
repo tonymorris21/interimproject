@@ -9,10 +9,16 @@ from werkzeug.utils import secure_filename
 from flask import current_app
 import numpy as np
 import pandas as pd
+from pandas.plotting import scatter_matrix
 import csv
+from flask import jsonify
 from io import BytesIO
 import matplotlib.pyplot as plt
 import base64
+import collections
+from collections import Counter
+
+import seaborn as sn
 filedata = Blueprint('filedata', __name__)
 
 
@@ -30,10 +36,11 @@ def file_data(fileid):
     sniffer = csv.Sniffer()
     sample_bytes = 2096
 
-    hasheader = (sniffer.has_header(
-        open(filename).read(sample_bytes)))
+    hasheader = sniffer.has_header(
+        open(filelocation).read(sample_bytes))
     print(hasheader)
-    df = pd.read_csv(filelocation)
+    df = pd.read_csv(file.location)
+    print("Generate report",df)
     continousdf,categoricaldf = generate_report(df)
     #print(list(df.columns))
     #print(df.isnull().sum())
@@ -79,8 +86,29 @@ def file_data(fileid):
     dict_obj = df.to_dict('list')
     filelocationandname = filelocation
     df.to_csv (filelocationandname, index = None, header=True)
+    df.loc[df.isnull().sum(1)>1].index
+    rowsmissingonefeature = [0,0,0,0,0,0,0]
+    numberoffeatures = df.shape[1]
+    count = 0
+    missingfeatures = df.isnull().sum(axis=1).tolist()
+    print("Missing features",df.isnull().sum(axis=1).tolist())
+    print("Missing features target",df["Col4"].isnull().sum().tolist())
+    missingtarget = 0
+    occurrences = collections.Counter(missingfeatures)
+    print(occurrences)
+    dict(occurrences)
+    columns = " " + df.columns
+    index_list = list(df.index.values)
+    columnlist = list(df.columns)
+    columnlist.insert(0," ")
+    test = len(continousdf["Feature"].values)
+    catcount =  len(categoricaldf["Feature"].values)
     
-    return render_template('filedata.html',fileid = fileid,hasheader=hasheader,df =df,column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = list(df.columns),dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows,continouscolumnnames = continousdf.columns.values,continousrow_data=list(continousdf.values.tolist()),continouscolumns=list(continousdf.columns),categoricalcolumnnames = categoricaldf.columns.values,categoricalrow_data=list(categoricaldf.values.tolist()),categorical=list(categoricaldf.columns))
+    contcount =  len(continousdf["Feature"].values)
+    catcountpt = str(catcount/(contcount+catcount)*100)
+    contcountpt = str(contcount/(contcount+catcount)*100)
+    print(catcountpt,contcountpt)
+    return render_template('filedata.html',catcount=catcount,contcount = contcount,catcountpt = catcountpt, contcountpt = contcountpt,missingtarget=missingtarget, occurrences = occurrences,indexlist = index_list,rowdata = list(df[df.isnull().any(axis=1)].values.tolist()),tables=[df.to_html()], titles=[''],totalrows = numrows, featurecount = numcolumns ,fileid = fileid,hasheader=hasheader,df =df,column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = columnlist,dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows,continouscolumnnames = continousdf.columns.values,continousrow_data=list(continousdf.values.tolist()),continouscolumns=list(continousdf.columns),categoricalcolumnnames = categoricaldf.columns.values,categoricalrow_data=list(categoricaldf.values.tolist()),categorical=list(categoricaldf.columns))
 def generate_report(df):
     #print("count",df.describe(include='all'))
     #print(df)
@@ -230,16 +258,154 @@ def getsecondmodepercentage(x):
 
 @filedata.route('/filedata/<fileid>/<featurename>', methods=['GET', 'POST'])
 def testfunc(fileid,featurename):
-    print(fileid)
-    print(featurename)
+    print("Test feature")
+    datatype = request.form.get("datatype")
+    
     featurename = featurename
     file = File.query.filter_by(fileid=fileid).first()
     df = pd.read_csv(file.location)
+
+    if datatype == 'continuous':
+        plot_url = generateContinuousGraphs(df[featurename],featurename)
+        return plot_url
+    if datatype == 'categorical':
+        print("Categorical feature")
+        plot_url = generateCategoricalGraphs(df[featurename],featurename)
+        return plot_url
+
+
+
+
+
+def generateContinuousGraphs(feature,featurename):
     fig = plt.figure()
-    df[featurename].plot(kind='box', title=featurename)
+    sn.distplot(a=feature, hist=True)
     img = BytesIO()
+    plt.tight_layout()
     plt.savefig(img, format='png')
     plt.close()
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+
     return plot_url
+
+def generateCategoricalGraphs(feature,featurename):
+    
+    fig = plt.figure()
+    feature.value_counts().plot(kind='bar', xlabel=featurename, ylabel='Frequency')
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img,format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+
+    #comapare 
+    return plot_url
+@filedata.route('/filedata/<fileid>/correlations', methods=['GET', 'POST'])
+def correlationGraphs(fileid):
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    fig = plt.figure()
+    corrMatrix = df.corr()
+    sn.heatmap(corrMatrix, annot=True)
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img,format='png')
+    plt.close()
+    img.seek(0)
+    plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
+    plot_url = generatescattermatrix(df)
+    images = plot_url + "," + plot_url2
+    return images
+def generatescattermatrix(df):
+    fig = plt.figure()
+    scatter_matrix(df)
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img,format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    return plot_url
+@filedata.route('/filedata/<fileid>/dropfeature/<featurename>', methods=['GET', 'POST'])
+def dropFeature(fileid,featurename):
+    featurename = featurename
+    print(featurename)
+    file = File.query.filter_by(fileid=fileid).first()
+    df = pd.read_csv(file.location)
+    print(df)
+    print(file.location)
+    df = df.drop(featurename, 1)
+    df.to_csv(file.location ,mode='w+',index=False )
+    print("feature dropped")
+    print(df)
+    return redirect(url_for('filedata.file_data',fileid = fileid))
+
+@filedata.route('/filedata/<fileid>/newgraph/<xaxis>/<yaxis>', methods=['GET', 'POST'])
+def newgraph(xaxis,yaxis,fileid):
+    print('args:', request.args)
+    print('form:', request.form)
+    yaxis = yaxis
+    xaxis = xaxis
+    print("Xaxis",xaxis)
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    fig = plt.figure()
+    sn.catplot(x=xaxis, y=yaxis, data=df)
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img,format='png')
+    plt.close()
+    img.seek(0)
+    plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
+    return plot_url2
+@filedata.route('/filedata/<fileid>/bivariate/<target>', methods=['GET', 'POST'])
+def generatebivariate(target,fileid):
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    columns = len(df.columns)
+    images = ""
+    for columns in df:
+        if(columns==target):
+            print("target")
+        else:
+            sn.catplot(x=columns, y=target, data=df)
+            img = BytesIO()
+            plt.tight_layout()
+            plt.savefig(img,format='png')
+            plt.close()
+            img.seek(0)
+            plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
+            images = images + "," + plot_url2
+         
+               
+        
+    return str(images)
+
+@filedata.route('/filedata/<fileid>/missingvalues/<target>', methods=['GET', 'POST'])
+def getMissingFeatures(fileid,target):
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    missingfeatures = df.isnull().sum(axis=1).tolist()
+    print(type(target)==str)
+    print("Missing features",df.isnull().sum(axis=1).tolist())
+    occurrences = collections.Counter(missingfeatures)
+    b = dict(occurrences)
+    missingtarget = df[target].isnull().sum().tolist()
+    print(b)
+    missingtargets = str(missingtarget)
+    d = dict(occurrences)
+    d[99]=missingtargets
+    
+    return jsonify(d)
+@filedata.route('/filedata/<fileid>/dropMissingValue/<target>', methods=['GET', 'POST'])
+def dropMissingFeature(fileid,target):
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    if(type(target)==str):
+        df = df.dropna(subset=[target])
+    else:
+        df.dropna(axis=0, thresh=target)
+
+    return "success"

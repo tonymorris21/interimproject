@@ -1,133 +1,801 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <style>
-.stretch{
-  margin-left:100px;
-}
-tr,th,table {
-  font-size:14px;
-  width: 100%;
+  :root {
+    --background-gradient: linear-gradient(30deg, #f39c12 30%, #f1c40f);
+    --gray: #34495e;
+    --darkgray: #2c3e50;
+  }
+  .columndata {
+    margin-top: 2em;
+    margin-left: 10%;
+    width: 100%;
+    margin-right: 10%;
+    border: 3px solid #fff;
+  }
+  .rowdata {
+    margin-top: 2em;
+    margin-left: 1%;
+    width: 40%;
+    margin-right: 10%;
+    float: right;
+  }
+  .modal-footer #dropfeature {
+    float: left;
+    margin-right: 10em;
+  }
+  .float-container1 {
+    margin-left: 2%;
+    width: 100%;
+    margin-top: 4%;
+    height: fit-content;
+    margin-right: 2%;
+    border: 3px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
 
-  white-space: nowrap;
-}
-table{
-  margin-top:5%;
-}
-form{
-  margin-left:80px;
-  width:100%;
-}
-h1 {
-  font-size:40px;
-  margin-left:9.2em;
-  white-space: nowrap;
-}
-select{
-  margin-left:30em;
-}
-#submit{
-  font-size:20px;
-  margin-left:25em;
-}
+  .float-child1 {
+    margin-top: 2%;
+    width: 45%;
+    text-align: center;
+    font-size: 18px;
+    float: left;
 
-td a {
-  padding-left:3em;
+    margin-bottom: 2%;
 
-}
-.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-input{
-  width:20px;
-}
-  </style>
+    height: fit-content;
+  }
+  .float-child1:nth-child(1) {
+    margin-right: 2%;
+    width: fit-content;
+  }
+  .float-child1:nth-child(1) {
+    width: fit-content;
+  }
+  .float-container {
+    margin-left: 10%;
+    width: 100%;
+    margin-right: 10%;
+    border: 3px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child {
+    margin-top: 2%;
+    width: 45%;
+    text-align: center;
+    font-size: 18px;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 2%;
+    margin-right: 20px;
+    height: 9em;
+  }
+  .float-container2 {
+    margin-left: 10%;
+    width: 100%;
+    margin-right: 10%;
+    border: 3px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child2 {
+    margin-top: 2%;
+    width: 45%;
+    text-align: center;
+    font-size: 18px;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 2%;
+    margin-right: 20px;
+    height: 9em;
+  }
+
+  .imagecontainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+  #imagerow2 {
+    height: fit-content;
+    width: fit-content;
+  }
+  #imagerow img {
+    display: inline-block;
+    text-align: center;
+  }
+  #imagerow2 img {
+    display: inline-block;
+    text-align: center;
+  }
+  .icon {
+    background: url("/project/static/2967920.png");
+    height: 20px;
+    width: 20px;
+    display: block;
+    /* Other styles here */
+  }
+  .float-child:nth-child(2) {
+    padding-left: 2em;
+    padding-right: 2em;
+
+    border-left: 0.5px solid lightgray;
+  }
+  .selectdiv {
+    margin-bottom: 1em;
+  }
+  select {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    height: 2em;
+    width: 14em;
+    display: block;
+    margin: 0 auto;
+  }
+  #rowdata p {
+  }
+  #rowdata p {
+    display: inline-block;
+    justify-content: space-between;
+  }
+
+  .modal-dialog {
+    max-width: 100vw;
+    margin: 0;
+    overflow-x: hidden !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+  }
+  tr,
+  th,
+  table {
+    font-size: 14px;
+    width: 10%;
+    white-space: nowrap;
+  }
+
+  .clickable-row {
+    cursor: pointer;
+  }
+  table {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+  #heatmap:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+  }
+
+  form {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+  #submit {
+    font-size: 20px;
+    margin-left: 25em;
+  }
+
+  td a {
+    padding-left: 3em;
+  }
+
+  #summaryp {
+    font-size: 18px;
+    display: inline;
+    padding-left: 2em;
+    margin: auto;
+  }
+
+  #viewrelationships {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    background-color: white;
+    color: black;
+    margin-bottom: 1em;
+  }
+  #bivariate {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    background-color: white;
+    color: black;
+    margin-bottom: 1em;
+  }
+  #summarymodal {
+    margin-bottom: 2em;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .modal-body #hideoptions #hidecontent {
+    margin-bottom: 2em;
+    text-align: center;
+    visibility: hidden;
+  }
+
+  .progress {
+    height: 28px;
+  }
+
+  .progress-bar {
+    background-color: #002c6c;
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  span {
+    position: absolute;
+    right: -60px;
+    color: #002c6c;
+  }
+</style>
 <script type="text/javascript">
-   $(document).ready(function(){
-    $(".clickable-row").click(function() {
-        var featurename = $(this).attr("data-id");
-        var fileid = $(this).attr("fileid");
-        var url = "/filedata/"+fileid + "/" + featurename
-        console.log(featurename,fileid);
-        $.ajax({
-                        url: url,
-                        type: 'post',
-                        data: {fileid: fileid, featurename: featurename},
-                        success: function(plot_url){ 
-                            test = "data:image/png;base64,"+plot_url
-                            console.log(test)
-                            
-                            $('.modal-body #img').attr('src', "data:image/png;base64,"+plot_url)
-                            $('#exampleModalCenter').modal('show'); 
-                        }
-                    });
+  $(document).ready(function () {
+    var fileid = $("#bivariate").attr("fileid");
+    var target = $("#target").find(":selected").text();
+    var url = "/filedata/" + fileid + "/missingvalues/" + target;
+    $.ajax({
+      url: url,
+      type: "post",
+      data: { fileid: fileid, target: target },
+      success: function (data) {
+        $("#rowdata").append("<h3> Missing Features</h3>");
+
+        var cols = [];
+        Object.keys(data).forEach(function (key) {
+          cols.push(key);
+        });
+
+        // Create a table element
+        $("#rowdata").append("<table class = 'table' id='rowdatatable'> </table");
+        var thead = document.createElement("thead")
+        $("#rowdata #rowdatatable").append("<tr id='rowdatatr' class = 'thead-dark' > </tr>");
+   
+
+        for (var i = 0; i < cols.length; i++) {
+          // Create the table header th element
+          if(cols[i]==99){
+            $("#rowdata #rowdatatable #rowdatatr").append("<th> Target</th>");
+          }else{
+          $("#rowdata #rowdatatable #rowdatatr").append("<th>"+cols[i] + "</th>");
+          }
+        }
+        $('#rowdata table').css("class","thead-dark");
+        // Adding the data to the table
+        $("#rowdata #rowdatatable").append("<tr id='rowdatatr1' > </tr>");
+        Object.keys(data).forEach(function (key) {  
+          // Create a new row
+
+          
+            $("#rowdata #rowdatatable #rowdatatr1").append("<td > " + data[key] + "</td>");
+        
+          
+        });
+
+        // Add the newly created table containing json data
+       
+      },
     });
-});
+    $("select").on("change", function () {
+      var fileid = $("#bivariate").attr("fileid");
+      var target = $("#target").find(":selected").text();
+      var url = "/filedata/" + fileid + "/missingvalues/" + target;
+      $("#rowdata").empty();
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, target: target },
+        success: function (data) {
+          console.log(data);
+
+          Object.keys(data).forEach(function (key) {
+            console.log("Key : " + key + ", Value : " + data[key]);
+            if (key == 99) {
+              $("#rowdata").append(
+                "<p> Missing target feature  " + data[key] + "</p>"
+              );
+            } else {
+              $("#rowdata").append(
+                "<p>" + key + " missing features  " + data[key] + "</p>"
+              );
+            }
+          });
+        },
+      });
+    });
+    $(".modal-body #hideoptions").click(function () {
+      console.log("test hide");
+      $(".modal-body #hideoptions #hidecontent").css("visibility", "visible");
+    });
+    $(".clickable-row").click(function () {
+      var featurename = $(this).attr("data-id");
+      var fileid = $(this).attr("fileid");
+      var datatype = $(this).attr("datatype");
+      console.log(datatype);
+      var url = "/filedata/" + fileid + "/" + featurename;
+      console.log(featurename, fileid);
+      var data = $(this).attr("datarow");
+      $("#exampleModalCenter").attr("fileid", fileid);
+      $("#exampleModalCenter").attr("featurename", featurename);
+      var categorydata = [];
+      if (datatype === "categorical") {
+        categorydata = [
+          "Feature",
+          "Count",
+          "Missing(%)",
+          "Cardinality",
+          "Mode",
+          "Mode Freq",
+          "Mode %",
+          "2nd Mode",
+          "2nd Mode Freq",
+          "2nd Mode %",
+        ];
+      } else if (datatype === "continuous") {
+        categorydata = [
+          "Feature",
+          "Count",
+          "Missing(%)",
+          "Cardinality",
+          "Min",
+          "1st Quartile",
+          "Mean",
+          "Median",
+          "3rd Quartile",
+          "Max",
+          "Std. Deviation",
+        ];
+      }
+
+      data = data.replace("[", "");
+      data = data.replace("]", "");
+      data = data.replace("'", "");
+      data = data.replace("'", "");
+      var data = data.split(",");
+      // console.log("test"+ data);
+      $(".modal-header #h1modal").text("");
+      $(".modal-header #h1modal").append(data[0]);
+      $(".modal-body #img").attr("src", "");
+      $(".modal-body #img2").remove();
+
+      $("#summarymodal #summaryp").remove();
+      for (let i = 1; i < data.length; i++) {
+        //console.log(data[row] + data[row+1]);
+        $("#buttonclickedgraph").css("visibility", "visible");
+        $(".modal-body #hideoptions").css("visibility", "visible");
+        $("#summarymodal").append(
+          '<p id="summaryp">' +
+            "<b>" +
+            categorydata[i] +
+            "</b> : " +
+            data[i] +
+            "</p>"
+        );
+      }
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { datatype: datatype, fileid: fileid, featurename: featurename },
+        success: function (plot_url) {
+          test = "data:image/png;base64," + plot_url;
+          console.log(test);
+          srcvar = "data:image/png;base64," + plot_url;
+          $(".modal-body .imagecontainer").prepend(
+            '<img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart">'
+          );
+
+          $("#exampleModalCenter").modal("show");
+        },
+      });
+    });
+
+    $("#dropfeature").click(function () {
+      console.log("test");
+      $(".modal-header #h1modal").text("");
+      var fileid = $("#exampleModalCenter").attr("fileid");
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var url = "/filedata/" + fileid + "/dropfeature/" + featurename;
+
+      console.log(featurename);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, featurename: featurename },
+        success: function () {
+          console.log("feature deleted");
+          location.reload(true);
+        },
+      });
+    });
+
+    $("#viewrelationships").click(function () {
+      var fileid = $("#viewrelationships").attr("fileid");
+      var url = "/filedata/" + fileid + "/correlations";
+      $("#summarymodal #summaryp").remove();
+      $(".modal-body #img").attr("src", "");
+      $(".modal-header #h1modal").text("");
+      $(".modal-body #hideoptions").css("visibility", "hidden");
+      $(".modal-body #img2").remove();
+      $("#buttonclickedgraph").remove();
+
+      $(".modal-body #imagerow2 p").remove();
+      $("#imagerow2 .selectdiv").remove();
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid },
+        success: function (images) {
+          var images = images.split(",");
+
+          $(".modal-body #img").attr(
+            "src",
+            "data:image/png;base64," + images[0]
+          );
+
+          $(".modal-body #imagerow2").prepend(
+            '<img src="" id="img2" alt="Chart">'
+          );
+          $(".modal-body #img2").attr(
+            "src",
+            "data:image/png;base64," + images[1]
+          );
+          $("#dropfeature").hide();
+          $("#save").hide();
+          $("#exampleModalCenter").modal("show");
+        },
+      });
+    });
+    $("#bivariate").click(function () {
+      var fileid = $("#bivariate").attr("fileid");
+      var target = $("#target").find(":selected").text();
+      console.log(target);
+      var url = "/filedata/" + fileid + "/bivariate/" + target;
+      $("#summarymodal #summaryp").remove();
+      $(".modal-body #img").attr("src", "");
+      $(".modal-header #h1modal").text("");
+      $(".modal-body #hideoptions").css("visibility", "hidden");
+      $(".modal-body #img2").remove();
+      $("#buttonclickedgraph").remove();
+
+      $(".modal-body #imagerow2 p").remove();
+      $("#imagerow2 .selectdiv").remove();
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, target: target },
+        success: function (images) {
+          images.replace("", "");
+          images.replace("'", "");
+          var images = images.split(",");
+
+          console.log(images);
+
+          //var plot_url2 = plot_url2.split(',');
+
+          for (let i = 1; i < images.length; i++) {
+            srcvar = "data:image/png;base64," + images[i];
+            if (i < 3) {
+              $(".modal-body .imagecontainer").prepend(
+                '<img src=" ' +
+                  srcvar +
+                  '"' +
+                  'id="img ' +
+                  i +
+                  '"' +
+                  'alt="Chart">'
+              );
+            } else {
+              $(".modal-body .imagecontainer").prepend(
+                '<img src=" ' +
+                  srcvar +
+                  '"' +
+                  'id="img ' +
+                  i +
+                  '"' +
+                  'alt="Chart">'
+              );
+            }
+            $("#dropfeature").hide();
+            $("#save").hide();
+            $("#exampleModalCenter").modal("show");
+          }
+        },
+      });
+    });
+
+    $("#buttonclickedgraph").click(function () {
+      console.log("test");
+      var fileid = $("#viewrelationships").attr("fileid");
+      var xaxis = $(".selectdiv #xaxis").find(":selected").text();
+      var yaxis = $(".selectdiv #yaxis").find(":selected").text();
+      console.log(xaxis);
+      console.log(yaxis);
+      $(".modal-body #img2").remove();
+      var url = "/filedata/" + fileid + "/newgraph/" + xaxis + "/" + yaxis;
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { xaxis: xaxis, yaxis: yaxis, fileid: fileid },
+        success: function (plot_url2) {
+          $(".modal-body #imagerow2").append(
+            '<img src="" id="img2" alt="Chart">'
+          );
+          $(".modal-body #img2").attr(
+            "src",
+            "data:image/png;base64," + plot_url2
+          );
+          $("#buttonclickedgraph").remove();
+          $(".modal-body #imagerow2 p").remove();
+          $(".modal-body #row1").append(
+            '<div id = "imagerow3" class="col-md-4 " </div>'
+          );
+          $(".selectdiv").remove();
+          $(".modal-body #imagerow3").append(
+            "<p>Compare with other features </p>"
+          );
+          $(".modal-body #imagerow3").append(
+            '<button type="button" id ="buttonclickedgraph">Click! </button>'
+          );
+        },
+      });
+    });
+  });
 </script>
-<div class="stretch">
+<div class="float-container">
+  <div class="float-child">
+    <h1>Summary</h1>
+    <p>Total Features: {{featurecount}}</p>
+    <p>Total Rows: {{totalrows}}</p>
+    <div class="row">
+      <label>Continuous Features</label>
 
-    <form  id = "myform" action = "{{ url_for('train.train_data') }}">
-      <table class="table table-hover" >
-        <h1>Continuous Features</h1>
-        <tr class="thead-dark">
-          {% for col in continouscolumnnames %}
-          <th >{{col}}</th>
-          {% endfor %}
-      </tr>
-      {% for row in continousrow_data %}
- 
-      
-      <p>{{fileid}}</p>
-      <p>{{row[0]}}</p>
-
-      <tr class='clickable-row' fileid = '{{fileid}}' data-id='{{row[0]}}' >
-        {% for col, row_ in zip(continouscolumnnames, row) %}
-    
-      
-              <td ><p>{{row_}}</p></td>
-          {% endfor %}
-      </tr>
-      {% endfor %}
-      </table>
-      <table class="table table-hover">
-        <h1>Categorical Features</h1>
-      <tr class="thead-dark" >
-        {% for col in categoricalcolumnnames %}
-        <th >{{col}}</th>
-        {% endfor %}
-      </tr>
-      {% for row in categoricalrow_data %}
-      <tr class='clickable-row'  fileid = '{{fileid}}' data-id='{{row[0]}}'>
-        {% for col, row_ in zip(categoricalcolumnnames, row) %}
-            <td ><p>{{row_}}</p></td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-      <input id="submit"style = "text-align: center"; type="submit" form="myform" value="Train"/>
-      </table>
-      </form>
-</div>
-
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <div class="col-md-8">
+        <div class="progress">
+          <div
+            class="progress-bar bg-warning"
+            role="progressbar"
+            style="width: {{contcountpt}}%"
+            aria-valuenow="{{contcountpt}}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <span>{{contcount}} ({{contcountpt}} %)</span>
+          </div>
+        </div>
       </div>
-      <div class="modal-body">
-        <img src="data:image/jpeg;base64" id="img" alt="Chart" >
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+    </div>
+    <div class="row">
+      <label>Categorical Features</label>
+      <div class="col-md-8">
+        <div class="progress">
+          <div
+            class="progress-bar bg-danger"
+            role="progressbar"
+            style="width: {{catcountpt}}%"
+            aria-valuenow="{{catcountpt}}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <span>{{catcount}} ({{catcountpt}} %)</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <div class="float-child">
+    <h1>Target Selection</h1>
+    <p>
+      Select a feature to be the target<br />(what you want your model to
+      predict)
+    </p>
+    <div class="selectdiv">
+      <select id="target" name="target">
+        <option value="{{target[0]}}" selected>{{target[0]}}</option>
+        {% for target in target[1:] %}
+        <option value="{{target}}">{{target}}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
 </div>
-{% endblock %}
+
+<div class="float-container1">
+  <div class="float-child1">
+    <div id="test">
+      <button
+        fileid="{{fileid}}"
+        type="button"
+        id="bivariate"
+        class="btn btn-lg btn-secondary"
+      >
+        Bivariate Analysis
+      </button>
+      <button
+        fileid="{{fileid}}"
+        type="button"
+        id="viewrelationships"
+        class="btn btn-lg btn-secondary"
+      >
+        MultiVariate Analysis
+      </button>
+    </div>
+    <form id="myform" action="{{ url_for('train.train_data') }}">
+      <table class="table table-hover">
+        <h1 class="text-center">Continuous Features</h1>
+
+        <tr class="thead-dark">
+          {% for col in continouscolumnnames %}
+          <th>{{col}}</th>
+          {% endfor %}
+        </tr>
+        {% for row in continousrow_data %}
+
+        <tr
+          class="clickable-row"
+          datarow="{{row}}"
+          datatype="continuous"
+          fileid="{{fileid}}"
+          data-id="{{row[0]}}"
+        >
+          {% for col, row_ in zip(continouscolumnnames, row) %}
+
+          <td><p>{{row_}}</p></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+      <table class="table table-hover">
+        <h1 class="text-center">Categorical Features</h1>
+        <tr class="thead-dark">
+          {% for col in categoricalcolumnnames %}
+          <th>{{col}}</th>
+          {% endfor %}
+        </tr>
+        {% for row in categoricalrow_data %}
+        <tr
+          class="clickable-row"
+          datarow="{{row}}"
+          datatype="categorical"
+          fileid="{{fileid}}"
+          data-id="{{row[0]}}"
+        >
+          {% for col, row_ in zip(categoricalcolumnnames, row) %}
+          <td><p>{{row_}}</p></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </form>
+  </div>
+  <div class="float-child1">
+    <div id="rowdata"></div>
+    <h1>Row Data</h1>
+    <table class="table table-hover">
+      <tr class="thead-dark">
+        {% for col in columns %}
+        <th>{{col}}</th>
+        {% endfor %}
+      </tr>
+      {%set count = namespace(value=0) %} {% for row in rowdata %}
+      <tr
+        class="clickable-row"
+        datarow="{{row}}"
+        datatype="categorical"
+        fileid="{{fileid}}"
+        data-id="{{row[0]}}"
+      >
+        {% for col, row_ in zip(columns, row) %} {% if(col == " ") %}
+        <td><p>{{indexlist[ count.value]}}</p></td>
+        {%endif%}
+        <td><p>{{row_}}</p></td>
+
+        {% endfor %}
+      </tr>
+      {% set count.value = count.value + 1 %} {% endfor %}
+    </table>
+  </div>
+</div>
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="exampleModalCenter"
+  fileid=""
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-fullscreen"
+    role="document"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="col-12 modal-title text-center" featurename="" id="h1modal">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </h3>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div id="summarymodal" class="col-sm-12 align-self-center"></div>
+          </div>
+          <div id="hideoptions" class="row">
+            test<br />
+            <p id="hidecontent"><br />test test test</p>
+          </div>
+          <div class="row" id="row1">
+            <div class="imagecontainer">
+              <div>
+                <p>Compare with other features</p>
+                <div class="selectdiv">
+                  <p>X Axis:</p>
+                  <select id="xaxis" name="target">
+                    <option value="{{target[0]}}" selected>
+                      {{target[0]}}
+                    </option>
+                    {% for target in target[1:] %}
+                    <option value="{{target}}">{{target}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="selectdiv">
+                  <p>Y Axis:</p>
+                  <select id="yaxis" name="target">
+                    <option value="{{target[0]}}" selected>
+                      {{target[0]}}
+                    </option>
+                    {% for target in target[1:] %}
+                    <option value="{{target}}">{{target}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <button type="button" id="buttonclickedgraph">Click!</button>
+              </div>
+            </div>
+          </div>
+          <div id="imagerow" class="col-md-4 ms-auto text-center"></div>
+          <div id="imagerow2" class="col-md-4 ms-auto text-center"></div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              id="dropfeature"
+              class="btn btn-danger mr-auto"
+            >
+              Drop Feature
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" id="save" class="btn btn-primary">
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {% endblock %}
+    </div>
+  </div>
+</div>
