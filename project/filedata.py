@@ -17,8 +17,10 @@ import matplotlib.pyplot as plt
 import base64
 import collections
 from collections import Counter
-
+from sklearn.preprocessing import OrdinalEncoder
 import seaborn as sn
+from flask import send_file
+from sklearn.preprocessing import OneHotEncoder
 filedata = Blueprint('filedata', __name__)
 
 
@@ -92,7 +94,7 @@ def file_data(fileid):
     count = 0
     missingfeatures = df.isnull().sum(axis=1).tolist()
     print("Missing features",df.isnull().sum(axis=1).tolist())
-    print("Missing features target",df["Col4"].isnull().sum().tolist())
+    #print("Missing features target",df["Col4"].isnull().sum().tolist())
     missingtarget = 0
     occurrences = collections.Counter(missingfeatures)
     print(occurrences)
@@ -107,8 +109,20 @@ def file_data(fileid):
     contcount =  len(continousdf["Feature"].values)
     catcountpt = str(catcount/(contcount+catcount)*100)
     contcountpt = str(contcount/(contcount+catcount)*100)
+    dfrows = df[df.isnull().any(axis=1)]
+    
+    
+    
+    print(dfrows.head())
+    rowdatacolumns = dfrows.columns.values
+    print(rowdatacolumns)
     print(catcountpt,contcountpt)
-    return render_template('filedata.html',catcount=catcount,contcount = contcount,catcountpt = catcountpt, contcountpt = contcountpt,missingtarget=missingtarget, occurrences = occurrences,indexlist = index_list,rowdata = list(df[df.isnull().any(axis=1)].values.tolist()),tables=[df.to_html()], titles=[''],totalrows = numrows, featurecount = numcolumns ,fileid = fileid,hasheader=hasheader,df =df,column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = columnlist,dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows,continouscolumnnames = continousdf.columns.values,continousrow_data=list(continousdf.values.tolist()),continouscolumns=list(continousdf.columns),categoricalcolumnnames = categoricaldf.columns.values,categoricalrow_data=list(categoricaldf.values.tolist()),categorical=list(categoricaldf.columns))
+    test = list(dfrows.index.values)
+    dfrows.insert(0, 'Row', test)
+    dfrows["Drop"] = "dropbutton"
+        
+    tablerowdata = dfrows.to_html(classes = 'table rowdatatable')
+    return render_template('filedata.html', indexrows = list(dfrows.index.values.tolist()),titlesgr=dfrows.columns.values,rowdatacolumns = rowdatacolumns,catcount=catcount,contcount = contcount,catcountpt = catcountpt, contcountpt = contcountpt,missingtarget=missingtarget, occurrences = occurrences,indexlist = index_list,rowdata = list(dfrows.values.tolist()),tables=[df.to_html()], titles=[''],totalrows = numrows, featurecount = numcolumns ,fileid = fileid,hasheader=hasheader,df =df,column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = columnlist,dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows,continouscolumnnames = continousdf.columns.values,continousrow_data=list(continousdf.values.tolist()),continouscolumns=list(continousdf.columns),categoricalcolumnnames = categoricaldf.columns.values,categoricalrow_data=list(categoricaldf.values.tolist()),categorical=list(categoricaldf.columns))
 def generate_report(df):
     #print("count",df.describe(include='all'))
     #print(df)
@@ -266,7 +280,8 @@ def testfunc(fileid,featurename):
     df = pd.read_csv(file.location)
 
     if datatype == 'continuous':
-        plot_url = generateContinuousGraphs(df[featurename],featurename)
+        binsize = int(np.ceil(np.log2(len(df[featurename]))) + 1)
+        plot_url = generateContinuousGraphs(df[featurename],featurename,binsize)
         return plot_url
     if datatype == 'categorical':
         print("Categorical feature")
@@ -276,10 +291,13 @@ def testfunc(fileid,featurename):
 
 
 
-
-def generateContinuousGraphs(feature,featurename):
+def generateContinuousGraphs(feature,featurename,binsize):
     fig = plt.figure()
-    sn.distplot(a=feature, hist=True)
+    q75,q25 = np.percentile(feature, [75 ,25])
+    iqr = q75 - q25
+    print(iqr)
+    print(len(feature))
+    sn.distplot(a=feature, hist=True, bins=int(binsize))
     img = BytesIO()
     plt.tight_layout()
     plt.savefig(img, format='png')
@@ -288,7 +306,23 @@ def generateContinuousGraphs(feature,featurename):
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
 
     return plot_url
+@filedata.route('/filedata/<fileid>/generateContinuousGraphs/feature/<feature>/binsize/<binsize>', methods=['GET', 'POST'])
+def generateContinuousGraphsd(fileid,feature,binsize):
+    fig = plt.figure()
 
+    file = File.query.filter_by(fileid=fileid).first()
+    df = pd.read_csv(file.location)
+    
+    sn.distplot(a=df[feature], hist=True, bins=int(binsize))
+    
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+
+    return plot_url
 def generateCategoricalGraphs(feature,featurename):
     
     fig = plt.figure()
@@ -317,7 +351,7 @@ def correlationGraphs(fileid):
     plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
     plot_url = generatescattermatrix(df)
     images = plot_url + "," + plot_url2
-    return images
+    return str(images)
 def generatescattermatrix(df):
     fig = plt.figure()
     scatter_matrix(df)
@@ -409,3 +443,54 @@ def dropMissingFeature(fileid,target):
         df.dropna(axis=0, thresh=target)
 
     return "success"
+@filedata.route('/filedata/<fileid>/dropRowbyIndex/<index1>', methods=['GET', 'POST'])
+def dropRowByIndex(fileid,index1):
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    index = index1
+    df.drop(df.index[int(index1)], inplace = True)
+    file = File.query.filter_by(fileid=fileid).first()
+    df.to_csv(file.location ,mode='w+',index=False )
+    print(df.head)
+    return "200"
+@filedata.route('/filedata/<fileid>/missingvalues/<featurename>/change/<change>', methods=['GET', 'POST'])
+def missingValues(fileid,featurename,change):
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    print("Value changing is equal to",change)
+    if change =="mean":
+        df[featurename].fillna(df[featurename].mean(), inplace=True)
+    if change == "mode":
+        print("Changing to mode",df[featurename].mode()[0])
+        df[featurename].fillna(df[featurename].mode()[0], inplace=True)
+    if change == "median":
+        df[featurename].fillna(df[featurename].median(), inplace=True)
+    file = File.query.filter_by(fileid=fileid).first()
+    df.to_csv(file.location ,mode='w+',index=False )
+    print(df.head)
+    return "200"
+@filedata.route('/filedata/<fileid>/encoding/<featurename>/change/<change>', methods=['GET', 'POST'])
+def encodingValues(fileid,featurename,change):
+    filelocation = session['filelocation']
+    df = pd.read_csv(filelocation)
+    print("Value changing is equal to",change)
+    if change =="OrdinalEncoder":
+        ord_enc = OrdinalEncoder()
+        obj_df[featurename] = ord_enc.fit_transform(obj_df[[featurename]])
+    if change == "mode":
+        enc = OneHotEncoder(handle_unknown='ignore')
+        name = featurename + '_new'
+        enc_df = pd.DataFrame(enc.fit_transform(df[[name]]).toarray())
+        df = df.join(enc_df)
+    file = File.query.filter_by(fileid=fileid).first()
+    df.to_csv(file.location ,mode='w+',index=False )
+    print(df.head)
+    return "200"
+@filedata.route('/filedata/<fileid>/downloadcleandata', methods=['GET', 'POST'])
+def downloaddata(fileid):
+    file = File.query.filter_by(fileid=fileid).first()
+    csv = file.location
+    return send_file(file.location,
+                     mimetype='text/csv',
+                     attachment_filename='data.csv',
+                     as_attachment=True)
