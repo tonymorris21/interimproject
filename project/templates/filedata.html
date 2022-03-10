@@ -54,6 +54,7 @@
   .float-container {
     margin-left: 10%;
     width: 100%;
+    margin-top:2em;
     margin-right: 10%;
     border: 3px solid #fff;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
@@ -219,6 +220,15 @@
     text-align: center;
     visibility: hidden;
   }
+  .modal-body #hideoptions {
+    
+  }
+  .modal-body #hideoptions {
+    
+    
+    white-space:nowrap;
+    max-width:100%;
+  }
 
   .progress {
     height: 28px;
@@ -237,77 +247,104 @@
   }
 </style>
 <script type="text/javascript">
+  function binsize(Text){
+      alert(Text);
+      var fileid = $("#bivariate").attr("fileid");
+      var target = $("#target").find(":selected").text();
+      var binsize = Text;
+      var featurename = $(".clickable-row").attr("data-id");
+      var url = "/filedata/" + fileid + "/generateContinuousGraphs" +"/feature/"+featurename +"/binsize/" + binsize;
+      
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, featurename:featurename ,binsize:binsize},
+        success: function (plot_url) {
+          console.log(plot_url);
+          srcvar = "data:image/png;base64," + plot_url;
+          $(".modal-body .imagecontainer").empty();
+          $(".modal-body .imagecontainer").prepend(
+            '<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>'
+          );
+
+        // Add the newly created table containing json data
+        },
+      });
+     
+    }
+  function createrowdatatable(data) {
+    $("#rowdata").append("<h3> Missing Feature Count</h3>");
+
+    var cols = [];
+    Object.keys(data).forEach(function (key) {
+      cols.push(key);
+    });
+
+    // Create a table element
+    $("#rowdata").append("<table class = 'table' id='rowdatatable'> </table");
+    var thead = document.createElement("thead");
+    $("#rowdata #rowdatatable").append(
+      "<tr id='rowdatatr' class = 'thead-dark' > </tr><tr id='droprow' > </tr>"
+    );
+    for (var i = 0; i < cols.length; i++) {
+      // Create the table header th element
+
+      if (cols[i] == 99) {
+        $("#rowdata #rowdatatable #rowdatatr").append("<th> Target</th>");
+      } else{
+        $("#rowdata #rowdatatable #rowdatatr").append(
+          "<th>" + cols[i] + "</th>"
+        );
+
+      }
+
+    }
+    
+  
+    $("#rowdata table").css("class", "thead-dark");
+    // Adding the data to the table
+    $("#rowdata #rowdatatable").append("<tr id='rowdatatr1' > </tr>");
+    Object.keys(data).forEach(function (key) {
+      // Create a new row
+
+      $("#rowdata #rowdatatable #rowdatatr1").append(
+        "<td > " + data[key] + "</td>"
+      );
+    });
+  }
   $(document).ready(function () {
+
+
     var fileid = $("#bivariate").attr("fileid");
     var target = $("#target").find(":selected").text();
+
     var url = "/filedata/" + fileid + "/missingvalues/" + target;
     $.ajax({
       url: url,
       type: "post",
       data: { fileid: fileid, target: target },
       success: function (data) {
-        $("#rowdata").append("<h3> Missing Features</h3>");
 
-        var cols = [];
-        Object.keys(data).forEach(function (key) {
-          cols.push(key);
-        });
-
-        // Create a table element
-        $("#rowdata").append("<table class = 'table' id='rowdatatable'> </table");
-        var thead = document.createElement("thead")
-        $("#rowdata #rowdatatable").append("<tr id='rowdatatr' class = 'thead-dark' > </tr>");
-   
-
-        for (var i = 0; i < cols.length; i++) {
-          // Create the table header th element
-          if(cols[i]==99){
-            $("#rowdata #rowdatatable #rowdatatr").append("<th> Target</th>");
-          }else{
-          $("#rowdata #rowdatatable #rowdatatr").append("<th>"+cols[i] + "</th>");
-          }
-        }
-        $('#rowdata table').css("class","thead-dark");
-        // Adding the data to the table
-        $("#rowdata #rowdatatable").append("<tr id='rowdatatr1' > </tr>");
-        Object.keys(data).forEach(function (key) {  
-          // Create a new row
-
-          
-            $("#rowdata #rowdatatable #rowdatatr1").append("<td > " + data[key] + "</td>");
-        
-          
-        });
+        createrowdatatable(data);
 
         // Add the newly created table containing json data
-       
       },
     });
+
     $("select").on("change", function () {
       var fileid = $("#bivariate").attr("fileid");
       var target = $("#target").find(":selected").text();
       var url = "/filedata/" + fileid + "/missingvalues/" + target;
-      $("#rowdata").empty();
+
       $.ajax({
         url: url,
         type: "post",
         data: { fileid: fileid, target: target },
         success: function (data) {
           console.log(data);
-
-          Object.keys(data).forEach(function (key) {
-            console.log("Key : " + key + ", Value : " + data[key]);
-            if (key == 99) {
-              $("#rowdata").append(
-                "<p> Missing target feature  " + data[key] + "</p>"
-              );
-            } else {
-              $("#rowdata").append(
-                "<p>" + key + " missing features  " + data[key] + "</p>"
-              );
-            }
-          });
-        },
+          $("#rowdata").empty();
+          createrowdatatable(data);
+        }
       });
     });
     $(".modal-body #hideoptions").click(function () {
@@ -387,8 +424,9 @@
           test = "data:image/png;base64," + plot_url;
           console.log(test);
           srcvar = "data:image/png;base64," + plot_url;
+          $(".modal-body .imagecontainer").empty();
           $(".modal-body .imagecontainer").prepend(
-            '<img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart">'
+            '<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>'
           );
 
           $("#exampleModalCenter").modal("show");
@@ -414,6 +452,94 @@
         },
       });
     });
+    $("#savechanges").click(function () {
+      missingvalues = []
+      encoding = []
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var fileid = $("#exampleModalCenter").attr("fileid");
+      LabelEncoding,OneHotEncoder,OrdinalEncoder
+      if($("#mediancheckbox:checked").val()=="on"){
+        missingvalues.push("median");
+      }
+      if($("#modecheckbox:checked").val()=="on"){
+        missingvalues.push("mode");
+      }
+      if($("#meancheckbox:checked").val()=="on"){
+        missingvalues.push("mean");
+      }
+      if($("#LabelEncoding:checked").val()=="on"){
+        encoding.push("LabelEncoding");
+      }
+      if($("#OneHotEncoder:checked").val()=="on"){
+        encoding.push("OneHotEncoder");
+      }
+      if($("#OrdinalEncoder:checked").val()=="on"){
+        encoding.push("OrdinalEncoder");
+      } 
+      if(missingvalues.length!=0){
+        
+        var change;
+        if(missingvalues[0]=="mean"){
+            change = "mean";
+        }
+        if(missingvalues[0]=="mode"){
+          change="mode";
+        }
+        if(missingvalues[0]=="median"){
+          change="median";
+        }
+        var url = "/filedata/" + fileid + "/missingvalues/"+featurename+ "/change/" + change
+        console.log(url);
+        $.ajax({
+          url: url,
+          type: "post",
+          data: { fileid: fileid ,featurename:featurename,change:change},
+          success: function () {
+            console.log("feature deleted");
+            location.reload(true);
+          },
+        });
+        }
+        if(encoding.length!=0){
+        
+        
+        if(encoding[0]=="OneHotEncoder"){
+          change="OneHotEncoder";
+        }
+        if(encoding[0]=="OrdinalEncoder"){
+          change="OrdinalEncoder";
+        }
+        var url = "/filedata/" + fileid + "/encoding/"+featurename+ "/change/" + change
+        console.log(url);
+        $.ajax({
+          url: url,
+          type: "post",
+          data: { fileid: fileid ,featurename:featurename,change:change},
+          success: function () {
+            console.log("feature deleted");
+            location.reload(true);
+          },
+        });
+        }
+    });
+    $("#droprowbyindex").click(function () {
+      console.log("TEST TEST")
+      var fileid = $(".clickable-row").attr("fileid");
+      console.log(fileid)
+      
+      var index1 = $("#droprowbyindex").attr("datarow");
+      var url = "/filedata/" + fileid + "/dropRowbyIndex/"+ index1
+      console.log(url);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid ,index1:index1},
+        success: function () {
+          console.log("feature deleted");
+          location.reload(true);
+        },
+      });
+    });
 
     $("#viewrelationships").click(function () {
       var fileid = $("#viewrelationships").attr("fileid");
@@ -432,23 +558,42 @@
         type: "post",
         data: { fileid: fileid },
         success: function (images) {
+          images.replace("", "");
+          images.replace("'", "");
           var images = images.split(",");
 
-          $(".modal-body #img").attr(
-            "src",
-            "data:image/png;base64," + images[0]
-          );
-
-          $(".modal-body #imagerow2").prepend(
-            '<img src="" id="img2" alt="Chart">'
-          );
-          $(".modal-body #img2").attr(
-            "src",
-            "data:image/png;base64," + images[1]
-          );
-          $("#dropfeature").hide();
-          $("#save").hide();
-          $("#exampleModalCenter").modal("show");
+          console.log(images);
+         
+          //var plot_url2 = plot_url2.split(',');
+          $(".modal-body .imagecontainer").empty();
+          for (let i = 1; i < images.length; i++) {
+            srcvar = "data:image/png;base64," + images[i];
+            console.log(srcvar)
+            if (i < 2) {
+              $(".modal-body .imagecontainer").prepend(
+                '<img src=" ' +
+                  srcvar +
+                  '"' +
+                  'id="img ' +
+                  i +
+                  '"' +
+                  'alt="Chart">'
+              );
+            } else {
+              $(".modal-body .imagecontainer").prepend(
+                '<img src=" ' +
+                  srcvar +
+                  '"' +
+                  'id="img ' +
+                  i +
+                  '"' +
+                  'alt="Chart">'
+              );
+            }
+            $("#dropfeature").hide();
+            $("#save").hide();
+            $("#exampleModalCenter").modal("show");
+          }
         },
       });
     });
@@ -476,11 +621,13 @@
           var images = images.split(",");
 
           console.log(images);
-
+         
           //var plot_url2 = plot_url2.split(',');
-
+          $(".modal-body .imagecontainer").empty();
+          
           for (let i = 1; i < images.length; i++) {
             srcvar = "data:image/png;base64," + images[i];
+
             if (i < 3) {
               $(".modal-body .imagecontainer").prepend(
                 '<img src=" ' +
@@ -548,7 +695,17 @@
     });
   });
 </script>
+<button
+onclick="window.location.href='/filedata/{{fileid}}/downloadcleandata'"
+fileid="{{fileid}}"
+type="button"
+id="downloadbutton"
+class="btn btn-success mx-auto d-bloc"
+>
+Download Clean Data
+</button>
 <div class="float-container">
+
   <div class="float-child">
     <h1>Summary</h1>
     <p>Total Features: {{featurecount}}</p>
@@ -676,29 +833,40 @@
   </div>
   <div class="float-child1">
     <div id="rowdata"></div>
-    <h1>Row Data</h1>
+    <h1>Rows Missing Features</h1>
     <table class="table table-hover">
+      <h1 class="text-center">Continuous Features</h1>
+
       <tr class="thead-dark">
-        {% for col in columns %}
+        
+        {% for col in titlesgr %}
         <th>{{col}}</th>
         {% endfor %}
+
       </tr>
-      {%set count = namespace(value=0) %} {% for row in rowdata %}
+      {% set count = 1 %}
+      {% for row in rowdata %}
+      
       <tr
-        class="clickable-row"
+
         datarow="{{row}}"
-        datatype="categorical"
+        datatype="continuous"
         fileid="{{fileid}}"
         data-id="{{row[0]}}"
       >
-        {% for col, row_ in zip(columns, row) %} {% if(col == " ") %}
-        <td><p>{{indexlist[ count.value]}}</p></td>
+      
+        {% for col, row_  in zip(titlesgr, row) %}
+        {%if col=="Drop"%}
+          <td><button type="button" datarow="{{row[0]}}" id="droprowbyindex" class="btn btn-primary">Drop</button></td>
+        {%else%}
+          <td><p>{{row_}}</p></td>
+          
         {%endif%}
-        <td><p>{{row_}}</p></td>
-
+        
         {% endfor %}
       </tr>
-      {% set count.value = count.value + 1 %} {% endfor %}
+      
+      {% endfor %}
     </table>
   </div>
 </div>
@@ -735,8 +903,57 @@
             <div id="summarymodal" class="col-sm-12 align-self-center"></div>
           </div>
           <div id="hideoptions" class="row">
-            test<br />
-            <p id="hidecontent"><br />test test test</p>
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="card "style="width: 30rem;">
+                  <div class="card-body">
+                    <h5>Missing Values</h4>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="mediancheckbox">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Replace with Median</label>
+                      </div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="modecheckbox">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Replace with Mode</label>
+                      </div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="meancheckbox">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Replace with Mean</label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div id ="encoding" class="card">
+                  <div class="card-body">
+                    <h5>Encoding</h4>
+                      
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="LabelEncoding">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Label Encoding</label>
+                      </div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="OneHotEncoder">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">OneHotEncoder</label>
+                      </div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="OrdinalEncoder">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Ordinal Encoder</label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div id ="clamptransformation" class="card">
+                  <div class="card-body">
+                    <h5>Outliers</h4>
+                      
+  
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
           <div class="row" id="row1">
             <div class="imagecontainer">
@@ -788,7 +1005,7 @@
             >
               Close
             </button>
-            <button type="button" id="save" class="btn btn-primary">
+            <button type="button" id="savechanges" class="btn btn-primary">
               Save changes
             </button>
           </div>
