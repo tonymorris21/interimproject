@@ -297,15 +297,25 @@ def generateContinuousGraphs(feature,featurename,binsize):
     iqr = q75 - q25
     print(iqr)
     print(len(feature))
-    sn.distplot(a=feature, hist=True, bins=int(binsize))
+    a= sn.distplot(a=feature, hist=True, bins=int(binsize))
+    a.set_title("Histogram for "+ featurename + " values")
     img = BytesIO()
     plt.tight_layout()
     plt.savefig(img, format='png')
     plt.close()
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-
-    return plot_url
+    p= sn.boxplot(y=feature)
+    p.set_title("Box Plot for "+ featurename + " values")
+    img = BytesIO()
+    
+    plt.tight_layout()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
+    images = plot_url + "," + plot_url2
+    return images
 @filedata.route('/filedata/<fileid>/generateContinuousGraphs/feature/<feature>/binsize/<binsize>', methods=['GET', 'POST'])
 def generateContinuousGraphsd(fileid,feature,binsize):
     fig = plt.figure()

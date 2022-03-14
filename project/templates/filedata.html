@@ -420,15 +420,17 @@
         url: url,
         type: "post",
         data: { datatype: datatype, fileid: fileid, featurename: featurename },
-        success: function (plot_url) {
-          test = "data:image/png;base64," + plot_url;
-          console.log(test);
-          srcvar = "data:image/png;base64," + plot_url;
-          $(".modal-body .imagecontainer").empty();
-          $(".modal-body .imagecontainer").prepend(
-            '<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>'
-          );
+        success: function (images) {
+          images.replace("", "");
+          images.replace("'", "");
+          var images = images.split(",");
 
+          console.log(images);
+          $(".modal-body .imagecontainer").empty();
+          for (let i = 0; i < images.length; i++) {
+            srcvar = "data:image/png;base64," + images[i];
+            $(".modal-body .imagecontainer").append('<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
+          }
           $("#exampleModalCenter").modal("show");
         },
       });
