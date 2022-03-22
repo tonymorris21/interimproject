@@ -45,7 +45,8 @@ def createproject():
 
 @userproject.route('/createproject')
 def projectcreate():
-
+    session["contfeature"] = []
+    session["catfeature"] = []
     return render_template('createproject.html')
 
 @userproject.route('/project/<projectid>')

@@ -12,9 +12,8 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-    #db.create_all()
 
-    
+
     db.init_app(app)
     with app.app_context():
         db.create_all()
@@ -32,6 +31,9 @@ def create_app():
     app.register_blueprint(filedata_blueprint)
     from .train import train as train_blueprint
     app.register_blueprint(train_blueprint)
+
+    from .predict import predict as predict_blueprint
+    app.register_blueprint(predict_blueprint)
 
     path = os.getcwd()
     UPLOAD_FOLDER = os.path.join(path, 'uploads')
@@ -59,4 +61,5 @@ def create_app():
     return app
 if __name__ == '__main__':
     app.jinja_env.cache = {}
-    app.run(threaded=True)
+
+    app.run(threaded=True,debug=True,TEMPLATES_AUTO_RELOAD=True)

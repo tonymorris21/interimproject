@@ -13,6 +13,7 @@ from pandas.plotting import scatter_matrix
 import csv
 from flask import jsonify
 from io import BytesIO
+import matplotlib
 import matplotlib.pyplot as plt
 import base64
 import collections
@@ -21,28 +22,38 @@ from sklearn.preprocessing import OrdinalEncoder
 import seaborn as sn
 from flask import send_file
 from sklearn.preprocessing import OneHotEncoder
+from numpy import array
+import missingno as msno
 filedata = Blueprint('filedata', __name__)
 
-
+matplotlib.use('Agg')
 @filedata.route('/filedata/<fileid>')
 def file_data(fileid):
+    print("request args",request.args)
     file = File.query.filter_by(fileid=fileid).first()
     session['filename'] = file.name
     session['filelocation'] = file.location
     session['fileid'] = file.fileid
     filename = session['filename']
     filelocation = session['filelocation']
-    print(filelocation)
-    print(filename)
+    #print(filelocation)
+  #  print(filename)
    
     sniffer = csv.Sniffer()
     sample_bytes = 2096
 
     hasheader = sniffer.has_header(
         open(filelocation).read(sample_bytes))
-    print(hasheader)
+   # print(hasheader)
     df = pd.read_csv(file.location)
-    print("Generate report",df)
+    msno.matrix(df, sparkline=False, figsize=(10,5), fontsize=12, color=(0.27, 0.52, 1.0))
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+   # print("Generate report",df)
     continousdf,categoricaldf = generate_report(df)
     #print(list(df.columns))
     #print(df.isnull().sum())
@@ -54,15 +65,15 @@ def file_data(fileid):
         if unique_count / total_count < 0.05:
             columnTypesDict.append(name)
   #  print("Categorigcal columsn",columnTypesDict)
-    if not hasheader:
+   # if not hasheader:
         #print("test")
-        addheader =[]
-        i=0
-        for x in df.columns:
+    #    addheader =[]
+    #    i=0
+    #    for x in df.columns:
 
-            addheader.append("Col"+str(i))
-            i+=1
-        df.columns = addheader
+      #      addheader.append("Col"+str(i))
+     #       i+=1
+     #   df.columns = addheader
        # print(addheader)
     numrows = df.shape[0]
     dataTypeDict = dict(df.dtypes)
@@ -80,7 +91,7 @@ def file_data(fileid):
             
         }
     )
-    print("Continous column values",continousdf.columns.values)
+   # print("Continous column values",continousdf.columns.values)
     dataframe.insert(2, "Nullable", 'Checkbox')
     tables=[dataframe.to_html(index=False,classes='data')]
     body = ''
@@ -93,11 +104,11 @@ def file_data(fileid):
     numberoffeatures = df.shape[1]
     count = 0
     missingfeatures = df.isnull().sum(axis=1).tolist()
-    print("Missing features",df.isnull().sum(axis=1).tolist())
+  #  print("Missing features",df.isnull().sum(axis=1).tolist())
     #print("Missing features target",df["Col4"].isnull().sum().tolist())
     missingtarget = 0
     occurrences = collections.Counter(missingfeatures)
-    print(occurrences)
+  #  print(occurrences)
     dict(occurrences)
     columns = " " + df.columns
     index_list = list(df.index.values)
@@ -113,16 +124,44 @@ def file_data(fileid):
     
     
     
-    print(dfrows.head())
+   # print(dfrows.head())
     rowdatacolumns = dfrows.columns.values
-    print(rowdatacolumns)
-    print(catcountpt,contcountpt)
+   # print(rowdatacolumns)
+   # print(catcountpt,contcountpt)
     test = list(dfrows.index.values)
+    dfd = df
+    dfd.insert(0,'Row',list(df.index.values))
     dfrows.insert(0, 'Row', test)
     dfrows["Drop"] = "dropbutton"
         
     tablerowdata = dfrows.to_html(classes = 'table rowdatatable')
-    return render_template('filedata.html', indexrows = list(dfrows.index.values.tolist()),titlesgr=dfrows.columns.values,rowdatacolumns = rowdatacolumns,catcount=catcount,contcount = contcount,catcountpt = catcountpt, contcountpt = contcountpt,missingtarget=missingtarget, occurrences = occurrences,indexlist = index_list,rowdata = list(dfrows.values.tolist()),tables=[df.to_html()], titles=[''],totalrows = numrows, featurecount = numcolumns ,fileid = fileid,hasheader=hasheader,df =df,column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = columnlist,dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows,continouscolumnnames = continousdf.columns.values,continousrow_data=list(continousdf.values.tolist()),continouscolumns=list(continousdf.columns),categoricalcolumnnames = categoricaldf.columns.values,categoricalrow_data=list(categoricaldf.values.tolist()),categorical=list(categoricaldf.columns))
+    return render_template('filedata.html',fulltable=list(dfd.values.tolist()),fulltablecolumns = dfd.columns.values, plot_url=plot_url,indexrows = list(dfrows.index.values.tolist()),titlesgr=dfrows.columns.values,rowdatacolumns = rowdatacolumns,catcount=catcount,contcount = contcount,catcountpt = catcountpt, contcountpt = contcountpt,missingtarget=missingtarget, occurrences = occurrences,indexlist = index_list,rowdata = list(dfrows.values.tolist()),tables=[df.to_html()], titles=[''],totalrows = numrows, featurecount = numcolumns ,fileid = fileid,hasheader=hasheader,df =df,column_names=dataframe.columns.values,row_data=list(dataframe.values.tolist()),target = target,columns = columnlist,dataTypeDict = dataTypeDict,check_box = "Nullable", numcolumns = numcolumns, zip=zip,datasetname = filename, numrows =numrows,continouscolumnnames = continousdf.columns.values,continousrow_data=list(continousdf.values.tolist()),continouscolumns=list(continousdf.columns),categoricalcolumnnames = categoricaldf.columns.values,categoricalrow_data=list(categoricaldf.values.tolist()),categorical=list(categoricaldf.columns))
+
+@filedata.route('/filedata/<fileid>/contvalue/<contvalue>', methods=['GET', 'POST']) 
+def setContFeatures(fileid,contvalue):
+    contvars =[]
+    if session.get("contfeature") is not None:
+        contvars = session["contfeature"] 
+    contvars.append(contvalue)
+    session["contfeature"] = contvars
+    file_data(fileid)
+    return "200"
+@filedata.route('/filedata/<fileid>/catvalue/<catvalue>', methods=['GET', 'POST']) 
+def setCatFeatures(fileid,catvalue):
+    contvars =[]
+    if session.get("catfeature") is not None:
+        contvars = session["catfeature"] 
+
+    if session.get("contfeature") is not None:
+     cont = session.get("contfeature")
+     if(catvalue in cont):
+        cont.remove(catvalue)
+        print("cont values ",cont)
+        session["contfeature"] =cont
+    contvars.append(catvalue)
+    session["catfeature"] = contvars
+    file_data(fileid)
+    return "200"
 def generate_report(df):
     #print("count",df.describe(include='all'))
     #print(df)
@@ -138,13 +177,32 @@ def generate_report(df):
     cat = df
     #for categorical 
     non_floats= []
+    if session.get("contfeature") is not None:
+        cont = session.get("contfeature")
+        print(cont)
+        at = session.get("catfeature")
+        print(at)
+        for x in cont:
+
+            non_floats.append(x)
+
     for col in cat:
         if df[col].dtypes != "object":
             if col not in columnTypesDict:
                 non_floats.append(col)
+   # print(non_floats)
+    if session.get("catfeature") is not None:
+        cont = session.get("catfeature")
+        print("cont value",cont)
+        for x in cont:
+
+            non_floats.remove(x)
     cat = cat.drop(columns=non_floats)
     allcolumns = df.columns
     categoricalcols = cat.columns
+    print(categoricalcols)
+
+    
     #print("Categorical Count", categorical.count())
     continous = con.drop(columns = categoricalcols ,axis=1)
     #print("continous Count", continous.describe(include = 'all'))
@@ -154,14 +212,15 @@ def generate_report(df):
     modeListcount = modeListCount(cat)
     secondmodeListcount = secondmodeListCount(cat)
     secondmodelist = secondmodeList(cat)
-    print("1st mode",modelist)
-    print("second mode",secondmodelist)
+   # print("1st mode",modelist)
+   # print("second mode",secondmodelist)
     modePercentagelist = modePercentageList(cat)
     secondmodePercentagelist = secondmodePercentageList(cat)
     pd.set_option("display.precision", 2)
     categoricaldf = pd.DataFrame(
         {
             "Feature": list(cat.columns),
+            
             "Count": list(cat.count()),
             "% Missing": list(cat.isna().sum()/len(cat)*100),
             "Cardinality":list(cat.nunique()),
@@ -170,7 +229,8 @@ def generate_report(df):
             "Mode %":modePercentagelist,
             "2nd Mode": secondmodelist,
             "2nd Mode Freq":secondmodeListcount,
-            "2nd Mode %": secondmodePercentagelist
+            "2nd Mode %": secondmodePercentagelist,
+            "":"Checkbox"
         }
     )
     continousmin = continous.min()
@@ -178,24 +238,75 @@ def generate_report(df):
 
     
    # print(continous.describe(include = 'all'))
+  #  print(list(continous.std()))
+
+    quartile1 = []
+    for x in continous.columns:
+        try:
+            quant = continous[x].quantile(0.25)
+            if quant:
+             #   print(continous[x].quantile(0.25))
+                quartile1.append(quant)
+        except (RuntimeError, TypeError, NameError):
+            quartile1.append("N/A")
+    quartile3 = []
+    for x in continous.columns:
+        try:
+            quant1 = continous[x].quantile(0.75)
+            if quant1:
+             #   print(continous[x].quantile(0.75))
+                quartile3.append(quant1)
+        except (RuntimeError, TypeError, NameError):
+            quartile3.append("N/A")
+    mean1 = []
+    for x in continous.columns:
+        try:
+            mean = continous[x].mean()
+            if mean:
+                
+                mean1.append(mean)
+              #  print(str(mean))
+        except Exception as e:
+            mean1.append("N/A")
+    median1 = []
+    for x in continous.columns:
+        try:
+            median = continous[x].median()
+            if median:
+                
+                median1.append(median)
+             #   print(str(median))
+        except Exception as e:
+            median1.append("N/A")
+    std1 = []
+    for x in continous.columns:
+        try:
+            std = continous[x].std()
+            if std:
+                
+                std1.append(median)
+               # print(str(std))
+        except Exception as e:
+            std1.append("N/A")
+ #   print("mean",median1)
     continousdf = pd.DataFrame(
         {
-            "Feature": list(continous.columns),
-            "Count": list(continous.count()),
-            "% Missing": list(continous.isna().sum()/len(continous)*100),
-            "Cardinality":list(continous.nunique()),
-            "Min":list(continous.min()),
-            "1st Quartile":list(continous.quantile(0.25)),
-            "Mean":list(continous.mean()),
-            "Median":list(continous.median()),
-            "3rd Quartile":list(continous.quantile(0.75)),
-            "Max":list(continous.max()),
-            "Std. Deviation": list(continous.std())
-
+            "Feature": array(continous.columns),
+            "Count": array(continous.count()),
+            "% Missing": array(continous.isna().sum()/len(continous)*100),
+            "Cardinality":array(continous.nunique()),
+            "Min":array(continous.min()),
+            "1st Quartile":quartile1,
+            "Mean":mean1,
+            "Median":median1,
+            "3rd Quartile":quartile3,
+            "Max":array(continous.max()),
+            "Std. Deviation": std1,
+            "":"Checkbox"
             
         }
     )
-    print(continousdf)
+   # print(continousdf)
     #print(cat)
     continousdf = np.round(continousdf, decimals = 2)
     categoricaldf = np.round(categoricaldf, decimals = 2)
@@ -435,6 +546,7 @@ def getMissingFeatures(fileid,target):
     print(type(target)==str)
     print("Missing features",df.isnull().sum(axis=1).tolist())
     occurrences = collections.Counter(missingfeatures)
+    print(occurrences)
     b = dict(occurrences)
     missingtarget = df[target].isnull().sum().tolist()
     print(b)
@@ -504,3 +616,27 @@ def downloaddata(fileid):
                      mimetype='text/csv',
                      attachment_filename='data.csv',
                      as_attachment=True)
+
+@filedata.route('/filedata/<fileid>/clamp/<featurename>/upper/<uppervalue>/lower/<lowervalue>', methods=['GET', 'POST'])
+def clampTransformation(fileid, featurename,uppervalue,lowervalue):
+    file = File.query.filter_by(fileid=fileid).first()
+    df = pd.read_csv(file.location)
+    df[featurename] = df[featurename].clip(upper=float(uppervalue),lower=float(lowervalue))
+    print(df[featurename].max())
+    print(file.location)
+    df.to_csv(file.location ,mode='w+',index=False )
+    return "200"
+
+@filedata.route('/filedata/whiskerValues/Q1/<Q1>/Q3/<Q3>', methods=['GET', 'POST'])
+def whiskerValues(Q1,Q3):
+    print(Q1)
+    print(Q3)
+    Q1 = Q1.strip()
+    print("test",Q1)
+    Q3 = Q3.strip()
+
+    uppervalue = float(Q3)+(1.5*(float(Q3)-float(Q1)))
+    lowervalue=float(Q1)-1.5*(float(Q3)-float(Q1))
+
+    values = str(uppervalue) + "," + str(lowervalue)
+    return values

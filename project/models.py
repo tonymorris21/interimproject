@@ -23,6 +23,8 @@ class Project(db.Model):
 class Model(db.Model):
     modelid = db.Column(db.Integer,primary_key=True)
     projectid = db.Column(db.Integer)
+    location = db.Column(db.String(10000))
+    classnames = db.Column(db.String(10000))
     createddate = db.Column(db.DateTime)
     accuracy = db.Column(db.Integer)
     confusion_matrix = db.Column(db.String(10000))

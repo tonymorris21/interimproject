@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+      $(document).ready(function () {
+        $("#trainbutton").click(function () {
+        var fileid = window.sessionStorage.getItem("fileid");
+        var target = window.sessionStorage.getItem("target");
+        var algorithm = $(".selectdiv #target").val();
+        var url = "/train/" + fileid + "/algorithm/" + algorithm + "/target/"+target;
+        window.location.href = url;
+    })
+});
+</script>
+<div class="column is-4 is-offset-4">
+
+    <div class="box">
+
+        <h1>Algorithm Selection</h1>
+        <p>
+          Select an algorithm.
+        </p>
+        <div class="selectdiv">
+            <select id="target" name="target">
+              <option value="KNN" selected>K Nearest Neighbour</option>
+              <option value="SVC" selected>Support Vector Classifier</option>
+              <option value="NB" selected>Naive Bayes</option>
+            </select>
+          </div>
+          <a  id= "trainbutton">Train</a>
+    </div>
+</div>
+{% endblock %}

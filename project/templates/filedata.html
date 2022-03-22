@@ -26,7 +26,7 @@
   .float-container1 {
     margin-left: 2%;
     width: 100%;
-    margin-top: 4%;
+    margin-top: 1%;
     height: fit-content;
     margin-right: 2%;
     border: 3px solid #fff;
@@ -35,7 +35,7 @@
 
   .float-child1 {
     margin-top: 2%;
-    width: 45%;
+    width: 40%;
     text-align: center;
     font-size: 18px;
     float: left;
@@ -45,7 +45,7 @@
     height: fit-content;
   }
   .float-child1:nth-child(1) {
-    margin-right: 2%;
+    margin-right: 1%;
     width: fit-content;
   }
   .float-child1:nth-child(1) {
@@ -92,10 +92,7 @@
   }
 
   .imagecontainer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
+    display: inline-block;
   }
   #imagerow2 {
     height: fit-content;
@@ -211,6 +208,17 @@
     justify-content: center;
     align-items: center;
   }
+  #summarymodal p {
+    margin-right:2em;
+  }
+  #rowdata div{
+    margin-bottom:.1em;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    
+  }
+  #trainbutton{
+
+  }
   .center {
     margin-left: auto;
     margin-right: auto;
@@ -229,7 +237,10 @@
     white-space:nowrap;
     max-width:100%;
   }
-
+#fulltable{
+  max-width:100%;
+  max-height:80%;
+}
   .progress {
     height: 28px;
   }
@@ -280,38 +291,64 @@
       cols.push(key);
     });
 
-    // Create a table element
-    $("#rowdata").append("<table class = 'table' id='rowdatatable'> </table");
-    var thead = document.createElement("thead");
-    $("#rowdata #rowdatatable").append(
-      "<tr id='rowdatatr' class = 'thead-dark' > </tr><tr id='droprow' > </tr>"
-    );
-    for (var i = 0; i < cols.length; i++) {
+    console.log(data);
+
+   
+     // for (var i = 0; i < cols.length; i++) {
       // Create the table header th element
 
-      if (cols[i] == 99) {
-        $("#rowdata #rowdatatable #rowdatatr").append("<th> Target</th>");
-      } else{
-        $("#rowdata #rowdatatable #rowdatatr").append(
-          "<th>" + cols[i] + "</th>"
-        );
+     // if (cols[i] == 99) {
+    //    $("#rowdata #rowdatatable").append("<p> There are" + cols[i] + "rows missing the Target</p>");
+    //  } else{
+    //    $("#rowdata #rowdatatable #rowdatatr").append(
+    
+     //   );
 
+    //  }
+
+   // }
+    // Create a table element
+  //  $("#rowdata").append("<table class = 'table' id='rowdatatable'> </table");
+  //  var thead = document.createElement("thead");
+ //   $("#rowdata #rowdatatable").append(
+ //     "<tr id='rowdatatr' class = 'thead-dark' > </tr><tr id='droprow' > </tr>"
+  //  );
+ //   for (var i = 0; i < cols.length; i++) {
+      // Create the table header th element
+
+   //   if (cols[i] == 99) {
+    //    $("#rowdata #rowdatatable #rowdatatr").append("<th> Target</th>");
+   //   } else{
+   //     $("#rowdata #rowdatatable #rowdatatr").append(
+   //       "<th>" + cols[i] + "</th>"
+   //     );
+
+    //  }
+    
+    Object.keys(data).forEach(function (key) {
+      $("#rowdata").append("<div id = 'ptags" + key +"'></div>");
+      if(key=="99"){
+        $("#rowdata #ptags"+key).append("<p> There are <b>" + data[key] + "</b> rows missing <b>Target</b> feature </p><br>");
+      }else{
+
+      $("#rowdata #ptags"+key).append("<p> There are <b>" + data[key] + "</b> rows missing <b>" + key + "</b> feature </p><br>");
       }
-
+    });
     }
     
   
-    $("#rowdata table").css("class", "thead-dark");
+    //$("#rowdata table").css("class", "thead-dark");
     // Adding the data to the table
-    $("#rowdata #rowdatatable").append("<tr id='rowdatatr1' > </tr>");
-    Object.keys(data).forEach(function (key) {
+   // $("#rowdata #rowdatatable").append("<tr id='rowdatatr1' > </tr>");
+  //  Object.keys(data).forEach(function (key) {
       // Create a new row
 
-      $("#rowdata #rowdatatable #rowdatatr1").append(
-        "<td > " + data[key] + "</td>"
-      );
-    });
-  }
+   //   $("#rowdata #rowdatatable #rowdatatr1").append(
+     //   "<td > " + data[key] + "</td>"
+    //  );
+   // });
+  //}
+  
   $(document).ready(function () {
 
 
@@ -351,91 +388,137 @@
       console.log("test hide");
       $(".modal-body #hideoptions #hidecontent").css("visibility", "visible");
     });
-    $(".clickable-row").click(function () {
-      var featurename = $(this).attr("data-id");
-      var fileid = $(this).attr("fileid");
-      var datatype = $(this).attr("datatype");
-      console.log(datatype);
-      var url = "/filedata/" + fileid + "/" + featurename;
-      console.log(featurename, fileid);
-      var data = $(this).attr("datarow");
-      $("#exampleModalCenter").attr("fileid", fileid);
-      $("#exampleModalCenter").attr("featurename", featurename);
-      var categorydata = [];
-      if (datatype === "categorical") {
-        categorydata = [
-          "Feature",
-          "Count",
-          "Missing(%)",
-          "Cardinality",
-          "Mode",
-          "Mode Freq",
-          "Mode %",
-          "2nd Mode",
-          "2nd Mode Freq",
-          "2nd Mode %",
-        ];
-      } else if (datatype === "continuous") {
-        categorydata = [
-          "Feature",
-          "Count",
-          "Missing(%)",
-          "Cardinality",
-          "Min",
-          "1st Quartile",
-          "Mean",
-          "Median",
-          "3rd Quartile",
-          "Max",
-          "Std. Deviation",
-        ];
-      }
+    function clickrow(){
 
-      data = data.replace("[", "");
-      data = data.replace("]", "");
-      data = data.replace("'", "");
-      data = data.replace("'", "");
-      var data = data.split(",");
-      // console.log("test"+ data);
-      $(".modal-header #h1modal").text("");
-      $(".modal-header #h1modal").append(data[0]);
-      $(".modal-body #img").attr("src", "");
-      $(".modal-body #img2").remove();
-
-      $("#summarymodal #summaryp").remove();
-      for (let i = 1; i < data.length; i++) {
-        //console.log(data[row] + data[row+1]);
-        $("#buttonclickedgraph").css("visibility", "visible");
-        $(".modal-body #hideoptions").css("visibility", "visible");
-        $("#summarymodal").append(
-          '<p id="summaryp">' +
-            "<b>" +
-            categorydata[i] +
-            "</b> : " +
-            data[i] +
-            "</p>"
-        );
-      }
-      $.ajax({
-        url: url,
-        type: "post",
-        data: { datatype: datatype, fileid: fileid, featurename: featurename },
-        success: function (images) {
-          images.replace("", "");
-          images.replace("'", "");
-          var images = images.split(",");
-
-          console.log(images);
-          $(".modal-body .imagecontainer").empty();
-          for (let i = 0; i < images.length; i++) {
-            srcvar = "data:image/png;base64," + images[i];
-            $(".modal-body .imagecontainer").append('<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
-          }
-          $("#exampleModalCenter").modal("show");
-        },
-      });
+    }
+    
+    $("#tablebutton").on("click",function (e) {
+      $("#exampleModalCenter1").modal("show");
     });
 
+    $("#OpenAnalytics,.clickable-row td").on("click",function (e) {
+
+        console.log($(this))
+        var featurename = $(this).attr("data-id");
+        var fileid = $(this).attr("fileid");
+        var datatype = $(this).attr("datatype");
+        $(".modal-body #hideoptions").empty();
+        console.log(datatype);
+        var url = "/filedata/" + fileid + "/" + featurename;
+        console.log(featurename, fileid);
+        var data = $(this).attr("datarow");
+        $("#exampleModalCenter").attr("fileid", fileid);
+        $("#exampleModalCenter").attr("featurename", featurename);
+        var categorydata = [];
+        if (datatype === "categorical") {
+          categorydata = [
+            "Feature",
+            "Count",
+            "Missing(%)",
+            "Cardinality",
+            "Mode",
+            "Mode Freq",
+            "Mode %",
+            "2nd Mode",
+            "2nd Mode Freq",
+            "2nd Mode %",
+          ];
+        } else if (datatype === "continuous") {
+          categorydata = [
+            "Feature",
+            "Count",
+            "Missing(%)",
+            "Cardinality",
+            "Min",
+            "1st Quartile",
+            "Mean",
+            "Median",
+            "3rd Quartile",
+            "Max",
+            "Std. Deviation",
+          ];
+        }
+
+        data = data.replace("[", "");
+        data = data.replace("]", "");
+        data = data.replace("'", "");
+        data = data.replace("'", "");
+        var data = data.split(",");
+        // console.log("test"+ data);
+        $(".modal-header #h1modal").text("");
+        $(".modal-header #h1modal").append(data[0]);
+        $(".modal-body #img").attr("src", "");
+        $(".modal-body #img2").remove();
+        $(".modal-body #row3").append("          <div id='hideoptions' class='row'>            <div class='row'>              <div class='col-sm-4'>                <div class='card 'style='width: 30rem;'>                  <div class='card-body'>                    <h5>Missing Values</h4>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='mediancheckbox'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Median</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='modecheckbox'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Mode</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='meancheckbox'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Mean</label>                      </div>                  </div>                </div>              </div>              <div class='col-sm-4'>                <div id ='encoding' class='card'>                  <div class='card-body'>                    <h5>Encoding</h4>                                            <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='LabelEncoding'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Label Encoding</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='OneHotEncoder'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>OneHotEncoder</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='OrdinalEncoder'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Ordinal Encoder</label>                      </div>                  </div>                </div>              </div>              <div class='col-sm-4'>                <div id ='clamptransformation' class='card'>                  <div class='card-body'>                    <h5>Outliers</h4>                      <div>                        <label>Upper value</label>                                              <input id='uppervalue' class='form-control' type='text' placeholder='0'>                      </div>                      <div>                                                                     <label>Upper value</label> <input id='lowervalue' class='form-control' type='text' placeholder='0'>                      </div>                      <button class='btn btn-lg btn-secondary' id='clampButton'>Remove Outliers</button>                  </div>                </div>              </div>            </div>          </div>")
+
+        $("#summarymodal").empty();
+        var quartile1 = 0;
+        var quartile3 = 0;
+        for (let i = 1; i < data.length; i++) {
+          //console.log(data[row] + data[row+1]);
+          if(categorydata[i]=="1st Quartile"){
+            quartile1 = data[i];
+
+          }
+          if(categorydata[i]=="3rd Quartile"){
+            quartile3 = data[i];
+          }
+          $("#buttonclickedgraph").css("visibility", "visible");
+          $(".modal-body #hideoptions").css("visibility", "visible");
+          console.log(data[i]);
+          if(data[i]!=" 'Checkbox'"){
+            $("#summarymodal").append(
+              '<p id=' + categorydata[i] +'>' +
+                "<b>" +
+                categorydata[i] +
+                "</b> : " +
+                data[i] +
+                "</p>"
+                );
+          
+                }
+        }
+        var q1 = quartile1.toString();
+        var q3 = quartile3.toString();
+        console.log(q1);
+        console.log(q3);
+        var url1 = "/filedata/whiskerValues/Q1/" + q1 + "/Q3/" + q3;
+
+        console.log(quartile1);
+        console.log(quartile3);
+        $.ajax({
+          url: url1,
+          type: "post",
+          data: {quartile1:1,quartile3:2},
+          success: function (values) {
+            var values = values.split(",");
+            $(".modal-body #clamptransformation #uppervalue").attr("value",values[0]);
+            $(".modal-body #clamptransformation #lowervalue").attr("value",values[1]);
+
+          },
+        });
+        $.ajax({
+          url: url,
+          type: "post",
+          data: { datatype: datatype, fileid: fileid, featurename: featurename },
+          success: function (images) {
+            images.replace("", "");
+            images.replace("'", "");
+            var images = images.split(",");
+
+            console.log(images);
+            $(".modal-body .imagecontainer").empty();
+            for (let i = 0; i < images.length; i++) {
+              srcvar = "data:image/png;base64," + images[i];
+              $(".modal-body .imagecontainer").append('<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
+            }
+            $("#exampleModalCenter").modal("show");
+          },
+        });
+        
+      });
+
+    
     $("#dropfeature").click(function () {
       console.log("test");
       $(".modal-header #h1modal").text("");
@@ -453,6 +536,68 @@
           location.reload(true);
         },
       });
+    });
+    function startRefresh() {
+    $.get('', function(data) {
+        $(document.body).html(data);    
+    });
+}
+
+    $("#dropbutton").click(function (e) {
+      console.log("test");
+      var feature = $(this).attr("column");
+      console.log(feature);
+      var fileid = $(this).attr("fileid");
+      var url = "/filedata/" + fileid + "/dropfeature/" + feature;
+
+      console.log("Feature Name",feature);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, feature: feature },
+        success: function () {
+          console.log("feature deleted");
+          setTimeout(startRefresh,150);
+        },
+      });
+    });
+
+    $("#changebuttoncont").click(function () {
+      console.log("test");
+      var feature = $(this).attr("column");
+      console.log(feature);
+      var fileid = $(this).attr("fileid");
+      var datatype = $(this).attr("datatype")
+      var url = "/filedata/" + fileid + "/contvalue/" + feature;
+      if(datatype=="cat"){
+        url = "/filedata/" + fileid + "/catvalue/" + feature;
+      }
+      
+      $.ajax({
+          url: url,
+          type: "post",
+          data: { fileid: fileid ,feature:feature},
+          success: function () {
+            console.log("feature deleted");
+            location.reload(true);
+          },
+        });
+    });
+    $("#changebuttoncat").click(function () {
+      var feature = $("#changebuttoncat").attr("column");
+      console.log(feature);
+      var fileid = $("#changebuttoncat").attr("fileid");
+      console.log(fileid);
+      var url = "/filedata/" + fileid + "/catvalue/" + feature;
+      $.ajax({
+          url: url,
+          type: "post",
+          data: { fileid: fileid ,feature:feature},
+          success: function () {
+            console.log("feature deleted");
+            location.reload(true);
+          },
+        });
     });
     $("#savechanges").click(function () {
       missingvalues = []
@@ -524,7 +669,7 @@
         });
         }
     });
-    $("#droprowbyindex").click(function () {
+    $("#droprows").click(function () {
       console.log("TEST TEST")
       var fileid = $(".clickable-row").attr("fileid");
       console.log(fileid)
@@ -542,11 +687,30 @@
         },
       });
     });
+    $("#clampButton").click(function () {
+      
+      var fileid = $("#exampleModalCenter").attr("fileid");
 
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var uppervalue = $(".modal-body #clamptransformation #uppervalue").attr("value");
+      var lowervalue = $(".modal-body #clamptransformation #lowervalue").attr("value");
+      var url = "/filedata/"+fileid+"/clamp/"+featurename+"/upper/"+uppervalue+"/lower/"+lowervalue;
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid ,featurename:featurename,uppervalue:uppervalue,lowervalue:lowervalue},
+        success: function () {
+          console.log("outliers deleted");
+          
+        },
+      });
+
+    })
     $("#viewrelationships").click(function () {
       var fileid = $("#viewrelationships").attr("fileid");
       var url = "/filedata/" + fileid + "/correlations";
-      $("#summarymodal #summaryp").remove();
+      $("#summarymodal").empty();
+      $("#summarymodal").append("<h1>Multivariate Analysis");
       $(".modal-body #img").attr("src", "");
       $(".modal-header #h1modal").text("");
       $(".modal-body #hideoptions").css("visibility", "hidden");
@@ -555,6 +719,7 @@
 
       $(".modal-body #imagerow2 p").remove();
       $("#imagerow2 .selectdiv").remove();
+      $(".modal-body #row3 #hideoptions").remove();
       $.ajax({
         url: url,
         type: "post",
@@ -568,30 +733,19 @@
          
           //var plot_url2 = plot_url2.split(',');
           $(".modal-body .imagecontainer").empty();
-          for (let i = 1; i < images.length; i++) {
+          for (let i = 0; i < images.length; i++) {
             srcvar = "data:image/png;base64," + images[i];
             console.log(srcvar)
-            if (i < 2) {
               $(".modal-body .imagecontainer").prepend(
-                '<img src=" ' +
-                  srcvar +
+                '<img src="data:image/png;base64, ' +
+                  images[i] +
                   '"' +
                   'id="img ' +
                   i +
                   '"' +
                   'alt="Chart">'
               );
-            } else {
-              $(".modal-body .imagecontainer").prepend(
-                '<img src=" ' +
-                  srcvar +
-                  '"' +
-                  'id="img ' +
-                  i +
-                  '"' +
-                  'alt="Chart">'
-              );
-            }
+
             $("#dropfeature").hide();
             $("#save").hide();
             $("#exampleModalCenter").modal("show");
@@ -605,6 +759,10 @@
       console.log(target);
       var url = "/filedata/" + fileid + "/bivariate/" + target;
       $("#summarymodal #summaryp").remove();
+      $(".modal-body #row3 #hideoptions").remove();
+      $("#summarymodal").append("<h1>BiVariate Analysis");
+
+
       $(".modal-body #img").attr("src", "");
       $(".modal-header #h1modal").text("");
       $(".modal-body #hideoptions").css("visibility", "hidden");
@@ -658,6 +816,14 @@
         },
       });
     });
+    $("#trainbutton").click(function () {
+      var fileid = $("#trainbutton").attr("fileid");
+      var target = $(".selectdiv #target").find(":selected").text();
+      var url = "/train/" + fileid + "/target/"+target;
+      var setsession = window.sessionStorage.setItem("target",target);
+      setsession = window.sessionStorage.setItem("fileid",fileid);
+      $("#trainbutton").attr("href",url);
+    })
 
     $("#buttonclickedgraph").click(function () {
       console.log("test");
@@ -706,6 +872,7 @@ class="btn btn-success mx-auto d-bloc"
 >
 Download Clean Data
 </button>
+<a fileid={{fileid}} id="trainbutton" href="">View Model Evaluation</a>
 <div class="float-container">
 
   <div class="float-child">
@@ -785,7 +952,7 @@ Download Clean Data
         MultiVariate Analysis
       </button>
     </div>
-    <form id="myform" action="{{ url_for('train.train_data') }}">
+    <form id="myform">
       <table class="table table-hover">
         <h1 class="text-center">Continuous Features</h1>
 
@@ -804,9 +971,30 @@ Download Clean Data
           data-id="{{row[0]}}"
         >
           {% for col, row_ in zip(continouscolumnnames, row) %}
-
-          <td><p>{{row_}}</p></td>
+          {% if row_ == "Checkbox" %}
+          <td id="optionmenu"><div class="btn-group">
+            <button id="editbutton"type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Action
+            </button>
+            <div class="dropdown-menu">
+              <a fileid= {{fileid}} column = {{row[0]}} id="dropbutton" class="dropdown-item" href="#">Drop</a>
+             
+            <div class="dropdown-divider"></div>
+            <a fileid= {{fileid}} column = {{row[0]}} datatype="cat"id="changebuttoncont" class="dropdown-item" href="/filedata/{{fileid}}/catvalue/{{row[0]}}">Change to Cat</a>
+          
+          <div class="dropdown-divider"></div>
+          <a data-id="{{row[0]}}" fileid="{{fileid}}" datatype="continuous" datarow="{{row}}" id="OpenAnalytics" class="dropdown-item" href="#">Open Analytics</a>
+        </div>
+          </div>
+        </td>
+         
+          {%else%}
+          <td data-id="{{row[0]}}" fileid="{{fileid}}" datatype="continuous" datarow="{{row}}" id="clickable"><p>{{row_}}</p></td>
+      
+          {% endif %}
+         
           {% endfor %}
+          
         </tr>
         {% endfor %}
       </table>
@@ -826,7 +1014,27 @@ Download Clean Data
           data-id="{{row[0]}}"
         >
           {% for col, row_ in zip(categoricalcolumnnames, row) %}
-          <td><p>{{row_}}</p></td>
+          {% if row_ == "Checkbox" %}
+          <td id="notclickable"><div class="btn-group">
+            <button id="editbutton"type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Action
+            </button>
+            <div class="dropdown-menu">
+              <a fileid= {{fileid}} column = {{row[0]}} id="dropbutton" class="dropdown-item" href="#">Drop</a>
+             
+            <div class="dropdown-divider"></div>
+            <a fileid= {{fileid}} column = {{row[0]}} id="changebuttoncont" class="dropdown-item" href="/filedata/{{fileid}}/contvalue/{{row[0]}}">Change to Continuous</a>
+          
+          <div class="dropdown-divider"></div>
+          <a id="OpenAnalytics"    fileid="{{fileid}}" datatype="categorical" datarow="{{row}}" data-id="{{row[0]}}" href="#">Open Analytics</a>
+        </div>
+          </div>
+        </td>
+         
+          {%else%}
+          <td data-id="{{row[0]}}" fileid="{{fileid}}" datatype="categorical" datarow="{{row}}" id="clickable"><p>{{row_}}</p></td>
+      
+          {% endif %}
           {% endfor %}
         </tr>
         {% endfor %}
@@ -834,44 +1042,22 @@ Download Clean Data
     </form>
   </div>
   <div class="float-child1">
+    <h1>Row Data</h1>
+    <button
+
+    type="button"
+    id="tablebutton"
+    class="btn btn-lg btn-secondary"
+  >
+    View Row Data
+  </button>
     <div id="rowdata"></div>
-    <h1>Rows Missing Features</h1>
-    <table class="table table-hover">
-      <h1 class="text-center">Continuous Features</h1>
-
-      <tr class="thead-dark">
-        
-        {% for col in titlesgr %}
-        <th>{{col}}</th>
-        {% endfor %}
-
-      </tr>
-      {% set count = 1 %}
-      {% for row in rowdata %}
-      
-      <tr
-
-        datarow="{{row}}"
-        datatype="continuous"
-        fileid="{{fileid}}"
-        data-id="{{row[0]}}"
-      >
-      
-        {% for col, row_  in zip(titlesgr, row) %}
-        {%if col=="Drop"%}
-          <td><button type="button" datarow="{{row[0]}}" id="droprowbyindex" class="btn btn-primary">Drop</button></td>
-        {%else%}
-          <td><p>{{row_}}</p></td>
-          
-        {%endif%}
-        
-        {% endfor %}
-      </tr>
-      
-      {% endfor %}
-    </table>
+    <img src="data:image/png;base64,{{plot_url}}">
+    
   </div>
+  
 </div>
+
 <!-- Modal -->
 <div
   class="modal fade"
@@ -904,61 +1090,9 @@ Download Clean Data
           <div class="row">
             <div id="summarymodal" class="col-sm-12 align-self-center"></div>
           </div>
-          <div id="hideoptions" class="row">
-            <div class="row">
-              <div class="col-sm-4">
-                <div class="card "style="width: 30rem;">
-                  <div class="card-body">
-                    <h5>Missing Values</h4>
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="mediancheckbox">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Replace with Median</label>
-                      </div>
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="modecheckbox">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Replace with Mode</label>
-                      </div>
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="meancheckbox">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Replace with Mean</label>
-                      </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-4">
-                <div id ="encoding" class="card">
-                  <div class="card-body">
-                    <h5>Encoding</h4>
-                      
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="LabelEncoding">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Label Encoding</label>
-                      </div>
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="OneHotEncoder">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">OneHotEncoder</label>
-                      </div>
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="OrdinalEncoder">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Ordinal Encoder</label>
-                      </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-4">
-                <div id ="clamptransformation" class="card">
-                  <div class="card-body">
-                    <h5>Outliers</h4>
-                      
-  
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
+          <div id="row3"></div>
           <div class="row" id="row1">
-            <div class="imagecontainer">
+            <div class="imagecontainer col d-flex flex-wrap align-items-center justify-content-center">
               <div>
                 <p>Compare with other features</p>
                 <div class="selectdiv">
@@ -1014,7 +1148,76 @@ Download Clean Data
         </div>
       </div>
 
-      {% endblock %}
+
     </div>
   </div>
 </div>
+<div
+  class="modal fade"
+  id="exampleModalCenter1"
+  fileid=""
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-fullscreen"
+    role="document"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="col-12 modal-title text-center" featurename="" id="h1modal">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </h3>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <table  id="fulltable" class="table table-hover">
+            <h1 class="text-center">Row Data</h1>
+            <tr class="thead-dark">
+              {% for col in fulltablecolumns %}
+              <th>{{col}}</th>
+              {% endfor %}
+            </tr>
+            {% for row in fulltable %}
+            <tr
+              class="clickable-row"
+              datarow="{{row}}"
+              datatype="categorical"
+              fileid="{{fileid}}"
+              data-id="{{row[0]}}"
+            >
+              {% for col, row_ in zip(fulltablecolumns, row) %}
+
+              <td data-id="{{row[0]}}" fileid="{{fileid}}" datatype="categorical" datarow="{{row}}" id="clickable"><p>{{row_}}</p></td>
+          
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </table>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
