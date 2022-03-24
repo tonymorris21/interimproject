@@ -24,7 +24,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import uuid
 from sklearn.naive_bayes import GaussianNB
-
+from sklearn import preprocessing
 import json 
 train = Blueprint('train', __name__)
 
@@ -37,7 +37,7 @@ def trainpage(fileid,target):
 @train.route('/train/<fileid>/algorithm/<algorithm>/target/<target>', methods=['POST','GET'])
 def train_data(fileid,algorithm,target):
     print("test train")
-    modelid, plot_url, accuracy, tables = naivebayes(fileid,target)
+    modelid, plot_url, accuracy, tables = svc(fileid,target)
     
 
     #target = request.args.get("target")
@@ -127,10 +127,11 @@ def naivebayes(fileid,target):
     file = File.query.filter_by(fileid=fileid).first()
     df = pd.read_csv(file.location)
     X = df.drop(target, 1)
+    
     Y = df.filter([target])
     le = LabelEncoder()
     y = le.fit_transform(Y)
-
+    
     inverse = le.inverse_transform(y)
     columnnames = X.columns.values
     d  = classnamemap(y,inverse)
@@ -194,7 +195,11 @@ def svc(fileid,target):
     Y = df.filter([target])
     le = LabelEncoder()
     y = le.fit_transform(Y)
-
+    inverse = le.inverse_transform(y)
+    d  = classnamemap(y,inverse)
+    classnames1 = {str(k):str(v) for k,v in d.items()}
+    classnames = json.dumps(classnames1, indent = 4) 
+    
     print(Y)
     X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3)
 
@@ -214,7 +219,7 @@ def svc(fileid,target):
     print('precision_Naive Bayes: %.3f' %precision)
     print('recall_Naive Bayes: %.3f' %recall)
     print('f1-score_Naive Bayes : %.3f' %f1)
-    modelid, plot_url, accuracy, tables = toDatabase(svc,accuracy,y_test,X_test,Y_pred)
+    modelid, plot_url, accuracy, tables = toDatabase(classnames,svc,accuracy,y_test,X_test,Y_pred)
     return modelid, plot_url, accuracy, tables
 
 def toDatabase(classnames,model,accuracy,y_test,X_test,Y_pred):
