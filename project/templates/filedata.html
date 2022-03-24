@@ -91,9 +91,7 @@
     height: 9em;
   }
 
-  .imagecontainer {
-    display: inline-block;
-  }
+
   #imagerow2 {
     height: fit-content;
     width: fit-content;
@@ -120,7 +118,12 @@
     border-left: 0.5px solid lightgray;
   }
   .selectdiv {
-    margin-bottom: 1em;
+    width:auto;
+    margin-left:2em;
+    margin-bottom: .5em;
+  }
+  #selectdiv{
+    margin-left:2em;
   }
   select {
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
@@ -139,6 +142,7 @@
   .modal-dialog {
     max-width: 100vw;
     margin: 0;
+    margin-left:1em;
     overflow-x: hidden !important;
     top: 0;
     bottom: 0;
@@ -146,11 +150,12 @@
     right: 0;
     height: 100vh;
   }
+
   tr,
   th,
   table {
     font-size: 14px;
-    width: 10%;
+    width: 6%;
     white-space: nowrap;
   }
 
@@ -201,7 +206,7 @@
     margin-bottom: 1em;
   }
   #summarymodal {
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     display: flex;
     text-align: center;
@@ -216,27 +221,22 @@
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     
   }
-  #trainbutton{
 
-  }
   .center {
     margin-left: auto;
     margin-right: auto;
   }
   .modal-body #hideoptions #hidecontent {
-    margin-bottom: 2em;
+    margin-bottom: 4em;
     text-align: center;
     visibility: hidden;
   }
   .modal-body #hideoptions {
-    
+    margin-bottom: 2em;
+    justify-content: center;
   }
-  .modal-body #hideoptions {
-    
-    
-    white-space:nowrap;
-    max-width:100%;
-  }
+
+
 #fulltable{
   max-width:100%;
   max-height:80%;
@@ -251,32 +251,73 @@
     line-height: 28px;
   }
 
-  span {
+  .progress span {
     position: absolute;
     right: -60px;
     color: #002c6c;
   }
+
+.modal-body .imagecontainer div {
+
+  margin:auto;
+  margin-right:1em;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+.modal-body .imagecontainer .imgages2 {
+  text-align:center;
+  max-width:33%;
+  
+}
+
+.row5 {
+  display: flex;
+  justify-content: center;
+  
+   /* equal height of the children */
+}
+.row5 #outlierdiv input {
+  width:20%;
+}
+.row5 #outlierdiv label {
+  float:left;
+  padding-right:.5em;
+}
+.col5 {
+  flex: 1; /* additionally, equal width */
+  
+  padding: 1em;
+  border: solid;
+}
+#outlierdiv input{
+ 
+}
 </style>
 <script type="text/javascript">
-  function binsize(Text){
-      alert(Text);
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+  function binsize(Text,divid){
+      id = Text.attr("id");
+      text = Text.val();
+      charttype = Text.attr("charttype");
+      alert(id);
       var fileid = $("#bivariate").attr("fileid");
       var target = $("#target").find(":selected").text();
-      var binsize = Text;
+      var binsize = text;
       var featurename = $(".clickable-row").attr("data-id");
-      var url = "/filedata/" + fileid + "/generateContinuousGraphs" +"/feature/"+featurename +"/binsize/" + binsize;
+      var url = "/filedata/" + fileid + "/generateContinuousGraphs" +"/feature/"+featurename +"/binsize/" + binsize + "/charttype/" + charttype;
       
       $.ajax({
         url: url,
         type: "post",
-        data: { fileid: fileid, featurename:featurename ,binsize:binsize},
+        data: { fileid: fileid, featurename:featurename ,binsize:binsize,charttype:charttype},
         success: function (plot_url) {
           console.log(plot_url);
           srcvar = "data:image/png;base64," + plot_url;
-          $(".modal-body .imagecontainer").empty();
-          $(".modal-body .imagecontainer").prepend(
-            '<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>'
-          );
+          d = '.modal-body .imagecontainer ' + '#'+id + ' img'
+          alert(d);
+          $('.modal-body .imagecontainer ' + ' #'+id + ' img').attr('src',srcvar);
+
 
         // Add the newly created table containing json data
         },
@@ -328,10 +369,10 @@
     Object.keys(data).forEach(function (key) {
       $("#rowdata").append("<div id = 'ptags" + key +"'></div>");
       if(key=="99"){
-        $("#rowdata #ptags"+key).append("<p> There are <b>" + data[key] + "</b> rows missing <b>Target</b> feature </p><br>");
+        $("#rowdata #ptags"+key).append("<p> There are <b>" + data[key] + "</b> rows missing <b>Target</b> feature  &nbsp;&nbsp;&nbsp;  </p><button>Drop</button><br>");
       }else{
 
-      $("#rowdata #ptags"+key).append("<p> There are <b>" + data[key] + "</b> rows missing <b>" + key + "</b> feature </p><br>");
+      $("#rowdata #ptags"+key).append("<p> There are <b>" + data[key] + "</b> rows missing <b>" + key + "</b> feature &nbsp;&nbsp;   </p><button>Drop</button><br>");
       }
     });
     }
@@ -388,9 +429,7 @@
       console.log("test hide");
       $(".modal-body #hideoptions #hidecontent").css("visibility", "visible");
     });
-    function clickrow(){
 
-    }
     
     $("#tablebutton").on("click",function (e) {
       $("#exampleModalCenter1").modal("show");
@@ -411,6 +450,8 @@
         $("#exampleModalCenter").attr("featurename", featurename);
         var categorydata = [];
         if (datatype === "categorical") {
+          $(".modal-body #row3").empty();
+          $(".modal-body #row3").append("		  <div id='hideoptions' class='row'>           		  <div class='row'>             			<div class='col-sm-4'>               				<div class='card 'style='width: 30rem;'>            					<div class='card-body'>                						<h5>Missing Values</h4>   							<div class='form-check form-switch'>    							<input class='form-check-input' type='checkbox' id='removecheckbox'> 							<label class='form-check-label' for='flexSwitchCheckDefault'>Drop</label>   							</div>                                     </div>                </div>              </div>              				  <div class='col-sm-4'>    		  <div id ='Encoding' class='card'>                 		  <div class='card-body'>               <h5>Encoding</h4><div class='form-check form-switch'><input class='form-check-input' type='checkbox' id='LabelEncoding'><label class='form-check-label' for='flexSwitchCheckDefault'>Label Encoding</label>       </div>                      <div class='form-check form-switch'>                   <input class='form-check-input' type='checkbox' id='OneHotEncoder'>          <label class='form-check-label' for='flexSwitchCheckDefault'>OneHotEncoder</label>        </div>                      <div class='form-check form-switch'>                    <input class='form-check-input' type='checkbox' id='OrdinalEncoder'>                  <label class='form-check-label' for='flexSwitchCheckDefault'>Ordinal Encoder</label>            </div>                         		  </div>            		  </div>             		  </div>          		  </div>       		  </div>")
           categorydata = [
             "Feature",
             "Count",
@@ -424,6 +465,8 @@
             "2nd Mode %",
           ];
         } else if (datatype === "continuous") {
+          $(".modal-body #row3").empty();
+          $(".modal-body #row3").append("<div id='hideoptions' class='row'><div class='row5'><div class='col5'><h5>Missing Values</h4><div style='margin-bottom:1em' class='form-check form-switch'>     		  <input class='form-check-input' type='checkbox' id='removecheckbox'>           		  <label class='form-check-label' for='flexSwitchCheckDefault'>Drop</label>   		  </div>                 		  <div style='margin-bottom:1em' class='form-check form-switch'>       		  <input class='form-check-input' type='checkbox' id='mediancheckbox'>   		  <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Median</label>   		  </div>                    		  <div style='margin-bottom:1em' class='form-check form-switch'>     		  <input class='form-check-input' type='checkbox' id='modecheckbox'>   		  <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Mode</label>  		  </div>               		  <div style='margin-bottom:1em' class='form-check form-switch'>       		  <input class='form-check-input' type='checkbox' id='meancheckbox'> 		  <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Mean</label>   		  </div>                                       </div>			 <div class ='col5' id='outlierdiv'>		  <h5>Outliers</h4>                                 		  <div class='form-group 'id = 'clamptransformation'><label>Upper value</label>       		  <input id='uppervalue' class='form-control' type='text' placeholder='0'> </div><div class='form-group'id='clamptransformation'>                              		  <label>Lower value</label> <input id='lowervalue' class='form-control' type='text' placeholder='0'>   	            		              </div> 		  </div></div>		  		  </div>")
           categorydata = [
             "Feature",
             "Count",
@@ -449,8 +492,6 @@
         $(".modal-header #h1modal").append(data[0]);
         $(".modal-body #img").attr("src", "");
         $(".modal-body #img2").remove();
-        $(".modal-body #row3").append("          <div id='hideoptions' class='row'>            <div class='row'>              <div class='col-sm-4'>                <div class='card 'style='width: 30rem;'>                  <div class='card-body'>                    <h5>Missing Values</h4>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='mediancheckbox'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Median</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='modecheckbox'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Mode</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='meancheckbox'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Replace with Mean</label>                      </div>                  </div>                </div>              </div>              <div class='col-sm-4'>                <div id ='encoding' class='card'>                  <div class='card-body'>                    <h5>Encoding</h4>                                            <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='LabelEncoding'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Label Encoding</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='OneHotEncoder'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>OneHotEncoder</label>                      </div>                      <div class='form-check form-switch'>                        <input class='form-check-input' type='checkbox' id='OrdinalEncoder'>                        <label class='form-check-label' for='flexSwitchCheckDefault'>Ordinal Encoder</label>                      </div>                  </div>                </div>              </div>              <div class='col-sm-4'>                <div id ='clamptransformation' class='card'>                  <div class='card-body'>                    <h5>Outliers</h4>                      <div>                        <label>Upper value</label>                                              <input id='uppervalue' class='form-control' type='text' placeholder='0'>                      </div>                      <div>                                                                     <label>Upper value</label> <input id='lowervalue' class='form-control' type='text' placeholder='0'>                      </div>                      <button class='btn btn-lg btn-secondary' id='clampButton'>Remove Outliers</button>                  </div>                </div>              </div>            </div>          </div>")
-
         $("#summarymodal").empty();
         var quartile1 = 0;
         var quartile3 = 0;
@@ -500,17 +541,30 @@
         $.ajax({
           url: url,
           type: "post",
-          data: { datatype: datatype, fileid: fileid, featurename: featurename },
+          data: { datatype: datatype, fileid: fileid, featurename: featurename},
           success: function (images) {
             images.replace("", "");
             images.replace("'", "");
             var images = images.split(",");
 
             console.log(images);
-            $(".modal-body .imagecontainer").empty();
+            charttype = ["distplot","boxplot"];
+            $(".modal-body .imagecontainer .imgages2").empty();
             for (let i = 0; i < images.length; i++) {
               srcvar = "data:image/png;base64," + images[i];
-              $(".modal-body .imagecontainer").append('<div id="images"><input onchange="binsize($(this).val());"id="binsize" type="text"></><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
+              divid = "images"+featurename+i
+              chart = charttype[i]
+              if(datatype=="Continuous"){
+              if(chart=="distplot"){
+              $(".modal-body .imagecontainer").prepend('<div class = "imgages2" id="'+ divid +'"><label>Bins  <input charttype = "'+ chart + '" id = "'+ divid+'" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
+              }else{
+                $(".modal-body .imagecontainer").prepend('<div class="imgages2" id="'+ divid +'"><label style="visibility:hidden">Bins  <input style="visibility:hidden" charttype = "'+ chart + '" id = "'+ divid+'" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
+
+              }
+            }else{
+              $(".modal-body .imagecontainer").prepend('<div class = "imgages3" id="'+ divid +'"><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
+
+            }
             }
             $("#exampleModalCenter").modal("show");
           },
@@ -604,7 +658,7 @@
       encoding = []
       var featurename = $("#exampleModalCenter").attr("featurename");
       var fileid = $("#exampleModalCenter").attr("fileid");
-      LabelEncoding,OneHotEncoder,OrdinalEncoder
+      
       if($("#mediancheckbox:checked").val()=="on"){
         missingvalues.push("median");
       }
@@ -641,9 +695,11 @@
           url: url,
           type: "post",
           data: { fileid: fileid ,featurename:featurename,change:change},
-          success: function () {
+          success: function (data) {
+            srcvar = "data:image/png;base64," + data;
+            $(".modal-body .imagecontainer").prepend('<div class = "imgages2" id="'+ 3 +'"><label>Bins  <input charttype = "'+ 3 + '" id = "'+ 3+'" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
             console.log("feature deleted");
-            location.reload(true);
+            
           },
         });
         }
@@ -732,7 +788,7 @@
           console.log(images);
          
           //var plot_url2 = plot_url2.split(',');
-          $(".modal-body .imagecontainer").empty();
+          $(".modal-body .imagecontainer ").empty();
           for (let i = 0; i < images.length; i++) {
             srcvar = "data:image/png;base64," + images[i];
             console.log(srcvar)
@@ -817,7 +873,9 @@
       });
     });
     $("#trainbutton").click(function () {
+      
       var fileid = $("#trainbutton").attr("fileid");
+      
       var target = $(".selectdiv #target").find(":selected").text();
       var url = "/train/" + fileid + "/target/"+target;
       var setsession = window.sessionStorage.setItem("target",target);
@@ -872,11 +930,12 @@ class="btn btn-success mx-auto d-bloc"
 >
 Download Clean Data
 </button>
-<a fileid={{fileid}} id="trainbutton" href="">View Model Evaluation</a>
+
 <div class="float-container">
 
   <div class="float-child">
-    <h1>Summary</h1>
+    <h1>Summary      <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip" data-original-title="Share"></span></a>
+    </h1>
     <p>Total Features: {{featurecount}}</p>
     <p>Total Rows: {{totalrows}}</p>
     <div class="row">
@@ -916,7 +975,8 @@ Download Clean Data
     </div>
   </div>
   <div class="float-child">
-    <h1>Target Selection</h1>
+    <h1>Target Selection      <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip" data-original-title="Share"></span></a>
+    </h1>
     <p>
       Select a feature to be the target<br />(what you want your model to
       predict)
@@ -928,13 +988,17 @@ Download Clean Data
         <option value="{{target}}">{{target}}</option>
         {% endfor %}
       </select>
+      
     </div>
+    <a class="btn btn-success mx-auto d-bloc" fileid={{fileid}} id="trainbutton" href="">Training Configuration</a>
+
   </div>
 </div>
 
 <div class="float-container1">
   <div class="float-child1">
     <div id="test">
+      
       <button
         fileid="{{fileid}}"
         type="button"
@@ -952,13 +1016,14 @@ Download Clean Data
         MultiVariate Analysis
       </button>
     </div>
+
     <form id="myform">
       <table class="table table-hover">
-        <h1 class="text-center">Continuous Features</h1>
+        <h1 class="text-center">Continuous Features<a href="#"><span class="fa fa-question-circle" data-toggle="tooltip" data-original-title="Share"></span></a></h1>
 
         <tr class="thead-dark">
           {% for col in continouscolumnnames %}
-          <th>{{col}}</th>
+          <th title="Toolti["> <div data-toggle="tooltip" data-placement="top" title="Hooray!">{{col}}</div></th>
           {% endfor %}
         </tr>
         {% for row in continousrow_data %}
@@ -999,7 +1064,7 @@ Download Clean Data
         {% endfor %}
       </table>
       <table class="table table-hover">
-        <h1 class="text-center">Categorical Features</h1>
+        <h1 class="text-center">Categorical Features<a href="#"><span class="fa fa-question-circle" data-toggle="tooltip" data-original-title="Share"></span></a></h1>
         <tr class="thead-dark">
           {% for col in categoricalcolumnnames %}
           <th>{{col}}</th>
@@ -1042,7 +1107,7 @@ Download Clean Data
     </form>
   </div>
   <div class="float-child1">
-    <h1>Row Data</h1>
+    <h1>Row Data<a href="#"><span class="fa fa-question-circle" data-toggle="tooltip" data-original-title="Share"></span></a></h1>
     <button
 
     type="button"
@@ -1058,7 +1123,7 @@ Download Clean Data
   
 </div>
 
-<!-- Modal -->
+
 <div
   class="modal fade"
   id="exampleModalCenter"
@@ -1092,8 +1157,8 @@ Download Clean Data
           </div>
           <div id="row3"></div>
           <div class="row" id="row1">
-            <div class="imagecontainer col d-flex flex-wrap align-items-center justify-content-center">
-              <div>
+            <div class="imagecontainer d-flex flex-wrap align-items-center justify-content-center">
+              <div id="selectdiv">
                 <p>Compare with other features</p>
                 <div class="selectdiv">
                   <p>X Axis:</p>
@@ -1117,10 +1182,13 @@ Download Clean Data
                     {% endfor %}
                   </select>
                 </div>
-
                 <button type="button" id="buttonclickedgraph">Click!</button>
-              </div>
             </div>
+            </div>
+
+          </div>
+
+           
           </div>
           <div id="imagerow" class="col-md-4 ms-auto text-center"></div>
           <div id="imagerow2" class="col-md-4 ms-auto text-center"></div>
@@ -1141,9 +1209,7 @@ Download Clean Data
             >
               Close
             </button>
-            <button type="button" id="savechanges" class="btn btn-primary">
-              Save changes
-            </button>
+            <button type="button" id="savechanges" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>
@@ -1220,4 +1286,21 @@ Download Clean Data
   </div>
 </div>
 
+<div class="modal" id="myModal2" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">2nd Modal title</h4>
+        <button type="button" class="close" data-dismiss="modal">×</button>
+      </div><div class="container"></div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <a href="#" data-dismiss="modal" class="btn">Close</a>
+        <a href="#" class="btn btn-primary">Save changes</a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -12,6 +12,16 @@
     })
 });
 </script>
+<style>
+  .box{
+    text-align:center;
+  }
+  #Parameters{
+    padding-top:1em;
+    padding-bottom:1em;
+  }
+  #parameters:
+</style>
 <div class="column is-4 is-offset-4">
 
     <div class="box">
@@ -27,6 +37,25 @@
               <option value="NB" selected>Naive Bayes</option>
             </select>
           </div>
+          <div id="Parameters">
+            <h5> Configure Model parameters</h5>
+            <form>
+
+  <div class="form-group row">
+    <label for="inputPassword" class="col-sm-3 col-form-label">Train/Test Split</label>
+    <div class="col-sm-9">
+      <input style="text-align:center"; type="password" class="form-control" id="inputPassword" placeholder="20%">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="inputPassword" class="col-sm-3 col-form-label">Random State</label>
+    <div class="col-sm-9">
+      <input style="text-align:center"; type="password" class="form-control" id="inputPassword" placeholder="11">
+    </div>
+  </div>
+</form>
+          </div>
+
           <a  id= "trainbutton">Train</a>
     </div>
 </div>

@@ -408,7 +408,7 @@ def generateContinuousGraphs(feature,featurename,binsize):
     iqr = q75 - q25
     print(iqr)
     print(len(feature))
-    a= sn.distplot(a=feature, hist=True, bins=int(binsize))
+    a= sn.histplot(data=feature, stat="frequency" , bins=int(binsize),kde=True)
     a.set_title("Histogram for "+ featurename + " values")
     img = BytesIO()
     plt.tight_layout()
@@ -427,21 +427,31 @@ def generateContinuousGraphs(feature,featurename,binsize):
     plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
     images = plot_url + "," + plot_url2
     return images
-@filedata.route('/filedata/<fileid>/generateContinuousGraphs/feature/<feature>/binsize/<binsize>', methods=['GET', 'POST'])
-def generateContinuousGraphsd(fileid,feature,binsize):
+@filedata.route('/filedata/<fileid>/generateContinuousGraphs/feature/<feature>/binsize/<binsize>/charttype/<charttype>', methods=['GET', 'POST'])
+def generateContinuousGraphsd(fileid,feature,binsize,charttype):
     fig = plt.figure()
 
     file = File.query.filter_by(fileid=fileid).first()
     df = pd.read_csv(file.location)
+    if(charttype=="distplot"):
+        sn.distplot(a=df[feature], hist=True, bins=int(binsize))
     
-    sn.distplot(a=df[feature], hist=True, bins=int(binsize))
+        img = BytesIO()
+        plt.tight_layout()
+        plt.savefig(img, format='png')
+        plt.close()
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    if(charttype=="boxplot"):
+        sn.boxplot(y=df[feature])
+        set_title("Box Plot for "+ df[feature].name + " values")
+        img = BytesIO()
     
-    img = BytesIO()
-    plt.tight_layout()
-    plt.savefig(img, format='png')
-    plt.close()
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+        plt.tight_layout()
+        plt.savefig(img, format='png')
+        plt.close()
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode('utf8')
 
     return plot_url
 def generateCategoricalGraphs(feature,featurename):
@@ -589,8 +599,18 @@ def missingValues(fileid,featurename,change):
         df[featurename].fillna(df[featurename].median(), inplace=True)
     file = File.query.filter_by(fileid=fileid).first()
     df.to_csv(file.location ,mode='w+',index=False )
-    print(df.head)
-    return "200"
+
+    fig = plt.figure()
+    binsize = int(np.ceil(np.log2(len(df[featurename]))) + 1)
+    a= sn.distplot(a=df[featurename], hist=True, bins=int(binsize),hist_kws=dict(edgecolor="black", linewidth=2))
+    a.set_title("Histogram for "+ df[featurename].name + " after changes")
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    return plot_url
 @filedata.route('/filedata/<fileid>/encoding/<featurename>/change/<change>', methods=['GET', 'POST'])
 def encodingValues(fileid,featurename,change):
     filelocation = session['filelocation']

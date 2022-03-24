@@ -39,7 +39,7 @@ def predict_values(modelid,predict_values):
      #print("Predict values",test)
      data = pickle.load(modelfile)
 
-     dtest = data.predict_proba([test]).max(axis=1)
+     dtest = data.predict([test])
 
      print("prediction",dtest,classnames.get(str(dtest[0])))
      return str(dtest[0])
