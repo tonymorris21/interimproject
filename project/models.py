@@ -14,11 +14,14 @@ class File(db.Model):
     projectid = db.Column(db.Integer)
     name = db.Column(db.String(300))
     location = db.Column(db.String(300))
+    fileuploaddate = db.Column(db.Date)
 
 class Project(db.Model):
     projectid = db.Column(db.String(400),primary_key=True)
     userid = db.Column(db.Integer)
     projectName = db.Column(db.String(300))
+    projectcreation = db.Column(db.Date)
+    
 
 class Model(db.Model):
     modelid = db.Column(db.Integer,primary_key=True)

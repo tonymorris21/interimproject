@@ -191,12 +191,14 @@ def generate_report(df):
             if col not in columnTypesDict:
                 non_floats.append(col)
    # print(non_floats)
-    if session.get("catfeature") is not None:
-        cont = session.get("catfeature")
-        print("cont value",cont)
-        for x in cont:
-
-            non_floats.remove(x)
+    try:
+        if session.get("catfeature") is not None:
+            cont = session.get("catfeature")
+            print("cont value",cont)
+            for x in cont:
+                non_floats.remove(x)
+    except:
+        print("test")
     cat = cat.drop(columns=non_floats)
     allcolumns = df.columns
     categoricalcols = cat.columns
@@ -320,7 +322,10 @@ def modeList(df):
 def secondmodeList(df):
     modeList = []
     for columns in df:
-        modeList.append(second_get_most_frequent(df[columns]))
+        try:
+            modeList.append(second_get_most_frequent(df[columns]))
+        except:
+            modeList.append(0)
     return modeList
 
 def modeListCount(df):
@@ -352,8 +357,9 @@ def get_most_frequent(x):
 
 def second_get_most_frequent(x):
     a = x.value_counts()
-
+    print("Second get most frequent",a)
     first = sorted(dict(a).items(), key=lambda x: -x[1])[1]
+    print(first)
     return first[0]
 
 def get_most_frequent_count(x):
@@ -363,8 +369,10 @@ def get_most_frequent_count(x):
     return first[1]
 def second_get_most_frequent_count(x):
     a = x.value_counts()
-
-    first = sorted(dict(a).items(), key=lambda x: -x[1])[1]
+    try:
+        first = sorted(dict(a).items(), key=lambda x: -x[1])[1]
+    except:
+        return 0
     return first[1]
 
 def getmodepercentage(x):

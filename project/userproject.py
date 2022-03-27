@@ -21,6 +21,9 @@ from markupsafe import Markup
 from flask import escape
 from bs4 import BeautifulSoup
 import urllib.request
+from datetime import date
+
+
 userproject = Blueprint('userproject', __name__)
 
 @userproject.route('/userproject')
@@ -36,7 +39,8 @@ def createproject():
 
     name = request.form.get('name')
     projectid = str(uuid.uuid4())
-    new_project = Project(projectid=projectid,userid=current_user.id, projectName=name)
+    projectcreation = date.today()
+    new_project = Project(projectid=projectid,userid=current_user.id, projectName=name,projectcreation=projectcreation)
 
     db.session.add(new_project)
     db.session.commit()
@@ -58,6 +62,7 @@ def projectinfo(projectid):
     project = Project.query.filter_by(projectid=projectid).all()
     print("Project 0",project[0].projectName)
     session['projectname'] = project[0].projectName
+    session['projectid'] = projectid
     for row in model:
         print ("Name: ",row.accuracy)
     #confusion_matrix = model.confusion_matrix
@@ -68,6 +73,15 @@ def projectinfo(projectid):
     if len(file)<0:
         return render_template('projectinfo.html', file = file,model=model)
     return render_template('projectinfo.html',file = file,model=model)
+@userproject.route('/deleteproject/<projectid>')
+def deleteproject(projectid):
+
+    project = Project.query.get(projectid)
+    
+    db.session.delete(project)
+    db.session.commit()
+    data = Project.query.filter_by(userid=current_user.id).all()
+    return render_template('project.html',data=data)
 @userproject.route('/model/<modelid>')
 def modelinfo(modelid):
     model = Model.query.filter_by(modelid=modelid).all()
