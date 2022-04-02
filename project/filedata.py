@@ -435,7 +435,6 @@ def generateContinuousGraphs(feature,featurename,binsize):
     fig = plt.figure()
     q75,q25 = np.percentile(feature, [75 ,25])
     iqr = q75 - q25
-
     a= sn.histplot(data=feature, stat="frequency" , bins=int(binsize),kde=True)
     a.set_title("Histogram for "+ featurename + " values")
     img = BytesIO()

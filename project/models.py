@@ -21,7 +21,6 @@ class Project(db.Model):
     projectName = db.Column(db.String(300))
     projectcreation = db.Column(db.Date)
 
-
 class Model(db.Model):
     modelid = db.Column(db.Integer,primary_key=True)
     projectid = db.Column(db.Integer)
