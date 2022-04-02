@@ -6,6 +6,8 @@ from flask import Blueprint,render_template, redirect, url_for, request, flash, 
 import numpy as np
 import pandas as pd
 from flask import jsonify
+from flask_login import login_required, current_user
+
 predict = Blueprint('predict', __name__)
 
 
@@ -19,19 +21,19 @@ def prediction(modelid):
     modelfile = open(modelfile.location, 'rb')
     
     model = pickle.load(modelfile)
-    columnnames = model.feature_names
+    print(model)
+    columnnames = model.feature_names_in_
     print(columnnames[0])
-    classnames = json.loads(classnames1)
+  
     
 
-    return render_template('predict.html',columnnames=columnnames,classnames=classnames,modelid=modelid)
+    return render_template('predict.html',columnnames=columnnames,classnames=classnames1,modelid=modelid)
 
-@predict.route('/predict/<modelid>/values/<predict_values>', methods=['GET', 'POST'])
+@predict.route('/predict/<modelid>/values/<predict_values>', methods=['GET','POST'])
 def predict_values(modelid,predict_values):
      modelfile = Model.query.filter_by(modelid=modelid).first()
      #print("Modelfile location",modelfile.location)
      classnames1 = modelfile.classnames
-     classnames = json.loads(classnames1)
      modelfile = open(modelfile.location, 'rb')
      test =predict_values.split(",")
      test = np.array(test)
@@ -39,7 +41,8 @@ def predict_values(modelid,predict_values):
      #print("Predict values",test)
      data = pickle.load(modelfile)
 
-     dtest = data.predict_proba([test]).max(axis=1)
-
-     print("prediction",dtest,classnames.get(str(dtest[0])))
-     return str(dtest[0])
+     dtest = data.predict([test])
+     print(classnames1)
+     print("prediction",dtest)
+     
+     return json.dumps(dtest.tolist())

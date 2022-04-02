@@ -26,91 +26,233 @@ import uuid
 from sklearn.naive_bayes import GaussianNB
 from sklearn import preprocessing
 import json 
+from datetime import date
+from urllib import parse
+import json
+from flask import send_file
+from bs4 import BeautifulSoup
+import seaborn as sn
 train = Blueprint('train', __name__)
 
 
 @train.route('/train/<fileid>/target/<target>', methods=['POST','GET'])
 def trainpage(fileid,target):
-    print("test train page")
     return render_template('algorithmselect.html')
 
-@train.route('/train/<fileid>/algorithm/<algorithm>/target/<target>', methods=['POST','GET'])
-def train_data(fileid,algorithm,target):
+@train.route('/train/<fileid>/algorithm/<algorithm>/target/<target>/param/<param>', methods=['POST','GET'])
+def train_data(fileid,algorithm,target,param):
     print("test train")
-    modelid, plot_url, accuracy, tables = svc(fileid,target)
     
-
-    #target = request.args.get("target")
-    #print(target)
-    #fileid = session['fileid']
-    #print(request.args.getlist("nullable"))
-    #nullable = request.args.getlist("nullable")
-    #mean = request.args.getlist("mean")
-    #mode = request.args.getlist("mode")
-  #  print(nullable)
-  #  print(mean)
-   # print(mode)
-    #args = request.args
-    #filtered_dict = dict(filter(lambda item: "Col" in item[0], args.items()))
-    #if filtered_dict :
-       # print("dict",filtered_dict)
-       # filelocation = session['filelocation']
-       # df = pd.read_csv(filelocation)
-      #  df.rename(columns=filtered_dict,inplace=True)
-     #   print(df.columns)
-    #else:
-      #  filtered_dict = dict(filter(lambda item: "Col" in item[0], args.items()))
-      #  print("dict",filtered_dict)
-      #  filelocation = session['filelocation']
-     #   df = pd.read_csv(filelocation)
-    #    df.rename(columns=filtered_dict,inplace=True)
-   #     print(df.columns)
-
-   # print("dict",filtered_dict)
-   # filelocation = session['filelocation']
-    #df = pd.read_csv(filelocation)
-   # df.rename(columns=filtered_dict,inplace=True)
-   # print(df.columns)
-   # df.to_csv (filelocation, index = None, header=True)
-   # file = File.query.filter_by(fileid=fileid).first()
-   # file.location = filelocation
-   # db.session.commit()
-    #train_data = pd.read_csv(filelocation)
-    #data = session['df']
-    #train_data = pd.DataFrame(data)
-    #train_data.rename(columns=filtered_dict,inplace=True)
-   # dict_obj = train_data.to_dict('list')
-    #session['df'] = dict_obj
-   # print(train_data)
-   # print(train_data["Age"])
-
-    #train_data["Age"].fillna(train_data["Age"].mean(), inplace=True)
-
-   # for x in mean:
-    #    print(x)
-    #    train_data[x].fillna(train_data[x].mean(), inplace=True)
-   # print(train_data["Age"])
-   
-   # for z in mode:
-    #    print(z)
-    #    train_data[z].fillna(train_data[z].mode()[0], inplace=True)
-    #print(train_data["Age"])
-    #print(train_data.columns)
-    #print(train_data)
+    print(request.get_data())
     
-    #train_data.replace({'Sex':{'male':0,'female':1}, 'Embarked':{'S':0,'C':1,'Q':2}}, inplace=True)
+    parsed = parse.unquote(param)
+    print(parsed)
+    parsed= parsed.replace("{","")
+    parsed= parsed.replace("}","")
+    parsed= parsed.replace('"','')
+    parsed = parsed.split(",")
+    elem = {}
+    file = File.query.filter_by(fileid=fileid).first()
+    dfd = pd.read_csv(file.location)
+    df = pd.read_feather(file.featherlocation)
+    print("test",)
 
-   # train_data.replace({'Col4':{'male':0,'female':1}, 'Embarked':{'S':0,'C':1,'Q':2}}, inplace=True)
+    X = df.drop(target, 1)
+    Y = df.filter([target])
+    classnames = dfd[target].unique()
+    #https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html#sklearn.preprocessing.normalize
+    print("test",classnames)
+    #if key 'Normalisation' is present in elem, then use it as Normalisation
+    if 'Normalisation' in elem:
+        if elem['Normalisation'] == 'yes':
+            X = preprocessing.normalize(X)
 
-    #print(train_data)
+
+    if 'randomstate' in elem:
+        randomstate = elem['randomstate']
+    else:
+        randomstate = None
+    #if key 'split' is present in elem, then use it as split
+    if 'split' in elem:
+        split = elem['split']
+    else:
+        split = 0.25
+
+    X_train,X_test,y_train,y_test=train_test_split(X,Y,test_size=split,random_state=randomstate)
+    if bool(elem):
+        for i in parsed:
+            first = i.split(":")
+            elem[first[0]] = first[1]
+        print(elem['Kernel'])
+    # if key 'Kernel' is present in elem, then use it as kernel
+    if 'Kernel' in elem:
+        Kernel = elem['Kernel']
+    else:
+        Kernel = 'rbf'
+    # if key 'C' is present in elem, then use it as C
+    if 'k' in elem:
+        k = elem['k']
+    else:
+        k = 5
+
+    # if key 'var_smoothing' is present in elem, then use it as var_smoothing
+    if 'var_smoothing' in elem:
+        var_smoothing = elem['var_smoothing']
+    else:
+        var_smoothing = 1e-09
 
 
-    #train_data["Age"].fillna(train_data["Age"].mean(), inplace=True)
-    #train_data["Fare"].fillna(train_data["Fare"].mean(), inplace=True)
+    #if key 'ntree' is present in elem, then use it as ntree
+    if 'ntree' in elem:
+        ntree = elem['ntree']
+    else:
+        ntree = 100
+    #if key 'max_features' is present in elem, then use it as max_features
+    if 'max_features' in elem:
+        max_features = elem['max_features']
+    else:
+        max_features = 'auto'
 
+
+    if algorithm == "RF" : modelid, plot_url, accuracy, tables = RFC(max_features,ntree,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
+    elif algorithm == "NB" : modelid, plot_url, accuracy, tables = naivebayes(var_smoothing,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
+    elif algorithm == "KNN" : modelid, plot_url, accuracy, tables = KNN(k,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
+    elif algorithm == "SVC" : modelid, plot_url, accuracy, tables = svc(Kernel,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
 #https://www.analyticsvidhya.com/blog/2021/07/titanic-survival-prediction-using-machine-learning/
     print("test")
-    return render_template('train.html', modelid=modelid,plot_url=plot_url,accuracy=accuracy,tables=tables)
+    return render_template('modelinfo.html', modelid=modelid,confusion_matrix=plot_url,accuracy=accuracy,tables=tables,algorithm=algorithm,target=target)
+
+
+
+def naivebayes(var_smoothing,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
+ 
+
+    gaussian = GaussianNB()
+    gaussian.fit(X_train, y_train)
+    gaussian.feature_names = feature_names
+    Y_pred = gaussian.predict(X_test) 
+    accuracy = accuracy_score(y_test,Y_pred)
+    algorithm = "NB"
+    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),gaussian,accuracy,y_test,X_test,Y_pred)
+    return modelid, plot_url, accuracy, tables
+
+def KNN(k,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
+    file = File.query.filter_by(fileid=fileid).first()
+    df = pd.read_feather(file.featherlocation)
+
+    knn = KNeighborsClassifier(n_neighbors = 3)
+    knn.fit(X_train, y_train)
+    knn.feature_names = feature_names
+    Y_pred = knn.predict(X_test) 
+
+    accuracy = accuracy_score(y_test,Y_pred)
+
+
+    algorithm = "KNN"
+    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),knn,accuracy,y_test,X_test,Y_pred)
+    return modelid, plot_url, accuracy, tables
+def RFC (max_features,ntree,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
+
+
+    rf = RandomForestClassifier()
+    rf.fit(X_train, y_train)
+    rf.feature_names = feature_names
+    Y_pred = rf.predict(X_test) 
+
+    accuracy = accuracy_score(y_test,Y_pred)
+
+    algorithm = "RF"
+    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),rf,accuracy,y_test,X_test,Y_pred)
+    return modelid, plot_url, accuracy, tables
+
+def svc(Kernel,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
+
+
+    svc = SVC(kernel=Kernel)
+    svc.fit(X_train, y_train)
+    svc.feature_names = feature_names
+    Y_pred = svc.predict(X_test) 
+
+    accuracy = accuracy_score(y_test,Y_pred)
+    algorithm = "SVC"
+    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),svc,accuracy,y_test,X_test,Y_pred)
+    return modelid, plot_url, accuracy, tables
+
+def toDatabase(target,algorithm,classnames,model,accuracy,y_test,X_test,Y_pred):
+
+    cv = classification_report(y_test, Y_pred,target_names=classnames)
+
+    classreport = report_to_df(cv)
+
+    cm = confusion_matrix(y_test, Y_pred)
+
+    ax= plt.subplot()
+    sn.heatmap(cm, annot=True, fmt='g', ax=ax) #annot=True to annotate cells, ftm='g' to disable scientific notation
+    ax.set_xlabel('Predicted labels')
+    ax.set_ylabel('True labels')
+    ax.set_title('Confusion Matrix')
+    ax.xaxis.set_ticklabels(classnames)
+    ax.yaxis.set_ticklabels(np.flip(classnames))
+    img = BytesIO()
+
+
+    plt.title('Confusion matrix for our classifier')
+    plt.savefig(img, format='png')
+    plt.close()
+
+
+    img.seek(0)
+
+
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    projectid = session['projectid']
+
+
+
+    createddate = date.today()
+
+
+    tables=[classreport.to_html(index=False,classes='table table-sm')]
+
+
+
+    class_report = str(tables)
+    projectid = session['projectid']
+    filename = os.path.join(current_app.config['UPLOAD_FOLDER'], 'models\\', str(uuid.uuid4())+'_model.sav')
+
+    with open(filename, 'wb') as f:
+        pickle.dump(model, f)
+
+    model = Model(projectid=projectid, location = filename,target=target,algorithm=algorithm,classnames=classnames,createddate=createddate,accuracy=accuracy,confusion_matrix=plot_url,class_report=class_report)
+
+    db.session.add(model)
+    db.session.commit()
+
+    modelid = model.modelid
+
+
+    return modelid,plot_url, accuracy, tables
+
+def classnamemap(le,inverse):
+    classnames = dict(zip(le, inverse))
+    return classnames
+
+@train.route('/modelEvaluation/<modelid>', methods=['POST','GET'])
+def modelinfo(modelid):
+    model = Model.query.filter_by(modelid=modelid).first()
+    confusion_matrix = model.confusion_matrix
+    accuracy = model.accuracy
+    classreport = model.class_report
+    classreport = str(classreport).replace('[', '')
+    classreport = str(classreport).replace(']', '')
+    classreport = str(classreport).replace("'", '')
+    classreport = str(classreport).replace("\\n", '')
+    classreport.strip('/n')
+    soup = BeautifulSoup(classreport)
+    soup.get_text(strip=True)
+    return render_template('modelinfo.html',modelid=model.modelid,target = model.target,algorithm = model.algorithm,accuracy=accuracy,confusion_matrix=confusion_matrix,tables=soup)
+
+
 
 def report_to_df(report):
     report = [x.split(' ') for x in report.split('\n')]
@@ -123,139 +265,11 @@ def report_to_df(report):
     df = pd.DataFrame(data = values, columns = header)
     return df
 
-def naivebayes(fileid,target):
-    file = File.query.filter_by(fileid=fileid).first()
-    df = pd.read_csv(file.location)
-    X = df.drop(target, 1)
+@train.route('/train/<modelid>/downloadModel', methods=['POST','GET'])
+def downloadModel(modelid):
+    model = Model.query.filter_by(modelid=modelid).first()
     
-    Y = df.filter([target])
-    le = LabelEncoder()
-    y = le.fit_transform(Y)
-    
-    inverse = le.inverse_transform(y)
-    columnnames = X.columns.values
-    d  = classnamemap(y,inverse)
-    classnames1 = {str(k):str(v) for k,v in d.items()}
-    classnames = json.dumps(classnames1, indent = 4) 
-    print(X.columns.values)
-    X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2)
-
-    gaussian = GaussianNB()
-    gaussian.fit(X_train, y_train)
-    gaussian.feature_names = list(X.columns.values)
-    Y_pred = gaussian.predict(X_test) 
-    accuracy_nb=round(accuracy_score(y_test,Y_pred)* 100, 2)
-    acc_gaussian = round(gaussian.score(X_train, y_train) * 100, 2)
-    cm = confusion_matrix(y_test, Y_pred)
-    accuracy = accuracy_score(y_test,Y_pred)
-    precision =precision_score(y_test, Y_pred,average='micro')
-    recall =  recall_score(y_test, Y_pred,average='micro')
-    f1 = f1_score(y_test,Y_pred,average='micro')
-    print('Confusion matrix for Naive Bayes\n',cm)
-    print('accuracy_Naive Bayes: %.3f' %accuracy)
-    print('precision_Naive Bayes: %.3f' %precision)
-    print('recall_Naive Bayes: %.3f' %recall)
-    print('f1-score_Naive Bayes : %.3f' %f1)
-    modelid, plot_url, accuracy, tables = toDatabase(classnames,gaussian,accuracy,y_test,X_test,Y_pred)
-    return modelid, plot_url, accuracy, tables
-
-def KNN(fileid,target):
-    file = File.query.filter_by(fileid=fileid).first()
-    df = pd.read_csv(file.location)
-    X = df.drop(target, 1)
-    Y = df.filter([target])
-    le = LabelEncoder()
-    y = le.fit_transform(Y)
-    print(Y)
-    X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=0)
-
-    knn = KNeighborsClassifier(n_neighbors = 3)
-    knn.fit(X_train, y_train)
-    Y_pred = knn.predict(X_test) 
-    accuracy_nb=round(accuracy_score(y_test,Y_pred)* 100, 2)
-    acc_knn = round(knn.score(X_train, y_train) * 100, 2)
-    cm = confusion_matrix(y_test, Y_pred)
-    accuracy = accuracy_score(y_test,Y_pred)
-    precision =precision_score(y_test, Y_pred,average='micro')
-    recall =  recall_score(y_test, Y_pred,average='micro')
-    f1 = f1_score(y_test,Y_pred,average='micro')
-    print('Confusion matrix for Naive Bayes\n',cm)
-    print('accuracy_Naive KNNs: %.3f' %accuracy)
-    print('precision_Naive Bayes: %.3f' %precision)
-    print('recall_Naive Bayes: %.3f' %recall)
-    print('f1-score_Naive Bayes : %.3f' %f1)
-    modelid, plot_url, accuracy, tables = toDatabase(knn,accuracy,y_test,X_test,Y_pred)
-    return modelid, plot_url, accuracy, tables
-
-def svc(fileid,target):
-
-    file = File.query.filter_by(fileid=fileid).first()
-    df = pd.read_csv(file.location)
-    X = df.drop(target, 1)
-    Y = df.filter([target])
-    le = LabelEncoder()
-    y = le.fit_transform(Y)
-    inverse = le.inverse_transform(y)
-    d  = classnamemap(y,inverse)
-    classnames1 = {str(k):str(v) for k,v in d.items()}
-    classnames = json.dumps(classnames1, indent = 4) 
-    
-    print(Y)
-    X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3)
-
-    svc = SVC()
-    svc.fit(X_train, y_train)
-    svc.feature_names = list(X.columns.values)
-    Y_pred = svc.predict(X_test) 
-    accuracy_nb=round(accuracy_score(y_test,Y_pred)* 100, 2)
-    acc_svc = round(svc.score(X_train, y_train) * 100, 2)
-    cm = confusion_matrix(y_test, Y_pred)
-    accuracy = accuracy_score(y_test,Y_pred)
-    precision =precision_score(y_test, Y_pred,average='micro')
-    recall =  recall_score(y_test, Y_pred,average='micro')
-    f1 = f1_score(y_test,Y_pred,average='micro')
-    print('Confusion matrix for Naive Bayes\n',cm)
-    print('accuracy_Naive SVC: %.3f' %accuracy)
-    print('precision_Naive Bayes: %.3f' %precision)
-    print('recall_Naive Bayes: %.3f' %recall)
-    print('f1-score_Naive Bayes : %.3f' %f1)
-    modelid, plot_url, accuracy, tables = toDatabase(classnames,svc,accuracy,y_test,X_test,Y_pred)
-    return modelid, plot_url, accuracy, tables
-
-def toDatabase(classnames,model,accuracy,y_test,X_test,Y_pred):
-
-
-    cv = classification_report(y_test, Y_pred)
-    print(cv)
-    classreport = report_to_df(cv)
-    matrix = plot_confusion_matrix(model, X_test, Y_pred,
-                                 cmap=plt.cm.Blues)
-    img = BytesIO()
-    plt.title('Confusion matrix for our classifier')
-    plt.savefig(img, format='png')
-    plt.close()
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-    projectid = session['projectid']
-    classreportsql =str(classreport.to_json())
-    
-    tables=[classreport.to_html(index=False,classes='data')]
-    print(tables)
-    class_report = str(tables)
-    projectid = session['projectid']
-    filename = os.path.join(current_app.config['UPLOAD_FOLDER'], 'models\\', str(uuid.uuid4())+'_model.sav')
-    print(os.path.join(current_app.config['UPLOAD_FOLDER'], '\models'))
-    with open(filename, 'wb') as f:
-        pickle.dump(model, f)
-    model = Model(projectid=projectid, location = filename,classnames=classnames,accuracy=accuracy,confusion_matrix=plot_url,class_report=class_report)
-
-    db.session.add(model)
-    db.session.commit()
-
-    modelid = model.modelid
-
-    return modelid,plot_url, accuracy, tables
-
-def classnamemap(le,inverse):
-    classnames = dict(zip(le, inverse))
-    return classnames
+    return send_file(model.location,
+                     mimetype='application/octet-stream',
+                     attachment_filename='data.pickle',
+                     as_attachment=True)

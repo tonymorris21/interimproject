@@ -3,19 +3,162 @@
 {% block content %}
 <style>
 
-    #text{
-        font-size:20px;
-    }
+
+  .float-container1 {
+    margin-left: 1%;
+    width: 100%;
+    margin-top: 1%;
+    height: fit-content;
+    margin-right: 1%;
+    border: 3px solid #fff;
+    justify-content:center;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child1 {
+    margin-top: 2%;
+    width: 30%;
+    text-align: center;
+    font-size: 16px;
+    float: left;
+    
+    margin-bottom: 2%;
+
+    height: fit-content;
+  }
+
+  .float-child1:nth-child(1) {
+    margin-right: 0%;
+    margin-left:4em;
+    width: fit-content;
+    max-width:60%;
+  }
+
+  .float-child1:nth-child(2) {
+    
+    margin-left:4em;
+  }
+
+  .float-container {
+    margin-left: 10%;
+    width: 100%;
+    margin-top: 2em;
+    margin-right: 10%;
+    border: 3px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child {
+    margin-top: 2%;
+    width: 45%;
+    text-align: center;
+    font-size: 18px;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 2%;
+    margin-right: 20px;
+    height: 10em;
+  }
+
+  .float-container2 {
+    margin-left: 10%;
+    width: 100%;
+    margin-right: 10%;
+    border: 3px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child2 {
+    margin-top: 2%;
+    width: 45%;
+    text-align: center;
+    font-size: 18px;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 2%;
+    margin-right: 20px;
+    height: 9em;
+  }
+
+
+ 
+
+
+  .float-child:nth-child(2) {
+    padding-left: 2em;
+    padding-right: 2em;
+
+    border-left: 0.5px solid lightgray;
+  }
+
+
+  h1 {
+    font-size: 22px;
+  }
+
+
+
+  #goback{
+    margin-left:1em;
+  }
+  #predict{
+    margin-right:1em;
+  }
+
 </style>
-<div class="column is-4 is-offset-4">
+<script>
+    $(document).ready(function () {
+      $("#predict").click(function () {
+      var modelid = $("#predict").attr("modelid");
+      var algorithm = $(".selectdiv #target").val();
+      console.log(modelid);
+      var url = "/predict/" + modelid;
+      window.location.href = url;
+  })
+  });
+  </script>
+<button id="goback" class="btn btn-primary btn-lg" onclick="history.back(-1)" type="button"><i class="fa fa-solid fa-arrow-left"></i> Go Back</button>
 
-    <div class="box">
-            <p><b>Accuracy</b>  {{accuracy}}</p>
-            {% for table in tables %}
-                {{ table |safe }}
-            {% endfor %}
+<button onclick="window.location.href='/train/{{modelid}}/downloadModel'" type="button"
+  id="downloadmodel" class="btn btn-success mx-auto d-bloc">
+  Download Model
+</button>
+<button id="predict" modelid = {{modelid}} class="btn btn-primary btn-lg"  type="button"> Deploy <i class="fa fa-solid fa-arrow-right"></i></button>
 
-          <img src="data:image/png;base64, {{ confusion_matrix }}">
-    </div>
+<div class="float-container">
+
+  <div class="float-child">
+    <h1>Summary <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Share"></span></a>
+    </h1>
+    <p>Total Rows Tested: </p>
+    <p>Algorithm: {{algorithm}}</p>
+    <p>Target: {{target}}</p>
+    <P>Accuracy: {{ "%.2f"|format(accuracy|float) }}</P>
+  </div>
+  <div class="float-child">
+    <h1>Classification Summary <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+        data-original-title="Share"></span></a>
+  </h1>
+    {% for table in tables %}
+    {{ table |safe }}
+    {% endfor %}
+
+  </div>
 </div>
+
+<div class="float-container1">
+    <div class="column is-4 is-offset-4">
+
+        <div class="box">
+               
+    
+                <img src="data:image/png;base64, {{ confusion_matrix }}">
+              
+              
+        </div>
+    </div>
+    
+</div>
+
 {% endblock %}

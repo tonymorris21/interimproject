@@ -4,37 +4,44 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from sqlalchemy import *
+from waitress import serve
+from dask.distributed import Client, LocalCluster
 
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__,template_folder='./templates',static_folder='./static')
 
-    app.config['SECRET_KEY'] = 'secret-key-goes-here'
+    app.config['SECRET_KEY'] = 'secret-key'
+
+
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-
-
     db.init_app(app)
-    with app.app_context():
-        db.create_all()
 
-    Migrate(app,db)
-    from .models import User, File, Project
+
+    from .models import User
+    
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
     from .userproject import userproject as userproject_blueprint
     app.register_blueprint(userproject_blueprint)
+
     from .file import file as file_blueprint
     app.register_blueprint(file_blueprint)
+
     from .filedata import filedata as filedata_blueprint
     app.register_blueprint(filedata_blueprint)
+
     from .train import train as train_blueprint
     app.register_blueprint(train_blueprint)
 
     from .predict import predict as predict_blueprint
     app.register_blueprint(predict_blueprint)
 
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+    
     path = os.getcwd()
     UPLOAD_FOLDER = os.path.join(path, 'uploads')
 
@@ -45,8 +52,7 @@ def create_app():
 
 
 
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
+
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -56,8 +62,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
 
-        return User.query.get(int(user_id))
-        
+        return User.query.get(int(user_id))   
     return app
 if __name__ == '__main__':
     app.jinja_env.cache = {}
