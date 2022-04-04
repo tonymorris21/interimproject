@@ -580,7 +580,7 @@ def newgraph(xaxis,yaxis,fileid):
 @filedata.route('/filedata/<fileid>/bivariate/<target>', methods=['GET', 'POST'])
 def generatebivariate(target,fileid):
     #get total execution time of this function and store in time
-    start_time = time.time()
+   
 
 
     filelocation = session['filelocation']
@@ -591,20 +591,20 @@ def generatebivariate(target,fileid):
         if(columns==target):
             print("target")
         else:
+            start_time = time.time()
             sn.catplot(y=columns, x=target, data=df)
+            end_time = time.time() - start_time
+            print("Total time to generate bivariate",end_time)
             img = BytesIO()
-            plt.tight_layout()
             plt.suptitle("Scatter plot matrix for "+columns)
 
             plt.savefig(img,format='png')
-            plt.close()
             img.seek(0)
             plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
             images = images + "," + plot_url2
          
                
-    end_time = time.time() - start_time
-    print("Total time to generate bivariate",end_time)
+
     return str(images)
 
 @filedata.route('/filedata/<fileid>/missingvalues/<target>', methods=['GET', 'POST'])
@@ -772,4 +772,4 @@ def whiskerValues(Q1,Q3):
     return values
 
 
-https://library-cc.tudublin.ie/articles/3928395.3124/1.PDF
+#https://library-cc.tudublin.ie/articles/3928395.3124/1.PDF
