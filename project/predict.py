@@ -1,7 +1,7 @@
 import pickle
-from . import db
+from __init__ import db
 import json
-from .models import File,Model
+from models import File,Model
 from flask import Blueprint,render_template, redirect, url_for, request, flash, session
 import numpy as np
 import pandas as pd

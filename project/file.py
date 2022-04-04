@@ -1,9 +1,9 @@
 import os
 from flask import Blueprint,render_template, redirect, url_for, request, flash, session
-from . import db
-from .models import File
-from .models import Model
-from .models import Project
+from __init__ import db
+from models import File
+from models import Model
+from models import Project
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 from flask import current_app

@@ -1,8 +1,8 @@
 
 from flask import Blueprint,render_template, request,session
-from . import db
-from .models import File,Model
-from .models import Project
+from __init__ import db
+from models import File,Model
+from models import Project
 from flask_login import current_user
 import uuid
 from json2html import *
