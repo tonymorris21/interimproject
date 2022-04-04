@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+  $(document).ready(function () {
+    $("#trainbutton").click(function () {
+      var fileid = window.sessionStorage.getItem("fileid");
+      var target = window.sessionStorage.getItem("target");
+      var algorithm = $(".selectdiv #target").val();
+      var dict = new Object();
+      //if #Normalisation is selected store value in dict
+      if ($(".Normalisation #target").val().length !==0) {
+        dict["Normalisation"] = $('.Normalisation #target').val();
+      }
+      if($('#split').val().length !==0){
+        
+        dict["split"] = $('#split').val();
+      }
+      if($('#ntree').val().length !==0){
+        
+        dict["ntree"] = $('#ntree').val();
+      }
+      if($('#randomstate').val().length !==0){
+        
+        dict["randomstate"] = $('#randomstate').val();
+      }
+      if($('.max_features #target').val().length !==0){
+        
+        dict["max_features"] = $('.max_features #target').val();
+      }
+      //check if .kerneltarget #Kerneltarget has a value selected
+      if($('.Kerneltarget #target').val().length !==0){
+        
+        dict["Kernel"] = $('.Kerneltarget #target').val();
+      }
+      if($('#var_smoothing').val().length !==0){
+        
+        dict["var_smoothing"] = $('#var_smoothing').val();
+      }
+      if($('#k').val().length !==0){
+        dict["k"] = $('#k').val();
+      }
+  
+      var url = "/train/" + fileid + "/algorithm/" + algorithm + "/target/" + target + "/param/" + encodeURIComponent(JSON.stringify(dict));;
+      window.location.href =url;
+      
+    });
+
+    $("#advancedParametersbutton").click(function () {
+      console.log("advanced");
+      if ($("#KNN").hasClass("shown")) {
+        $("#KNN").removeClass("shown").addClass("hidden");
+      }
+      if ($("#NB").hasClass("shown")) {
+        $("#NB").removeClass("shown").addClass("hidden");
+      }
+      if ($("#SVC").hasClass("shown")) {
+        $("#SVC").removeClass("shown").addClass("hidden");
+      }
+      if ($("#RF").hasClass("shown")) {
+        $("#RF").removeClass("shown").addClass("hidden");
+        $("#RF1").removeClass("shown").addClass("hidden");
+      }
+      if ($("#advancedParameters").hasClass("hidden")) {
+        if (algorithm = $(".selectdiv #target").val() == "KNN") {
+          $("#KNN").removeClass("hidden").addClass("shown");
+        }
+        if (algorithm = $(".selectdiv #target").val() == "NB") {
+          $("#NB").removeClass("hidden").addClass("shown");
+        }
+        if (algorithm = $(".selectdiv #target").val() == "SVC") {
+          $("#SVC").removeClass("hidden").addClass("shown");
+        }
+        if (algorithm = $(".selectdiv #target").val() == "RF") {
+          $("#RF").removeClass("hidden").addClass("shown");
+          $("#RF1").removeClass("hidden").addClass("shown");
+          
+
+        }
+        $("#advancedParameters").removeClass("hidden").addClass("shown");
+        $("#advancedParametersbutton .fa").removeClass("fa-plus").addClass("fa-minus");
+      } else {
+        $("#advancedParameters").removeClass("shown").addClass("hidden");
+        $("#advancedParametersbutton .fa").removeClass("fa-minus").addClass("fa-plus");
+      }
+    });
+    $(".selectdiv #target").on('change', function () {
+      if ($("#advancedParameters").hasClass("shown")) {
+        $("#advancedParameters").removeClass("shown").addClass("hidden");
+        $("#advancedParametersbutton .fa").removeClass("fa-minus").addClass("fa-plus");
+      }
+    });
+  });
+</script>
+<style>
+  .container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .box {
+    text-align: center;
+    margin-top:4em;
+  }
+
+  #Parameters {
+    padding-top: 1em;
+    padding-bottom: 2em;
+  }
+  #Parameters h5{
+
+    padding-bottom: 1em;
+  }
+  .hidden {
+    display: none;
+    visibility: hidden;
+  }
+
+  .shown {
+    
+    
+    visibility: visible;
+  }
+  .form-group{
+    margin-bottom:.2em;
+  }
+  #advancedParameters {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+
+  #advancedParametersbutton {
+    margin-bottom: 1em;
+  }
+
+  #advancedParametersbutton i {
+    float: right;
+
+
+    transform: translateY(.3vh)
+  }
+  #goback{
+  width:auto;
+  height:2.4em;
+  margin-left:1em;
+}
+
+
+</style>
+<button id="goback" class="btn btn-primary btn-lg" onclick="history.back(-1)" type="button"><i class="fa fa-solid fa-arrow-left"></i> Go Back</button>
+
+<div class="col-12 container">
+
+  <div class="box col-4">
+
+    <h1>Algorithm Selection</h1>
+    <p>
+      Select an algorithm.
+    </p>
+    <div class="selectdiv">
+      <select id="target" name="target">
+        <option value="KNN" selected>K Nearest Neighbour</option>
+        <option value="SVC" selected>Support Vector Classifier</option>
+        <option value="NB" selected>Naive Bayes</option>
+        <option value="RF" selected>Random Forest</option>
+      </select>
+    </div>
+    <div id="Parameters">
+      <h5> Configure Model parameters</h5>
+      <form>
+        <div class="form-group row">         
+           
+          <label for="Normalisation" class="col-sm-3 col-form-label">Normalisation</label>  
+          <div class="col-sm-9">
+          <div class="Normalisation">
+            <select style="text-align:center" id="target" name="noramlize">
+
+              <option value="no" selected>No</option>
+              <option value="yes" selected>Yes</option>
+            </select>
+          </div>
+          </div>
+        </div>      
+        <div class="form-group row">
+          <label for="inputPassword" class="col-sm-3 col-form-label">Train/Test Split</label>
+          <div class="col-sm-9">
+            <input style="text-align:center"  type="text" class="form-control" id="split"
+              placeholder="20%">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputPassword" class="col-sm-3 col-form-label">Random State</label>
+          <div class="col-sm-9">
+            <input style="text-align:center"  type="text" class="form-control" id="randomstate" placeholder="11">
+          </div>
+        </div>
+      </form>
+    </div>
+    <button class="btn btn-warning btn-large btn-block" id="advancedParametersbutton">Advanced parameters<i
+        class="fa fa-plus" aria-hidden="true"></i></button>
+    <div class="hidden" id="advancedParameters">
+
+      <form>
+        
+      <div id="RF" class="form-group row hidden">
+        <label for="ntree" class="col-md-3 col-form-label">ntree</label>
+        <div class="col-md-9 ">
+          <input style="text-align:center"  type="text" class="form-control" id="ntree" placeholder="">
+        </div>
+      </div>
+      <div id="RF1" class="form-group row hidden">
+        <label for="max_features" class="col-md-3 col-form-label">max_features</label>
+        <div class="col-md-9">
+          <div class="max_features">
+            <select style="text-align:center" id="target" name="max_features">
+              <option value="'auto'" selected>Auto</option>
+              <option value="'sqrt'" selected>Sqrt</option>
+              <option value="'log2'" selected>Log2</option>
+            </select>
+          </div>
+        
+        </div>
+      </div>
+      <div id="SVC" class="form-group row hidden">
+        <label for="text" class="col-md-3 col-form-label">Kernel</label>
+        <div class="col-md-9">
+          <div class="Kerneltarget">
+            <select style="text-align:center" id="target" name="Kerneltarget">
+              <option value="linear" selected>Linear</option>
+              <option value="poly" selected>Polynomial</option>
+              <option value="rbf" selected>Radial Basis Function(GBF)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="KNN" class="form-group row hidden">
+        <label for="text" class="col-md-3 col-form-label">k</label>
+        <div class="col-md-9">
+          <input style="text-align:center"  type="text" class="form-control" id="k" placeholder="5">
+        </div>
+      </div>
+      <div id="NB" class="form-group row hidden">
+        <label for="text" class="col-md-3 col-form-label">var_smoothing</label>
+        <div class="col-md-9">
+          <input style="text-align:center"  type="text" class="form-control" id="var_smoothing"
+            placeholder="0.000000001">
+        </div>
+      </div>
+      </form>
+    </div>
+    <button class="btn btn-success btn-large btn-block" id="trainbutton">Train Model</button>
+
+  </div>
+</div>
+{% endblock %}

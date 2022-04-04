@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+     #tablecontainer {
+    width: 100%;
+    margin-right:25em;
+
+  }
+
+   #goback{
+  float:left;
+  height:2.4em;
+  margin-left:1em;
+}
+#formbox{
+    margin-top:5em;
+}
+    .form-group{
+        margin:0;
+     
+
+    }
+    #center{
+        margin-top:1em;
+        text-align:center;
+    }
+</style>
+<script>
+ $(document).ready(function () {
+
+    $('#formsubmit').click(function() {
+        console.log("test");
+        var values = {};
+        var modelid = $("#formsubmit").attr("modelid");
+        var predict_values = [];
+        $('#form').find('input, textarea, select').each(function(i, field) {
+            
+            predict_values.push(field.value);
+        
+        });
+        var url = "/predict/" + modelid + "/values/" + predict_values;
+        $.ajax({
+          url: url,
+          type: "post",
+          data: { modelid: modelid, predict_values: predict_values },
+          success: function (data) {
+            data= JSON.parse(data);
+            console.log(data);
+            //append data to output div in p tag
+            $('#output').append('<p class="text-center"><b>Predicted value is: <span style="color:green;">' + data + '</b></span></p>');
+          },
+      });
+});
+});
+
+</script>
+<button id="goback" class="btn btn-primary btn-lg" onclick="document.location.href = '/userproject'" type="button"><i class="fa fa-solid fa-arrow-left"></i> Go Back</button>
+<div id="tablecontainer" class="container">
+<div class="column is-4 is-offset-4">
+
+    <div id="formbox"class="box">
+    
+            <h3 class="text-center"><b>Manual Predictions</b></h3>
+            
+            <form class="col-xs-12" id="form">
+
+
+               
+            {% for column in columnnames %}
+            <div class="form-group">
+                <label for="exampleInputPassword1">{{column}}</label>
+                <input type="text" class="form-control form-control-sm " id={{column}} placeholder="">
+            </div>
+            {% endfor %}
+   
+            <div id="center">
+                <div id="output"></div>
+                <button id="formsubmit" type="button" modelid = {{modelid}} class="btn btn-primary">Submit</button>
+
+            </div>
+
+        </form>
+    </div>
+
+</div>
+</div>
+{% endblock %}

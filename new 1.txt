@@ -1,0 +1,55 @@
+
+	<div class='row'>
+		<div class='col-md-4'>
+      <form>
+	  <h5>Missing Values</h5>
+	  <p id='advice'>asdasdasd</p>
+<div class='form-inline'>
+<div class='col-md-3'>
+    <label for='search'>Drop</label>
+    <input type='checkbox' name='search' id='removecheckbox' class='form-control' />
+</div>
+<div class='col-md-3'>
+    <label for='year'>Median</label>
+    <input type='checkbox' name='year' id='mediancheckbox' class='form-control' />
+</div>
+<div class='col-md-3'>
+    <label for='year'>Mode</label>
+    <input type='checkbox' name='year' id='modecheckbox' class='form-control' />
+</div>
+<div  class='col-md-3'>
+    <label for='year'>Mean</label>
+    <input type='checkbox' name='year' id='meancheckbox' class='form-control' />
+</div>
+
+</div>
+    	<button id='imputation' type='submit' class='btn btn-primary'>
+					Submit
+			</button>
+  </form>
+
+		</div>
+		<div class='col-md-4'>
+			<form role='form'>
+      <h5>
+      Clamp Transformation
+      </h5>
+      <p>
+      asdasdasd
+      </p>
+				<div id='clamptransformation' class='form-inline'>
+          <div  class='col-md-6'>
+            <label for='year'>Upper Value</label>
+            <input type='text' size='3' name='year' id='uppervalue' class='form-control'/>    
+          </div><br>
+
+          <div class='col-md-6'>
+            <label for='year'>Lower Value</label>
+            <input type='text' size='3' name='year' id='lowervalue' class='form-control' />
+          </div>
+				</div>
+				<button type='submit' class='btn btn-primary'>
+					Submit
+				</button>
+			</form>
+		</div>

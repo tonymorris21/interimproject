@@ -1,0 +1,1549 @@
+{% extends "base.html" %} {% block content %}
+<style>
+  :root {
+    --background-gradient: linear-gradient(30deg, #f39c12 30%, #f1c40f);
+    --gray: #34495e;
+    --darkgray: #2c3e50;
+  }
+
+  .columndata {
+    margin-top: 2em;
+    margin-left: 10%;
+    width: 100%;
+    margin-right: 10%;
+    border: 3px solid #fff;
+  }
+
+  .rowdata {
+    margin-top: 2em;
+    margin-left: 1%;
+    width: 40%;
+    margin-right: 10%;
+    float: right;
+  }
+
+  .modal-footer #dropfeature {
+    float: left;
+    margin-right: 10em;
+  }
+
+  .float-container1 {
+    margin-left: 1%;
+    width: 100%;
+    margin-top: 1%;
+    height: fit-content;
+    margin-right: 1%;
+    border: 3px solid #fff;
+
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child1 {
+    margin-top: 2%;
+    width: 30%;
+    text-align: center;
+    font-size: 16px;
+    float: left;
+
+    margin-bottom: 2%;
+
+    height: fit-content;
+  }
+
+  .float-child1:nth-child(1) {
+    margin-right: 0%;
+    margin-left: 4em;
+    width: fit-content;
+    max-width: 60%;
+  }
+
+  .float-child1:nth-child(2) {
+
+    margin-left: 4em;
+  }
+
+  .float-container {
+    margin-left: 10%;
+    width: 100%;
+    margin-top: 2em;
+    margin-right: 10%;
+    border: 3px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child {
+    margin-top: 2%;
+    width: 45%;
+    text-align: center;
+    font-size: 18px;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 2%;
+    margin-right: 20px;
+    height: 9em;
+  }
+
+  .float-container2 {
+    margin-left: 10%;
+    width: 100%;
+    margin-right: 10%;
+    border: 3px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  .float-child2 {
+    margin-top: 2%;
+    width: 45%;
+    text-align: center;
+    font-size: 18px;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 2%;
+    margin-right: 20px;
+    height: 9em;
+  }
+
+
+  #imagerow2 {
+    height: fit-content;
+    width: fit-content;
+  }
+
+  #imagerow img {
+    display: inline-block;
+    text-align: center;
+  }
+
+  #imagerow2 img {
+    display: inline-block;
+    text-align: center;
+  }
+
+  .icon {
+    background: url("/project/static/2967920.png");
+    height: 20px;
+    width: 20px;
+    display: block;
+    /* Other styles here */
+  }
+
+  .float-child:nth-child(2) {
+    padding-left: 2em;
+    padding-right: 2em;
+
+    border-left: 0.5px solid lightgray;
+  }
+
+  .selectdiv {
+    width: auto;
+    margin-left: 2em;
+    margin-bottom: .5em;
+  }
+
+  #selectdiv {
+    margin-left: 2em;
+  }
+
+  select {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    height: 2em;
+    width: 14em;
+    display: block;
+    margin: 0 auto;
+  }
+
+  #rowdata p {}
+
+  #rowdata p {
+    display: inline-block;
+    justify-content: space-between;
+  }
+
+  #featuremodalcontainer {
+    max-width: 100%;
+    margin: 0;
+    margin-left: 1em;
+    overflow-x: hidden !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+
+
+  }
+
+  #featuremodalcontainer img {
+    display: block;
+  }
+
+  tr,
+  th,
+  table {
+    font-size: 14px;
+    width: 6%;
+    white-space: nowrap;
+  }
+
+  .clickable-row {
+    cursor: pointer;
+  }
+
+  table {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  }
+
+  #heatmap:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+  }
+
+  form {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  #submit {
+    font-size: 20px;
+    margin-left: 25em;
+  }
+
+  td a {
+    padding-left: 3em;
+  }
+
+  #summaryp {
+    font-size: 18px;
+    display: inline;
+    padding-left: 2em;
+    margin: auto;
+  }
+
+  #viewrelationships {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    background-color: white;
+    color: black;
+    margin-bottom: 1em;
+  }
+
+  #bivariate {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    background-color: white;
+    color: black;
+    margin-bottom: 1em;
+  }
+
+  #summarymodal {
+    margin-bottom: 1em;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #summarymodal p {
+    margin-right: 2em;
+  }
+
+  #rowdata div {
+    margin-bottom: .1em;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+
+  }
+
+  .center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .modal-body #hideoptions #hidecontent {
+    margin-bottom: 4em;
+    text-align: center;
+    visibility: hidden;
+  }
+
+  .modal-body #hideoptions {
+    margin-bottom: 2em;
+    justify-content: center;
+  }
+
+
+  #fulltable {
+    width: 100%;
+    max-height: 80%;
+  }
+
+  .progress {
+    height: 28px;
+  }
+
+  .progress-bar {
+    background-color: #002c6c;
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  .progress span {
+    position: absolute;
+    right: -60px;
+    color: #002c6c;
+  }
+
+  .modal-body .imagecontainer div {
+
+
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  }
+
+  .modal-body .imagecontainer .imgages2 {}
+
+  .modal:nth-of-type(odd) {
+    z-index: 1052 !important;
+  }
+
+  .modal-backdrop.show:nth-of-type(odd) {
+    z-index: 1051 !important;
+  }
+
+  .row5 {
+    display: flex;
+    justify-content: center;
+
+    /* equal height of the children */
+  }
+
+  .row5 #outlierdiv input {
+    width: 20%;
+  }
+
+  .row5 #outlierdiv label {
+    float: left;
+    padding-right: .5em;
+  }
+
+  .col5 {
+    flex: 1;
+    /* additionally, equal width */
+
+    padding: 1em;
+    border: solid;
+  }
+
+  #outlierdiv input {}
+
+  #advice {
+    color: red;
+  }
+
+  .imgages2 {
+
+    padding: 14px;
+    width: 30%;
+  }
+
+
+
+  .imagecontainer {
+    width: 100%;
+    max-width: 200vh;
+    display: flex;
+    flex-wrap: wrap;
+    background: #FFF;
+  }
+
+  .imagecontainer1 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFF;
+  }
+
+  .container-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #row1 {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wrap {
+    flex-wrap: wrap;
+  }
+
+  #optionsdiv {
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2em;
+    border: 1px solid black;
+
+
+  }
+
+  #optionsdiv form {
+    max-width: 30em;
+    text-align: center;
+  }
+
+  #test {
+    text-align: center;
+    display: block;
+  }
+
+  #goback {
+    margin-left: 1em;
+  }
+
+  #trainbutton {
+    color: white;
+    margin-right: 1em;
+  }
+
+  #closebutton {
+    margin-right: 2em;
+  }
+
+  #dropbutton {
+    float: right;
+  }
+</style>
+<script type="text/javascript">
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+  function binsize(Text, divid) {
+    id = Text.attr("id");
+    text = Text.val();
+
+    charttype = Text.attr("charttype");
+
+    var fileid = $("#bivariate").attr("fileid");
+    var target = $("#target").find(":selected").text();
+    var binsize = text;
+    //get value of #exampleModalCenter .modal-header h3
+    var featurename = $("#exampleModalCenter .modal-header h3").text();
+
+    console.log(featurename);
+    var url = "/filedata/" + fileid + "/generateContinuousGraphs" + "/feature/" + featurename + "/binsize/" + binsize + "/charttype/" + charttype;
+
+    $.ajax({
+      url: url,
+      type: "post",
+      data: { fileid: fileid, featurename: featurename, binsize: binsize, charttype: charttype },
+      success: function (plot_url) {
+        console.log(plot_url);
+        srcvar = "data:image/png;base64," + plot_url;
+        d = '.modal-body .imagecontainer ' + '#' + id + ' img'
+
+        $('.modal-body .imagecontainer ' + ' #' + id + ' img').attr('src', srcvar);
+
+
+
+      },
+    });
+
+  }
+  function createrowdatatable(data) {
+    $("#rowdata").append("<h3> Missing Feature Count</h3>");
+
+    var cols = [];
+    Object.keys(data).forEach(function (key) {
+      cols.push(key);
+    });
+
+    console.log(data);
+
+
+
+
+
+    Object.keys(data).forEach(function (key) {
+      $("#rowdata").append("<div id = 'ptags" + key + "'></div>");
+      var target = $("#target").find(":selected").text();
+    //format the data to 2 decimal points
+      var formatted = data[key].toFixed(2);
+      if (data[key] == 0) {
+      }else if (key!= 'totalrows'){
+        $("#ptags" + key).append("<p> There are <b>" + data[key] + "</b>("+ (data[key]/data['totalrows']*100).toFixed(2) +"%) rows missing <b>" + key + "</b> feature &nbsp;&nbsp;   </p><button id='dropbutton' fileid='{{fileid}}' featurename='" + key + "' class='btn btn-success btn-large '>Drop Rows</button><br>");
+      }
+    });
+  }
+  function replaceSummary(data) {
+
+    var categorys = ["Count", "Missing(%)", "Cardinality", "Min", "1st Quartile", "Mean", "Median", "3rd Quartile", "Max", "Std. Deviation"]
+    $('#Count').html("").append('<b>' + categorys[0] + ' : </b>' + data[1])
+    $('#Missing\\(\\%\\)').html("").append('<b>' + categorys[1] + ' : </b>' + data[2])
+    $("#Cardinality").html("").append('<b>' + categorys[2] + ' : </b>' + data[3]);
+    $("#Min").html("").append('<b>' + categorys[3] + ' : </b>' + data[4]);
+    $("#1st").html("").append('<b>' + categorys[4] + ' : </b>' + data[5]);
+    $("#Mean").html("").append('<b>' + categorys[5] + ' : </b>' + data[6]);
+    $("#Median").html("").append('<b>' + categorys[6] + ' : </b>' + data[7]);
+    $("#3rd").html("").append('<b>' + categorys[7] + ' : </b>' + data[8]);
+    $("#Max").html("").append('<b>' + categorys[8] + ' : </b>' + data[9]);
+    $("#Std\\.").html("").append('<b>' + categorys[9] + ' : </b>' + data[10]);
+
+    console.log("Data feature is",data[0]);
+    $("td[data-id='" + data[0] + "']:not(:last-child)").each(function (index) {
+      console.log(index);
+      console.log($(this).html());
+      $(this).html("").append('<p>' + data[index] + '</p>');
+    });
+  }
+
+  function replacetablerow(datatype,fileid,feature,data){
+          var tr = document.createElement('tr');
+          console.log("data", data);
+          tr.setAttribute('data-id', feature);
+          tr.setAttribute('class', 'clickable-row')
+          tr.setAttribute('datatype', 'continuous');
+          tr.setAttribute('fileid', fileid);
+          tr.setAttribute('feature-name', feature);
+          var t = "['" + data[0] + "',";
+          for (let i = 1; i < data.length; i++) {
+            if (i == data.length - 1) {
+              t = t + data[i] + ",'Checkbox']";
+            } else {
+              t = t + data[i] + ",";
+            }
+          }
+          tr.setAttribute('datarow', t);
+          console.log(t);
+          var datatype2;
+          if (datatype == "cat") {
+            datatype2 = "categorical"
+          } else {
+            datatype2 = "continuous"
+          }
+          for (let i = 0; i < data.length; i++) {
+            var td = document.createElement('td');
+            td.innerHTML = data[i];
+            td.setAttribute('data-id', feature);
+            td.setAttribute('id', 'clickable');
+            td.setAttribute('fileid', fileid);
+            td.setAttribute('feature-name', feature);
+            td.setAttribute('datatype', datatype2);
+            td.setAttribute('datarow', t);
+
+            tr.appendChild(td);
+          }
+          var td = document.createElement('td');
+          td.setAttribute('data-id', feature);
+          td.setAttribute('id', 'optionmenu');
+          //if datatype is equal to "categorical"
+
+          if (datatype == "cont") {
+            console.log("adding to continuous table");
+            td.innerHTML = '<div class="btn-group"><button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><div class="dropdown-menu"><a fileid=' + fileid + ' column=' + feature + ' id="dropfeaturebutton" class="dropdown-item">Drop</a><div class="dropdown-divider"></div><a fileid=' + fileid + ' datatype=' + datatype + ' column=' + feature + ' id="changebuttoncont" class="dropdown-item">Change to Categorical</a><div class="dropdown-divider"></div>                <a fileid=' + fileid + ' datatype="continuous" datarow=' + t + ' data-id=' + feature + ' id="OpenAnalytics" class="dropdown-item" href="#">Open Analytics</a></div></div></td><td data-id=' + feature + ' fileid=' + fileid + ' datatype="continuous" datarow=' + t + ' id="clickable">                   </td>';
+            tr.appendChild(td);
+            $('#continuoustable tr:last').after(tr);
+          } else {
+            console.log("adding to categorical table");
+            td.innerHTML = '<div class="btn-group"><button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><div class="dropdown-menu"><a fileid=' + fileid + ' column=' + feature + ' id="dropfeaturebutton" class="dropdown-item">Drop</a><div class="dropdown-divider"></div><a fileid=' + fileid + ' datatype=' + datatype + ' column=' + feature + ' id="changebuttoncont" class="dropdown-item">Change to Categorical</a><div class="dropdown-divider"></div>                <a fileid=' + fileid + ' datatype="cat" datarow=' + t + ' data-id=' + feature + ' id="OpenAnalytics" class="dropdown-item" href="#">Open Analytics</a></div></div></td><td data-id=' + feature + ' fileid=' + fileid + ' datatype="cat" datarow=' + t + ' id="clickable">                   </td>';
+
+            tr.appendChild(td);
+            $('#categoricaltable tr:last').after(tr);
+          }
+  }
+
+
+  $(document).ready(function () {
+    $(document).click(function (event) {
+      var text = $(event.target).attr('src');
+      console.log(text);
+      if ($(event.target).is('img') && $(event.target).attr('id') == "img1") {
+        //image is onclick wheelzoom adding to image present in the modal.
+        $('#modalbody1 .imagepreview').remove();
+        $('#modalbody1').append('<img style="display:block; margin:auto;"onclick="wheelzoom($(this));" src="" class="imagepreview" style="width: 50%;" >');
+        $('.imagepreview').attr('src', text);
+        $('#imagemodal').modal('show');
+
+      }
+
+
+    });
+
+    var fileid = $("#bivariate").attr("fileid");
+    var target = $("#target").find(":selected").text();
+
+    var url = "/filedata/" + fileid + "/missingvalues/" + target;
+    $.ajax({
+      url: url,
+      type: "post",
+      data: { fileid: fileid, target: target },
+      success: function (data) {
+
+        createrowdatatable(data);
+
+        // Add the newly created table containing json data
+      },
+    });
+
+    $("select").on("change", function () {
+      var fileid = $("#bivariate").attr("fileid");
+      var target = $("#target").find(":selected").text();
+      var url = "/filedata/" + fileid + "/missingvalues/" + target;
+
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, target: target },
+        success: function (data) {
+          console.log(data);
+          $("#rowdata").empty();
+          createrowdatatable(data);
+        }
+      });
+    });
+    $(".modal-body #hideoptions").click(function () {
+      console.log("test hide");
+      $(".modal-body #hideoptions #hidecontent").css("visibility", "visible");
+    });
+
+
+    $("#tablebutton").on("click", function (e) {
+      $("#exampleModalCenter1").modal("show");
+    });
+    function displayfeatureData(e) {
+      var data = $(this).attr("datarow");
+    }
+
+    $(document).on('click', '#OpenAnalytics, .clickable-row td', function (e) {
+      console.log("openalalyitics");
+      console.log($(this))
+      console.log($(this).attr("data-id"));
+
+      var featurename = $(this).attr("data-id");
+      var fileid = $(this).attr("fileid");
+      var datatype = $(this).attr("datatype");
+      var datatype2 = datatype;
+      $(".modal-body #hideoptions").empty();
+      console.log(datatype);
+      var url = "/filedata/" + fileid + "/" + featurename;
+      console.log(featurename, fileid);
+      var data = $(this).attr("datarow");
+      $("#exampleModalCenter").attr("fileid", fileid);
+      $("#exampleModalCenter").attr("featurename", featurename);
+
+      var categorydata = [];
+      if (datatype === "categorical") {
+        $(".modal-body #row3").empty();
+        $(".modal-body #row3").append("		  <div id='optionsdiv' class='row'>  <div class='col-md-4'>    <form id='test'>      <h5>Missing Values</h5>      <p id='advice'>asdasdasd</p>      <div class='form-inline'>        <div class='col-md-12'>          <label for='search'>Drop</label>          <input            type='checkbox'            name='search'            id='removecheckbox'            class='form-control'          />        </div>      </div>      <button datatype='categorigcal' id='imputation' type='button' class='btn buttontest btn-primary'>        Make Change     </button>    </form>  </div>  <div class='col-md-4'>    <form id='test' role='form'>      <h5>Encoding</h5>      <p>asdasdasd</p>      <div id='encoding' class='form-inline'>        <div class='col-md-4'>          <label for='search'>Label Encoding</label>          <input            type='checkbox'            name='search'            id='LabelEncoding'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OneHotEncoder</label>          <input            type='checkbox'            name='search'            id='OneHotEncoder'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OrdinalEncoder</label>          <input            type='checkbox'            name='search'            id='OrdinalEncoder'            class='form-control'          />        </div>      </div>      <button id='encodingbutton' type='button' class='btn btn-primary'>Make Change</button>    </form>  </div></div>")
+        categorydata = [
+          "Feature",
+          "Count",
+          "Missing(%)",
+          "Cardinality",
+          "Mode",
+          "Mode Freq",
+          "Mode %",
+          "2nd Mode",
+          "2nd Mode Freq",
+          "2nd Mode %",
+        ];
+      } else if (datatype === "continuous") {
+        $(".modal-body #row3").empty();
+        $(".modal-body #row3").append("		<div id='optionsdiv' class='row'>				<div class='col-md-4'>      <form id='test'>	  <h5>Missing Values</h5>	  <p id='advice'>asdasdasd</p><div class='form-inline'><div class='col-md-3'>    <label for='search'>Drop</label>    <input type='checkbox' name='search' id='removecheckbox' class='form-control' /></div><div class='col-md-3'>    <label for='year'>Median</label>    <input type='checkbox' name='year' id='mediancheckbox' class='form-control' /></div><div class='col-md-3'>    <label for='year'>Mode</label>    <input type='checkbox' name='year' id='modecheckbox' class='form-control' /></div><div  class='col-md-3'>    <label for='year'>Mean</label>    <input type='checkbox' name='year' id='meancheckbox' class='form-control' /></div></div>    	<button datatype = 'Continuous' id='imputation' type='button' class='btn btn-primary'>					Make Change			</button>  </form>		</div>		<div class='col-md-4'>			<form id='test' role='form'>      <h5>      Clamp Transformation      </h5>      <p>      asdasdasd      </p>				<div id='clamptransformation' class='form-inline'>          <div  class='col-md-6'>            <label for='year'>Upper Value</label>            <input type='text' size='3' name='year' id='uppervalue' class='form-control'/>              </div><br>          <div class='col-md-6'>            <label for='year'>Lower Value</label>            <input type='text' size='3' name='year' id='lowervalue' class='form-control' />          </div>				</div>				<button type='button' id='clampButton'class='btn btn-primary'>					Make Change				</button>			</form>		</div></div>")
+        categorydata = [
+          "Feature",
+          "Count",
+          "Missing(%)",
+          "Cardinality",
+          "Min",
+          "1st Quartile",
+          "Mean",
+          "Median",
+          "3rd Quartile",
+          "Max",
+          "Std. Deviation",
+        ];
+      }
+
+      data = data.replace("[", "");
+      data = data.replace("]", "");
+      data = data.replace("'", "");
+      data = data.replace("'", "");
+      var data = data.split(",");
+      // console.log("test"+ data);
+      $(".modal-header #h1modal").text("");
+      $(".modal-header #h1modal").append(data[0]);
+      $(".modal-body #img").attr("src", "");
+      $(".modal-body #img2").remove();
+      $("#summarymodal").empty();
+      var quartile1 = 0;
+      var quartile3 = 0;
+      for (let i = 1; i < data.length; i++) {
+        //console.log(data[row] + data[row+1]);
+        if (categorydata[i] == "1st Quartile") {
+
+          quartile1 = data[i];
+
+        }
+        if (categorydata[i] == "3rd Quartile") {
+          quartile3 = data[i];
+        }
+        if (categorydata[i] == "Missing(%)") {
+          if (data[i] == 0.0) {
+            $("#advice").text("No imputation required as 0 missing values");
+          }
+        }
+        $("#buttonclickedgraph").css("visibility", "visible");
+        $(".modal-body #hideoptions").css("visibility", "visible");
+        console.log(data[i]);
+
+        if (data[i] != " 'Checkbox'" && data[i] != "'Checkbox'") {
+          $("#summarymodal").append(
+            '<p id=' + categorydata[i] + '>' +
+            "<b>" +
+            categorydata[i] +
+            "</b> : " +
+            data[i] +
+            "</p>"
+          );
+
+        }
+      }
+      var q1 = quartile1.toString();
+      var q3 = quartile3.toString();
+      console.log(q1);
+      console.log(q3);
+      var url1 = "/filedata/whiskerValues/Q1/" + q1 + "/Q3/" + q3;
+
+      console.log(quartile1);
+      console.log(quartile3);
+      $.ajax({
+        url: url1,
+        type: "post",
+        data: { quartile1: 1, quartile3: 2 },
+        success: function (values) {
+          var values = values.split(",");
+          $(".modal-body #clamptransformation #uppervalue").attr("value", values[0]);
+          $(".modal-body #clamptransformation #lowervalue").attr("value", values[1]);
+
+        },
+      });
+      if (datatype == "cat") {
+        datatype = "categorical";
+      } else {
+        datatype = "continuous";
+      }
+      console.log(datatype2);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { datatype2: datatype2, fileid: fileid, featurename: featurename },
+        success: function (images) {
+          images.replace("", "");
+          images.replace("'", "");
+          var images = images.split(",");
+
+          console.log(images);
+          charttype = ["distplot", "boxplot"];
+
+          $(".modal-body .imagecontainer1").empty();
+          $(".modal-body .imagecontainer .imgages2").remove();
+          $(".modal-body .imagecontainer .imgages3").remove();
+          for (let i = 0; i < images.length; i++) {
+            srcvar = "data:image/png;base64," + images[i];
+            divid = "images" + featurename + i
+            chart = charttype[i]
+            if (datatype == "continuous") {
+              if (chart == "distplot") {
+                $(".modal-body .imagecontainer").prepend('<div class = "imgages2" id="' + divid + '"><label>Bins  <input charttype = "' + chart + '" id = "' + divid + '" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+              } else {
+                $(".modal-body .imagecontainer").prepend('<div class="imgages2" id="' + divid + '"><label style="visibility:hidden">Bins  <input style="visibility:hidden" charttype = "' + chart + '" id = "' + divid + '" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+
+              }
+            } else {
+              $(".modal-body .imagecontainer").prepend('<div class = "imgages3" id="' + divid + '"><img src=" ' + srcvar + '"' + 'id="img ' + '"' + 'alt="Chart"></div>');
+
+            }
+          }
+          $("#exampleModalCenter").modal("show");
+          $("#exampleModalCenter").attr("datatype", datatype);
+        },
+      });
+
+    });
+
+    $(document).on('click', '#dropbutton', function (e) {
+      console.log("test");
+
+      var fileid = $(this).attr("fileid");
+      var featurename = $(this).attr("featurename");
+      var url = "/filedata/" + fileid + "/dropMissingValue/" + featurename;
+
+      console.log(featurename);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, featurename: featurename },
+        success: function () {
+          console.log("feature deleted");
+          location.reload(true);
+        },
+      });
+    });
+    function startRefresh() {
+      $.get('', function (data) {
+        $(document.body).html(data);
+      });
+    }
+    $("#dropfeature").click(function () {
+      console.log("test");
+      $(".modal-header #h1modal").text("");
+      var fileid = $("#exampleModalCenter").attr("fileid");
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var url = "/filedata/" + fileid + "/dropfeature/" + featurename;
+
+      console.log(featurename);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, featurename: featurename },
+        success: function () {
+          console.log("feature deleted");
+          location.reload(true);
+        },
+      });
+    });
+
+
+    $(document).on('click', '#dropfeaturebutton', function (e) {
+      console.log("test");
+      var feature = $(this).attr("column");
+      console.log(feature);
+      var fileid = $(this).attr("fileid");
+      var url = "/filedata/" + fileid + "/dropfeature/" + feature;
+
+      console.log("Feature Name", feature);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, feature: feature },
+        success: function () {
+          console.log("feature deleted");
+          location.reload(true);
+        },
+      });
+    });
+
+    $(document).on('click', '#changebuttoncat,#changebuttoncont', function (e) {
+      sessionStorage.setItem('scrollpos', window.scrollY);
+      console.log("Changebuttoncat");
+      var feature = $(this).attr("column");
+      var fileid = $(this).attr("fileid");
+      var datatype = $(this).attr("datatype")
+      if (datatype == "cont") {
+        datatype = "cat";
+        url = "/filedata/" + fileid + "/catvalue/" + feature;
+      } else {
+        datatype = "cont";
+        url = "/filedata/" + fileid + "/contvalue/" + feature;
+      }
+
+
+      $('tr [data-id=' + feature + ']').remove();
+
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, feature: feature },
+        success: function (data) {
+          var data = JSON.parse(data);
+          replacetablerow(datatype,fileid,feature,data);
+
+
+          var scrollpos = sessionStorage.getItem('scrollpos');
+
+          if (scrollpos) {
+
+            window.scrollTo(0, scrollpos);
+
+            sessionStorage.removeItem('scrollpos');
+          }
+
+
+
+        }
+      });
+
+    });
+
+
+
+    $("#savechanges").click(function () {
+      missingvalues = []
+      encoding = []
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var fileid = $("#exampleModalCenter").attr("fileid");
+
+      if ($("#mediancheckbox:checked").val() == "on") {
+        missingvalues.push("median");
+      }
+      if ($("#modecheckbox:checked").val() == "on") {
+        missingvalues.push("mode");
+      }
+      if ($("#meancheckbox:checked").val() == "on") {
+        missingvalues.push("mean");
+      }
+      if ($("#LabelEncoding:checked").val() == "on") {
+        encoding.push("LabelEncoding");
+      }
+      if ($("#OneHotEncoder:checked").val() == "on") {
+        encoding.push("OneHotEncoder");
+      }
+      if ($("#OrdinalEncoder:checked").val() == "on") {
+        encoding.push("OrdinalEncoder");
+      }
+      if (missingvalues.length != 0) {
+
+        var change;
+        if (missingvalues[0] == "mean") {
+          change = "mean";
+        }
+        if (missingvalues[0] == "mode") {
+          change = "mode";
+        }
+        if (missingvalues[0] == "median") {
+          change = "median";
+        }
+        var url = "/filedata/" + fileid + "/missingvalues/" + featurename + "/change/" + change
+        console.log(url);
+        $.ajax({
+          url: url,
+          type: "post",
+          data: { fileid: fileid, featurename: featurename, change: change },
+          success: function (data) {
+            srcvar = "data:image/png;base64," + data;
+            $(".modal-body .imagecontainer").prepend('<div class = "imgages2" id="' + 3 + '"><label>Bins  <input charttype = "' + 3 + '" id = "' + 3 + '" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+            console.log("feature deleted");
+
+          },
+        });
+      }
+      if (encoding.length != 0) {
+
+
+        if (encoding[0] == "OneHotEncoder") {
+          change = "OneHotEncoder";
+        }
+        if (encoding[0] == "OrdinalEncoder") {
+          change = "OrdinalEncoder";
+        }
+        var url = "/filedata/" + fileid + "/encoding/" + featurename + "/change/" + change
+        console.log(url);
+        $.ajax({
+          url: url,
+          type: "post",
+          data: { fileid: fileid, featurename: featurename, change: change },
+          success: function () {
+            console.log("feature deleted");
+            location.reload(true);
+          },
+        });
+      }
+    });
+    $(document).on('click', '#imputation', function (e) {
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var fileid = $("#exampleModalCenter").attr("fileid");
+      var datatype = $("#exampleModalCenter").attr("datatype");
+      var change = "";
+      if ($("#mediancheckbox:checked").val() == "on") {
+        change = "median";
+      }
+      if ($("#modecheckbox:checked").val() == "on") {
+        change = "mode";
+      }
+      if ($("#meancheckbox:checked").val() == "on") {
+        change = "mean";
+      }
+      if ($("#removecheckbox:checked").val() == "on") {
+        console.log("removecheckbox");
+        change = "remove";
+      }
+      console.log(change);
+      var url = "/filedata/" + fileid + "/missingvalues/" + featurename + "/change/" + change
+      console.log(url);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { datatype:datatype,fileid: fileid, featurename: featurename, change: change },
+        success: function (dataarray) {
+          
+          var data = JSON.parse(dataarray);
+
+
+          console.log(data);
+          //split data[0] by ',' and remove '\'
+          var dataarray = data[0].split(',');
+          for (var i = 0; i < dataarray.length; i++) {
+            dataarray[i] = dataarray[i].replace(/\\/g, '');
+            dataarray[i] = dataarray[i].replace(/"/g, '');
+            dataarray[i] = dataarray[i].replace(/\]/g, '');
+            //remove '['
+            dataarray[i] = dataarray[i].replace(/\[/g, '');
+
+          }
+     
+
+          console.log(dataarray);
+          replaceSummary(dataarray);
+          srcvar = "data:image/png;base64," + data[1];
+          $(".modal-body .imagecontainer").prepend('<div class = "imgages2" id="' + 60 + '"><label>Bins  <input charttype="after changes" id = "' + 60 + '" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+          console.log("feature deleted");
+
+        },
+      });
+    });
+    $(document).on('click', '#encodingbutton', function (e) {
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var fileid = $("#exampleModalCenter").attr("fileid");
+      var change = "";
+      if ($("#LabelEncoding:checked").val() == "on") {
+        change = "LabelEncoding";
+      }
+      if ($("#OneHotEncoder:checked").val() == "on") {
+        change = "OneHotEncoder";
+      }
+      if ($("#OrdinalEncoder:checked").val() == "on") {
+        change = "OrdinalEncoder";
+      }
+
+      console.log(change);
+      var url = "/filedata/" + fileid + "/encoding/" + featurename + "/change/" + change
+      console.log(url);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, featurename: featurename, change: change },
+        success: function (data) {
+          console.log("outliers deleted");
+          var data = JSON.parse(data);
+          console.log(data);
+          replaceSummary(data);
+
+        },
+      });
+    });
+
+    $("#droprows").click(function () {
+      console.log("TEST TEST")
+      var fileid = $(".clickable-row").attr("fileid");
+      console.log(fileid)
+
+      var index1 = $("#droprowbyindex").attr("datarow");
+      var url = "/filedata/" + fileid + "/dropRowbyIndex/" + index1
+      console.log(url);
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, index1: index1 },
+        success: function () {
+          console.log("feature deleted");
+          location.reload(true);
+        },
+      });
+    });
+    $(document).on('click', '#clampButton', function () {
+      alert("test");
+      var fileid = $("#exampleModalCenter").attr("fileid");
+      var datatype = $("#exampleModalCenter").attr("datatype");
+      var featurename = $("#exampleModalCenter").attr("featurename");
+      var uppervalue = $("#uppervalue").val();
+      var lowervalue = $("#lowervalue").val();
+      alert("Upper value", uppervalue, "lowervalue", lowervalue);
+      var url = "/filedata/" + fileid + "/clamp/" + featurename + "/datatype/" + datatype + "/upper/" + uppervalue + "/lower/" + lowervalue;
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, featurename: featurename, uppervalue: uppervalue, lowervalue: lowervalue },
+        success: function (data) {
+          console.log("outliers deleted");
+          var data = JSON.parse(data);
+          console.log(data);
+          replaceSummary(data);
+        },
+      });
+
+    })
+
+    $("#viewrelationships").click(function () {
+      var fileid = $("#viewrelationships").attr("fileid");
+      var cont = $("#viewrelationships").attr("cont");
+      var url = "/filedata/" + fileid + "/correlations/" + cont;
+      $("#summarymodal").empty();
+      $("#summarymodal").append("<h1>Multivariate Analysis");
+      $(".modal-body #img").attr("src", "");
+      $(".modal-header #h1modal").text("");
+      $(".modal-body #hideoptions").css("visibility", "hidden");
+      $(".modal-body #img2").remove();
+      $("#buttonclickedgraph").remove();
+      $(".modal-body .imagecontainer1").empty();
+      $(".modal-body #imagerow2 p").remove();
+      $("#imagerow2 .selectdiv").remove();
+      $(".modal-body #row3 #hideoptions").remove();
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, cont: cont },
+        success: function (images) {
+          images.replace("", "");
+          images.replace("'", "");
+          var images = images.split(",");
+
+          console.log(images);
+
+          //var plot_url2 = plot_url2.split(',');
+          $(".modal-body .imagecontainer ").empty();
+          for (let i = 0; i < images.length; i++) {
+            srcvar = "data:image/png;base64," + images[i];
+            console.log(srcvar)
+
+            $(".modal-body .imagecontainer1").prepend('<div class="imgages3"> <img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+
+            $("#dropfeature").hide();
+            $("#save").hide();
+            $("#exampleModalCenter").modal("show");
+          }
+        },
+      });
+    });
+    $("#bivariate").click(function () {
+      var fileid = $("#bivariate").attr("fileid");
+      var target = $("#target").find(":selected").text();
+      console.log(target);
+      var url = "/filedata/" + fileid + "/bivariate/" + target;
+      $("#summarymodal #summaryp").remove();
+      $(".modal-body #row3 #hideoptions").remove();
+      $("#summarymodal").append("<h1>BiVariate Analysis");
+
+
+      $(".modal-body #img").attr("src", "");
+      $(".modal-header #h1modal").text("");
+      $(".modal-body #hideoptions").css("visibility", "hidden");
+      $(".modal-body #img2").remove();
+      $("#buttonclickedgraph").remove();
+
+      $(".modal-body #imagerow2 p").remove();
+      $("#imagerow2 .selectdiv").remove();
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { fileid: fileid, target: target },
+        success: function (images) {
+          images.replace("", "");
+          images.replace("'", "");
+          var images = images.split(",");
+
+          console.log(images);
+
+          //var plot_url2 = plot_url2.split(',');
+          $(".modal-body .imagecontainer").empty();
+          $(".modal-body .imagecontainer1").empty();
+          for (let i = 1; i < images.length; i++) {
+            srcvar = "data:image/png;base64," + images[i];
+
+            if (i < 3) {
+              $(".modal-body .imagecontainer").prepend('<div class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+
+
+            } else {
+              $(".modal-body .imagecontainer").prepend('<div class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+
+            }
+            $("#dropfeature").hide();
+            $("#save").hide();
+            $("#exampleModalCenter").modal("show");
+          }
+        },
+      });
+    });
+    $(document).on('click', '#trainbutton', function () {
+      console.log("test");
+      var fileid = $("#trainbutton").attr("fileid");
+
+      var target = $(".selectdiv #target").find(":selected").text();
+      var url = "/train/" + fileid + "/target/" + target;
+      var setsession = window.sessionStorage.setItem("target", target);
+      setsession = window.sessionStorage.setItem("fileid", fileid);
+      $("#trainbutton").attr("href", url);
+    });
+
+    $("#buttonclickedgraph").click(function () {
+      console.log("test");
+      var fileid = $("#viewrelationships").attr("fileid");
+      var xaxis = $(".selectdiv #xaxis").find(":selected").text();
+      var yaxis = $(".selectdiv #yaxis").find(":selected").text();
+      console.log("Xaxis", xaxis);
+      console.log("Y axis", yaxis);
+      xaxis = xaxis.trim();
+      yaxis = yaxis.trim();
+      $(".modal-body #img2").remove();
+      var url = "/filedata/" + fileid + "/newgraph/" + xaxis + "/" + yaxis;
+      $.ajax({
+        url: url,
+        type: "post",
+        data: { xaxis: xaxis, yaxis: yaxis, fileid: fileid },
+        success: function (plot_url2) {
+          $(".modal-body .imagecontainer > div:last").before(
+            '<div class = "imgages2" "><img src=" ' + "data:image/png;base64," + plot_url2 + '"' + 'id="img ' + '"' + 'alt="Chart"></div>'
+          );
+
+
+
+        },
+      });
+    });
+  });
+</script>
+<button id="goback" class="btn btn-primary btn-lg" onclick="history.back(-1)" type="button"><i
+    class="fa fa-solid fa-arrow-left"></i> Go Back</button>
+
+<button onclick="window.location.href='/filedata/{{fileid}}/downloadcleandata'" fileid="{{fileid}}" type="button"
+  id="downloadbutton" class="btn btn-success mx-auto d-bloc">
+  Download Clean Data
+</button>
+<a fileid={{fileid}} id="trainbutton" type="button" class="btn btn-primary btn-lg"><i
+    class="fa fa-solid fa-arrow-right"></i> Train</a>
+<div class="float-container">
+
+  <div class="float-child">
+    <h1>Summary <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Share"></span></a>
+    </h1>
+    <p>Total Features: {{featurecount}}</p>
+    <p>Total Rows: {{totalrows}}</p>
+    <div class="row">
+      <label>Continuous Features</label>
+
+      <div class="col-md-8">
+        <div class="progress">
+          <div class="progress-bar bg-warning" role="progressbar" style="width: {{contcountpt}}%"
+            aria-valuenow="({{'%0.2f'| format(contcountpt|float)}}%)" aria-valuemin="0" aria-valuemax="100">
+            <span>{{contcount}} ({{'%0.1f'| format(contcountpt|float)}}%) %)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <label>Categorical Features</label>
+      <div class="col-md-8">
+        <div class="progress">
+          <div class="progress-bar bg-danger" role="progressbar" style="width: {{catcountpt}}%"
+            aria-valuenow="{{catcountpt|float}}" aria-valuemin="0" aria-valuemax="100">
+            <span>{{catcount}} ({{'%0.1f'| format(catcountpt|float)}}%) %)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="float-child">
+    <h1>Target Selection <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Share"></span></a>
+    </h1>
+    <p>
+      Select a feature to be the target<br />(what you want your model to
+      predict)
+    </p>
+    <div class="selectdiv">
+      <select id="target" name="target">
+        <option value="{{target[0]}}" selected>{{target[0]}}</option>
+        {% for target in target[1:] %}
+        <option value="{{target}}">{{target}}</option>
+        {% endfor %}
+      </select>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="float-container1">
+  <div class="float-child1">
+    <div id="test">
+
+      <button fileid="{{fileid}}" type="button" id="bivariate" class="btn btn-lg btn-secondary">
+        Bivariate Analysis
+      </button>
+      <button fileid="{{fileid}}" type="button" cont="{%for i in contcolumns%}{{i}},{%endfor%}" id="viewrelationships"
+        class="btn btn-lg btn-secondary">
+        MultiVariate Analysis
+      </button>
+    </div>
+    <form id="myform">
+      <table id="continuoustable" class="table table-hover">
+        <h1 class="text-center">Continuous Features<a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+              data-original-title="Share"></span></a></h1>
+
+        <tr class="thead-dark">
+          {% for col in continouscolumnnames %}
+          <th title="Tooltip">
+
+            {% if col == "Feature" %}
+            <div data-toggle="tooltip" data-placement="top" title="Features name">{{col}}</div>
+            {%elif col == "Count" %}
+            <div data-toggle="tooltip" data-placement="top" title="Features count">{{col}}</div>
+            {%elif col == "% Missing" %}
+            <div data-toggle="tooltip" data-placement="top" title="Percentage of missing values">{{col}}</div>
+            {%elif col == "Cardinality" %}
+            <div data-toggle="tooltip" data-placement="top" title="The cardinality is the total unique values">{{col}}
+            </div>
+            {%elif col == "Min" %}
+            <div data-toggle="tooltip" data-placement="top" title="Smallest numeric value in the feature">{{col}}</div>
+            {%elif col == "1st Quartile" %}
+            <div data-toggle="tooltip" data-placement="top" title="Middle number between the min and the median">{{col}}
+            </div>
+            {%elif col == "Mean" %}
+            <div data-toggle="tooltip" data-placement="top" title="Average of a values in feature">{{col}}</div>
+            {%elif col == "Median" %}
+            <div data-toggle="tooltip" data-placement="top"
+              title="Middle value in a set of given numbers(ordered from smallest to biggest)">{{col}}</div>
+            {%elif col == "3rd Quartile" %}
+            <div data-toggle="tooltip" data-placement="top" title="Middle value between the median and the max ">{{col}}
+            </div>
+            {%elif col == "Max" %}
+            <div data-toggle="tooltip" data-placement="top" title="Biggest numeric value in the feature">{{col}}</div>
+            {%elif col == "Std. Deviation" %}
+            <div data-toggle="tooltip" data-placement="top"
+              title="A low standard deviation indicates that the values tend to be close to the mean.A high standard deviation indicates that the values are spread out over a wider range">
+              {{col}}</div>
+            {%endif%}
+          </th>
+          {% endfor %}
+        </tr>
+        {% for row in continousrow_data %}
+
+        <tr class="clickable-row" datarow="{{row}}" datatype="continuous" fileid="{{fileid}}" feature-name="{{row[0]}}"
+          data-id="{{row[0]}}">
+          {% for col, row_ in zip(continouscolumnnames, row) %}
+          {% if row_ == "Checkbox" %}
+          <td data-id="{{row[0]}}" id="optionmenu">
+            <div class="btn-group">
+              <button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Action
+              </button>
+              <div class="dropdown-menu">
+                <a fileid={{fileid}} column={{row[0]}} id="dropfeaturebutton" class="dropdown-item">Drop</a>
+
+                <div class="dropdown-divider"></div>
+                <a fileid={{fileid}} column={{row[0]}} datatype="cont" id="changebuttoncont"
+                  class="dropdown-item">Change
+                  to Categorical</a>
+
+                <div class="dropdown-divider"></div>
+                <a fileid="{{fileid}}" datatype="continuous" datarow="{{row}}" data-id="{{row[0]}}" id="OpenAnalytics"
+                  class="dropdown-item" href="#">Open Analytics</a>
+              </div>
+            </div>
+          </td>
+
+          {%else%}
+          <td data-id="{{row[0]}}" fileid="{{fileid}}" datatype="continuous" datarow="{{row}}" id="clickable">
+            <p>{{row_}}</p>
+          </td>
+
+          {% endif %}
+
+          {% endfor %}
+
+        </tr>
+        {% endfor %}
+      </table>
+      <table id="categoricaltable" class="table table-hover">
+        <h1 class="text-center">Categorical Features<a href="#"><span class="fa fa-question-circle"
+              data-toggle="tooltip" data-original-title="Share"></span></a></h1>
+        <tr class="thead-dark">
+          {% for col in categoricalcolumnnames %}
+          <th title="Tooltip">
+            {% if col == "Feature" %}
+            <div data-toggle="tooltip" data-placement="top" title="Features name">{{col}}</div>
+            {%elif col == "Count" %}
+            <div data-toggle="tooltip" data-placement="top" title="Features count">{{col}}</div>
+            {%elif col == "% Missing" %}
+            <div data-toggle="tooltip" data-placement="top" title="Percentage of missing values">{{col}}</div>
+            {%elif col == "Cardinality" %}
+            <div data-toggle="tooltip" data-placement="top" title="The cardinality is the total unique values">{{col}}
+            </div>
+            {%elif col == "Mode" %}
+            <div data-toggle="tooltip" data-placement="top" title="Most frequently occurring value in a feature">{{col}}
+            </div>
+            {%elif col == "Mode Freq" %}
+            <div data-toggle="tooltip" data-placement="top" title="The number of instances of the mode value">{{col}}
+            </div>
+            {%elif col == "Mode %" %}
+            <div data-toggle="tooltip" data-placement="top"
+              title="The percentage of the mode frequency out of the total number of instances in the feature">{{col}}
+            </div>
+            {%elif col == "2nd Mode" %}
+            <div data-toggle="tooltip" data-placement="top" title="Second most frequently occurring value in a feature">
+              {{col}}</div>
+            {%elif col == "2nd Mode Freq" %}
+            <div data-toggle="tooltip" data-placement="top" title="The number of instances of the second mode value ">
+              {{col}}</div>
+            {%elif col == "2nd Mode %" %}
+            <div data-toggle="tooltip" data-placement="top"
+              title="The percentage of the second mode frequency out of the total number of instances in the feature">
+              {{col}}</div>
+            {%endif%}
+          </th>
+          {% endfor %}
+        </tr>
+        {% for row in categoricalrow_data %}
+        <tr class="clickable-row" datarow="{{row}}" datatype="categorical" fileid="{{fileid}}" data-id="{{row[0]}}">
+          {% for col, row_ in zip(categoricalcolumnnames, row) %}
+          {% if row_ == "Checkbox" %}
+          <td feature-name="{{row[0]}}" data-id="{{row[0]}}" id="notclickable">
+            <div class="btn-group">
+              <button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Action
+              </button>
+              <div class="dropdown-menu">
+                <a fileid={{fileid}} column={{row[0]}} id="dropfeaturebutton" class="dropdown-item">Drop</a>
+
+                <div class="dropdown-divider"></div>
+                <a fileid={{fileid}} column={{row[0]}} datatype="cat" id="changebuttoncat" class="dropdown-item">Change
+                  to
+                  Continuous</a>
+
+                <div class="dropdown-divider"></div>
+                <a fileid="{{fileid}}" datatype="categorical" datarow="{{row}}" data-id="{{row[0]}}" id="OpenAnalytics"
+                  class="dropdown-item" href="#">Open Analytics</a>
+              </div>
+            </div>
+          </td>
+
+          {%else%}
+          <td data-id="{{row[0]}}" fileid="{{fileid}}" datatype="categorical" datarow="{{row}}" id="clickable">
+            <p>{{row_}}</p>
+          </td>
+
+          {% endif %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </form>
+  </div>
+  <div class="float-child1">
+    <h1>Row Data<a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Share"></span></a></h1>
+    <div id="rowdata"></div>
+    <img src="data:image/png;base64,{{plot_url}}">
+
+  </div>
+
+</div>
+
+
+<div class="modal fade" data-backdrop="static" id="exampleModalCenter" fileid="" tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document" id="featuremodalcontainer">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h3 featurename="" class="modal-title w-100 text-center" id="h1modal">I'm centered title</h3>
+
+        <button type="button" id="dropfeature" class="btn btn-danger ">
+          Drop
+        </button>
+        </h3>
+      </div>
+      <div class="modal-body">
+
+        <div class="container-fluid">
+
+          <div class="row">
+            <div id="summarymodal" class="col-sm-12 align-self-center"></div>
+          </div>
+          <div id="row3"></div>
+
+
+          <div class="row" id="row1">
+            <div class="imagecontainer ">
+
+
+              <div id="selectdiv">
+                <p>Compare with other features</p>
+                <div class="selectdiv">
+                  <p>X Axis:</p>
+                  <select id="xaxis" name="target">
+                    <option value="{{target[0]}}" selected>
+                      {{target[0]}}
+                    </option>
+                    {% for target in target[1:] %}
+                    <option value="{{target}}">{{target}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="selectdiv">
+                  <p>Y Axis:</p>
+                  <select id="yaxis" name="target">
+                    <option value="{{target[0]}}" selected>
+                      {{target[0]}}
+                    </option>
+                    {% for target in target[1:] %}
+                    <option value="{{target}}">{{target}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <button type="button" id="buttonclickedgraph">Click!</button>
+              </div>
+              
+
+            </div>
+            <div class="imagecontainer1"></div>
+          </div>
+        </div>
+        <div id="imagerow" class="col-md-4 ms-auto text-center"></div>
+        <div id="imagerow2" class="col-md-4 ms-auto text-center"></div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+
+<div class="modal" id="myModal2" data-backdrop="static">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">2nd Modal title</h4>
+        <button type="button" class="close" data-dismiss="modal">×</button>
+      </div>
+      <div class="container"></div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <a href="#" data-dismiss="modal" class="btn">Close</a>
+        <a href="#" class="btn btn-primary">Save changes</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div id="modalbody1" class="modal-body">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">Close</span></button>
+
+        <script>
+
+        </script>
+        </body>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
