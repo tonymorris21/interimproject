@@ -13,6 +13,7 @@ import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix, plot_confusion_matrix
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import uuid
 from sklearn.naive_bayes import GaussianNB
-from sklearn import preprocessing
+from sklearn import preprocessing,metrics
 import json 
 from datetime import date
 from urllib import parse
@@ -32,6 +33,8 @@ import json
 from flask import send_file
 from bs4 import BeautifulSoup
 import seaborn as sn
+from sklearn import preprocessing
+import time
 train = Blueprint('train', __name__)
 
 
@@ -51,7 +54,14 @@ def train_data(fileid,algorithm,target,param):
     parsed= parsed.replace("}","")
     parsed= parsed.replace('"','')
     parsed = parsed.split(",")
-    elem = {}
+
+    print(parsed)
+    elem = dict()
+    for parsed in parsed:
+        elem1 = parsed.split(":")
+        elem[elem1[0]] = elem1[1]
+    print(elem)
+
     file = File.query.filter_by(fileid=fileid).first()
     dfd = pd.read_csv(file.location)
     df = pd.read_feather(file.featherlocation)
@@ -63,6 +73,7 @@ def train_data(fileid,algorithm,target,param):
     #https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html#sklearn.preprocessing.normalize
     print("test",classnames)
     #if key 'Normalisation' is present in elem, then use it as Normalisation
+    featurenames = list(X.columns.values)
     if 'Normalisation' in elem:
         if elem['Normalisation'] == 'yes':
             X = preprocessing.normalize(X)
@@ -71,19 +82,17 @@ def train_data(fileid,algorithm,target,param):
     if 'randomstate' in elem:
         randomstate = elem['randomstate']
     else:
-        randomstate = None
+        randomstate = 1
     #if key 'split' is present in elem, then use it as split
-    if 'split' in elem:
-        split = elem['split']
+    print(elem.keys())
+    if 'split' in elem.keys():
+        split = float(elem['split'])/100
+        print("Split is",split)
     else:
         split = 0.25
+    print("Split is",split)
+    X_train,X_test,y_train,y_test=train_test_split(X,Y,test_size=split,shuffle=True, random_state=int(randomstate))
 
-    X_train,X_test,y_train,y_test=train_test_split(X,Y,test_size=split,random_state=randomstate)
-    if bool(elem):
-        for i in parsed:
-            first = i.split(":")
-            elem[first[0]] = first[1]
-        print(elem['Kernel'])
     # if key 'Kernel' is present in elem, then use it as kernel
     if 'Kernel' in elem:
         Kernel = elem['Kernel']
@@ -114,12 +123,11 @@ def train_data(fileid,algorithm,target,param):
         max_features = 'auto'
 
 
-    if algorithm == "RF" : modelid, plot_url, accuracy, tables = RFC(max_features,ntree,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
-    elif algorithm == "NB" : modelid, plot_url, accuracy, tables = naivebayes(var_smoothing,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
-    elif algorithm == "KNN" : modelid, plot_url, accuracy, tables = KNN(k,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
-    elif algorithm == "SVC" : modelid, plot_url, accuracy, tables = svc(Kernel,dfd[target],X_train,X_test,y_train,y_test,fileid,target,list(X.columns.values))
-#https://www.analyticsvidhya.com/blog/2021/07/titanic-survival-prediction-using-machine-learning/
-    print("test")
+    if algorithm == "RF" : modelid, plot_url, accuracy, tables = RFC(max_features,ntree,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+    elif algorithm == "NB" : modelid, plot_url, accuracy, tables = naivebayes(var_smoothing,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+    elif algorithm == "KNN" : modelid, plot_url, accuracy, tables = KNN(k,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+    elif algorithm == "SVC" : modelid, plot_url, accuracy, tables = svc(Kernel,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+
     return render_template('modelinfo.html', modelid=modelid,confusion_matrix=plot_url,accuracy=accuracy,tables=tables,algorithm=algorithm,target=target)
 
 
@@ -127,20 +135,21 @@ def train_data(fileid,algorithm,target,param):
 def naivebayes(var_smoothing,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
  
 
-    gaussian = GaussianNB()
+    gaussian = GaussianNB(var_smoothing=var_smoothing)
     gaussian.fit(X_train, y_train)
     gaussian.feature_names = feature_names
     Y_pred = gaussian.predict(X_test) 
     accuracy = accuracy_score(y_test,Y_pred)
     algorithm = "NB"
-    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),gaussian,accuracy,y_test,X_test,Y_pred)
+    classnames = targetdf.unique()
+    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,classnames,gaussian,accuracy,y_test,X_test,Y_pred)
     return modelid, plot_url, accuracy, tables
 
 def KNN(k,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
     file = File.query.filter_by(fileid=fileid).first()
     df = pd.read_feather(file.featherlocation)
 
-    knn = KNeighborsClassifier(n_neighbors = 3)
+    knn = KNeighborsClassifier(n_neighbors = k)
     knn.fit(X_train, y_train)
     knn.feature_names = feature_names
     Y_pred = knn.predict(X_test) 
@@ -154,9 +163,11 @@ def KNN(k,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
 def RFC (max_features,ntree,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
 
 
-    rf = RandomForestClassifier()
+    rf = RandomForestClassifier(max_features=max_features,n_estimators=ntree)
     rf.fit(X_train, y_train)
     rf.feature_names = feature_names
+    rf.score(X_test, y_test)
+    rf.score(X_train,y_train)
     Y_pred = rf.predict(X_test) 
 
     accuracy = accuracy_score(y_test,Y_pred)
@@ -167,25 +178,30 @@ def RFC (max_features,ntree,targetdf,X_train,X_test,y_train,y_test,fileid,target
 
 def svc(Kernel,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
 
-
-    svc = SVC(kernel=Kernel)
+    svc = SVC(probability=False,kernel=Kernel)
     svc.fit(X_train, y_train)
     svc.feature_names = feature_names
+    svc.score(X_test, y_test)
+    svc.score(X_train,y_train)
     Y_pred = svc.predict(X_test) 
-
     accuracy = accuracy_score(y_test,Y_pred)
+
+    cm = confusion_matrix(y_test,Y_pred)
+    sn.heatmap(cm,annot=True,cmap="Greens")
+
+    plt.show()
     algorithm = "SVC"
     modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),svc,accuracy,y_test,X_test,Y_pred)
     return modelid, plot_url, accuracy, tables
 
 def toDatabase(target,algorithm,classnames,model,accuracy,y_test,X_test,Y_pred):
 
-    cv = classification_report(y_test, Y_pred,target_names=classnames)
-
+    cv = classification_report(y_test, Y_pred)
+    print(cv)
     classreport = report_to_df(cv)
-
+    metrics.plot_roc_curve(model, X_test, y_test) 
     cm = confusion_matrix(y_test, Y_pred)
-
+    print(f1_score(y_test, Y_pred, average="macro"))
     ax= plt.subplot()
     sn.heatmap(cm, annot=True, fmt='g', ax=ax) #annot=True to annotate cells, ftm='g' to disable scientific notation
     ax.set_xlabel('Predicted labels')

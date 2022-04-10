@@ -2,6 +2,9 @@
 
 {% block content %}
 <script>
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
   $(document).ready(function () {
     $("#trainbutton").click(function () {
       var fileid = window.sessionStorage.getItem("fileid");
@@ -93,6 +96,13 @@
   });
 </script>
 <style>
+  h1{
+    margin-bottom:1em;
+  }
+  h6{
+    margin-top:1em;
+    margin-bottom:1em;
+  }
   .container{
     display: flex;
     align-items: center;
@@ -153,11 +163,11 @@
 
   <div class="box col-4">
 
-    <h1>Algorithm Selection</h1>
-    <p>
-      Select an algorithm.
-    </p>
-    <div class="selectdiv">
+    <h1>Training Configuration</h1>
+    <div class="form-group row">   
+      <label for="Normalisation" class="text-left col-sm-3 col-form-label">Algorithm <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+        data-original-title="Testing different algorithms and comparing the performance metrics can be useful for deciding which algorithm works best with your data."></span></a></label>  
+    <div class="col-sm-9 selectdiv">
       <select id="target" name="target">
         <option value="KNN" selected>K Nearest Neighbour</option>
         <option value="SVC" selected>Support Vector Classifier</option>
@@ -165,12 +175,15 @@
         <option value="RF" selected>Random Forest</option>
       </select>
     </div>
+    </div>
     <div id="Parameters">
-      <h5> Configure Model parameters</h5>
+      
       <form>
+        
         <div class="form-group row">         
            
-          <label for="Normalisation" class="col-sm-3 col-form-label">Normalisation</label>  
+          <label for="Normalisation" class="text-left col-sm-3 col-form-label">Normalisation <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+        data-original-title="Translates data into the range [0, 1] giving equal weight to each variable, some algorithms can benefit from this."></span></a></label>  
           <div class="col-sm-9">
           <div class="Normalisation">
             <select style="text-align:center" id="target" name="noramlize">
@@ -180,67 +193,77 @@
             </select>
           </div>
           </div>
-        </div>      
+        
+        </div>  
+        <h6>Algorithm Parameters</h6>    
         <div class="form-group row">
-          <label for="inputPassword" class="col-sm-3 col-form-label">Train/Test Split</label>
+          <label for="inputPassword" class="text-left col-sm-3 col-form-label">Train/Test Split <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+            data-original-title="Splits dataset into two subsets of data one for training and one for testing"></span></a></label>
           <div class="col-sm-9">
             <input style="text-align:center"  type="text" class="form-control" id="split"
               placeholder="20%">
           </div>
         </div>
         <div class="form-group row">
-          <label for="inputPassword" class="col-sm-3 col-form-label">Random State</label>
+          <label for="inputPassword" class="text-left col-sm-3 col-form-label">Random State <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+            data-original-title="Random state ensures that the splits that you generate are reproducible"></span></a></label>
           <div class="col-sm-9">
             <input style="text-align:center"  type="text" class="form-control" id="randomstate" placeholder="11">
           </div>
         </div>
       </form>
     </div>
-    <button class="btn btn-warning btn-large btn-block" id="advancedParametersbutton">Advanced parameters<i
+    <button class="btn btn-warning btn-large btn-block" id="advancedParametersbutton">Advanced Parameters<i
         class="fa fa-plus" aria-hidden="true"></i></button>
     <div class="hidden" id="advancedParameters">
 
       <form>
         
       <div id="RF" class="form-group row hidden">
-        <label for="ntree" class="col-md-3 col-form-label">ntree</label>
+        <label for="ntree" class="col-md-3 col-form-label">ntree <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Higher number of trees can increase performance of model but slows down training"></span></a></label>
         <div class="col-md-9 ">
           <input style="text-align:center"  type="text" class="form-control" id="ntree" placeholder="">
         </div>
       </div>
       <div id="RF1" class="form-group row hidden">
-        <label for="max_features" class="col-md-3 col-form-label">max_features</label>
+        <label for="max_features" class="col-md-3 col-form-label">max_features <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="The maximum number of features Random Forest is allowed to try in an individual tree"></span></a></label>
         <div class="col-md-9">
           <div class="max_features">
             <select style="text-align:center" id="target" name="max_features">
-              <option value="'auto'" selected>Auto</option>
-              <option value="'sqrt'" selected>Sqrt</option>
-              <option value="'log2'" selected>Log2</option>
+              <option value="auto" selected>Auto</option>
+              <option value="sqrt" selected>Sqrt</option>
+              <option value="log2" selected>Log2</option>
             </select>
           </div>
         
         </div>
       </div>
       <div id="SVC" class="form-group row hidden">
-        <label for="text" class="col-md-3 col-form-label">Kernel</label>
+        <label for="text" class="col-md-3 col-form-label">Kernel <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Linear: Mostly used for text-classification problems. Polynomial: Useful for data lacking in complexity + many features. Sigmoid: Neural networks. RBF: Mostly used for non-linear data."></span></a></label>
         <div class="col-md-9">
           <div class="Kerneltarget">
             <select style="text-align:center" id="target" name="Kerneltarget">
               <option value="linear" selected>Linear</option>
               <option value="poly" selected>Polynomial</option>
-              <option value="rbf" selected>Radial Basis Function(GBF)</option>
+              <option value="sigmoid" selected>Sigmoid</option>
+              <option value="rbf" selected>Radial Basis Function(RBF)</option>
             </select>
           </div>
         </div>
       </div>
       <div id="KNN" class="form-group row hidden">
-        <label for="text" class="col-md-3 col-form-label">k</label>
+        <label for="text" class="col-md-3 col-form-label">k <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Best k value found through trying different values."></span></a></label>
         <div class="col-md-9">
           <input style="text-align:center"  type="text" class="form-control" id="k" placeholder="5">
         </div>
       </div>
       <div id="NB" class="form-group row hidden">
-        <label for="text" class="col-md-3 col-form-label">var_smoothing</label>
+        <label for="text" class="col-md-3 col-form-label">var_smoothing <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Portion of the largest variance of all features that is added to variances for calculation stability."></span></a></label>
         <div class="col-md-9">
           <input style="text-align:center"  type="text" class="form-control" id="var_smoothing"
             placeholder="0.000000001">

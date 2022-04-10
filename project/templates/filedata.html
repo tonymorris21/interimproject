@@ -14,6 +14,18 @@
     border: 3px solid #fff;
   }
 
+  .modal {
+    overflow-y: auto;
+  }
+
+  .modal-open {
+    overflow: auto;
+  }
+
+  .modal-open[style] {
+    padding-right: 0px !important;
+  }
+
   .rowdata {
     margin-top: 2em;
     margin-left: 1%;
@@ -308,7 +320,9 @@
   .modal-backdrop.show:nth-of-type(odd) {
     z-index: 1051 !important;
   }
-
+  #exampleModalCenter1{
+    z-index:1053;
+  }
   .row5 {
     display: flex;
     justify-content: center;
@@ -345,7 +359,9 @@
     width: 30%;
   }
 
-
+  .tooltip {
+    z-index: 99999 !important; 
+}
 
   .imagecontainer {
     width: 100%;
@@ -412,6 +428,20 @@
   #dropbutton {
     float: right;
   }
+  .tooltip{
+    z-index: 100000000 !important;
+    position: fixed;
+  }
+  #header1{
+    border:none;
+  }
+  #header1 button{
+    position:absolute;
+    float:left;
+  }
+  body.modal-open {
+    overflow: hidden;
+}
 </style>
 <script type="text/javascript">
   $(function () {
@@ -466,29 +496,43 @@
     Object.keys(data).forEach(function (key) {
       $("#rowdata").append("<div id = 'ptags" + key + "'></div>");
       var target = $("#target").find(":selected").text();
-    //format the data to 2 decimal points
+      //format the data to 2 decimal points
       var formatted = data[key].toFixed(2);
       if (data[key] == 0) {
-      }else if (key!= 'totalrows'){
-        $("#ptags" + key).append("<p> There are <b>" + data[key] + "</b>("+ (data[key]/data['totalrows']*100).toFixed(2) +"%) rows missing <b>" + key + "</b> feature &nbsp;&nbsp;   </p><button id='dropbutton' fileid='{{fileid}}' featurename='" + key + "' class='btn btn-success btn-large '>Drop Rows</button><br>");
+      } else if (key != 'totalrows') {
+        $("#ptags" + key).append("<p> There are <b>" + data[key] + "</b>(" + (data[key] / data['totalrows'] * 100).toFixed(2) + "%) rows missing <b>" + key + "</b> feature &nbsp;&nbsp;   </p><button id='dropbutton' fileid='{{fileid}}' featurename='" + key + "' class='btn btn-success btn-large '>Drop Rows</button><br>");
       }
     });
   }
-  function replaceSummary(data) {
+  function replaceSummary(data, datatype) {
 
-    var categorys = ["Count", "Missing(%)", "Cardinality", "Min", "1st Quartile", "Mean", "Median", "3rd Quartile", "Max", "Std. Deviation"]
-    $('#Count').html("").append('<b>' + categorys[0] + ' : </b>' + data[1])
-    $('#Missing\\(\\%\\)').html("").append('<b>' + categorys[1] + ' : </b>' + data[2])
-    $("#Cardinality").html("").append('<b>' + categorys[2] + ' : </b>' + data[3]);
-    $("#Min").html("").append('<b>' + categorys[3] + ' : </b>' + data[4]);
-    $("#1st").html("").append('<b>' + categorys[4] + ' : </b>' + data[5]);
-    $("#Mean").html("").append('<b>' + categorys[5] + ' : </b>' + data[6]);
-    $("#Median").html("").append('<b>' + categorys[6] + ' : </b>' + data[7]);
-    $("#3rd").html("").append('<b>' + categorys[7] + ' : </b>' + data[8]);
-    $("#Max").html("").append('<b>' + categorys[8] + ' : </b>' + data[9]);
-    $("#Std\\.").html("").append('<b>' + categorys[9] + ' : </b>' + data[10]);
-
-    console.log("Data feature is",data[0]);
+    if (datatype == 'continuous') {
+      console.log("Replace summary Datatype is", datatype);
+      var categorys = ["Count", "Missing(%)", "Cardinality", "Min", "1st Quartile", "Mean", "Median", "3rd Quartile", "Max", "Std. Deviation"]
+      $('.Count').html("").append('<b>' + categorys[0] + ' : </b>' + data[1])
+      $('.Missing\\(\\%\\)').html("").append('<b>' + categorys[1] + ' : </b>' + data[2])
+      $(".Cardinality").html("").append('<b>' + categorys[2] + ' : </b>' + data[3]);
+      $(".Min").html("").append('<b>' + categorys[3] + ' : </b>' + data[4]);
+      $(".1st").html("").append('<b>' + categorys[4] + ' : </b>' + data[5]);
+      $(".Mean").html("").append('<b>' + categorys[5] + ' : </b>' + data[6]);
+      $(".Median").html("").append('<b>' + categorys[6] + ' : </b>' + data[7]);
+      $(".3rd").html("").append('<b>' + categorys[7] + ' : </b>' + data[8]);
+      $(".Max").html("").append('<b>' + categorys[8] + ' : </b>' + data[9]);
+      $(".Std\\.").html("").append('<b>' + categorys[9] + ' : </b>' + data[10]);
+    }
+    else {
+      var categorys = ["Count","Missing(%)","Cardinality","Mode","Mode Freq","Mode %","2nd Mode","2nd Mode Freq","2nd Mode %"];
+      $('.Count').html("").append('<b>' + categorys[0] + ' : </b>' + data[1])
+      $('.Missing\\(\\%\\)').html("").append('<b>' + categorys[1] + ' : </b>' + data[2])
+      $(".Cardinality").html("").append('<b>' + categorys[2] + ' : </b>' + data[3]);
+      $(".Mode").html("").append('<b>' + categorys[3] + ' : </b>' + data[4]);
+      $(".Mode").eq(1).html("").append('<b>' + categorys[4] + ' : </b>' + data[5]);
+      $(".Mode").eq(2).html("").append('<b>' + categorys[5] + ' : </b>' + data[6]);
+      $(".2nd").html("").append('<b>' + categorys[6] + ' : </b>' + data[7]);
+      $(".2nd").eq(1).html("").append('<b>' + categorys[7] + ' : </b>' + data[8]);
+      $(".2nd").eq(2).html("").append('<b>' + categorys[8] + ' : </b>' + data[9]);
+    }
+    console.log("Data feature is", data[0]);
     $("td[data-id='" + data[0] + "']:not(:last-child)").each(function (index) {
       console.log(index);
       console.log($(this).html());
@@ -496,59 +540,59 @@
     });
   }
 
-  function replacetablerow(datatype,fileid,feature,data){
-          var tr = document.createElement('tr');
-          console.log("data", data);
-          tr.setAttribute('data-id', feature);
-          tr.setAttribute('class', 'clickable-row')
-          tr.setAttribute('datatype', 'continuous');
-          tr.setAttribute('fileid', fileid);
-          tr.setAttribute('feature-name', feature);
-          var t = "['" + data[0] + "',";
-          for (let i = 1; i < data.length; i++) {
-            if (i == data.length - 1) {
-              t = t + data[i] + ",'Checkbox']";
-            } else {
-              t = t + data[i] + ",";
-            }
-          }
-          tr.setAttribute('datarow', t);
-          console.log(t);
-          var datatype2;
-          if (datatype == "cat") {
-            datatype2 = "categorical"
-          } else {
-            datatype2 = "continuous"
-          }
-          for (let i = 0; i < data.length; i++) {
-            var td = document.createElement('td');
-            td.innerHTML = data[i];
-            td.setAttribute('data-id', feature);
-            td.setAttribute('id', 'clickable');
-            td.setAttribute('fileid', fileid);
-            td.setAttribute('feature-name', feature);
-            td.setAttribute('datatype', datatype2);
-            td.setAttribute('datarow', t);
+  function replacetablerow(datatype, fileid, feature, data) {
+    var tr = document.createElement('tr');
+    console.log("data", data);
+    tr.setAttribute('data-id', feature);
+    tr.setAttribute('class', 'clickable-row')
+    tr.setAttribute('datatype', 'continuous');
+    tr.setAttribute('fileid', fileid);
+    tr.setAttribute('feature-name', feature);
+    var t = "['" + data[0] + "',";
+    for (let i = 1; i < data.length; i++) {
+      if (i == data.length - 1) {
+        t = t + data[i] + ",'Checkbox']";
+      } else {
+        t = t + data[i] + ",";
+      }
+    }
+    tr.setAttribute('datarow', t);
+    console.log(t);
+    var datatype2;
+    if (datatype == "cat") {
+      datatype2 = "categorical"
+    } else {
+      datatype2 = "continuous"
+    }
+    for (let i = 0; i < data.length; i++) {
+      var td = document.createElement('td');
+      td.innerHTML = data[i];
+      td.setAttribute('data-id', feature);
+      td.setAttribute('id', 'clickable');
+      td.setAttribute('fileid', fileid);
+      td.setAttribute('feature-name', feature);
+      td.setAttribute('datatype', datatype2);
+      td.setAttribute('datarow', t);
 
-            tr.appendChild(td);
-          }
-          var td = document.createElement('td');
-          td.setAttribute('data-id', feature);
-          td.setAttribute('id', 'optionmenu');
-          //if datatype is equal to "categorical"
+      tr.appendChild(td);
+    }
+    var td = document.createElement('td');
+    td.setAttribute('data-id', feature);
+    td.setAttribute('id', 'optionmenu');
+    //if datatype is equal to "categorical"
 
-          if (datatype == "cont") {
-            console.log("adding to continuous table");
-            td.innerHTML = '<div class="btn-group"><button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><div class="dropdown-menu"><a fileid=' + fileid + ' column=' + feature + ' id="dropfeaturebutton" class="dropdown-item">Drop</a><div class="dropdown-divider"></div><a fileid=' + fileid + ' datatype=' + datatype + ' column=' + feature + ' id="changebuttoncont" class="dropdown-item">Change to Categorical</a><div class="dropdown-divider"></div>                <a fileid=' + fileid + ' datatype="continuous" datarow=' + t + ' data-id=' + feature + ' id="OpenAnalytics" class="dropdown-item" href="#">Open Analytics</a></div></div></td><td data-id=' + feature + ' fileid=' + fileid + ' datatype="continuous" datarow=' + t + ' id="clickable">                   </td>';
-            tr.appendChild(td);
-            $('#continuoustable tr:last').after(tr);
-          } else {
-            console.log("adding to categorical table");
-            td.innerHTML = '<div class="btn-group"><button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><div class="dropdown-menu"><a fileid=' + fileid + ' column=' + feature + ' id="dropfeaturebutton" class="dropdown-item">Drop</a><div class="dropdown-divider"></div><a fileid=' + fileid + ' datatype=' + datatype + ' column=' + feature + ' id="changebuttoncont" class="dropdown-item">Change to Categorical</a><div class="dropdown-divider"></div>                <a fileid=' + fileid + ' datatype="cat" datarow=' + t + ' data-id=' + feature + ' id="OpenAnalytics" class="dropdown-item" href="#">Open Analytics</a></div></div></td><td data-id=' + feature + ' fileid=' + fileid + ' datatype="cat" datarow=' + t + ' id="clickable">                   </td>';
+    if (datatype == "cont") {
+      console.log("adding to continuous table");
+      td.innerHTML = '<div class="btn-group"><button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><div class="dropdown-menu"><a fileid=' + fileid + ' column=' + feature + ' id="dropfeaturebutton" class="dropdown-item">Drop</a><div class="dropdown-divider"></div><a fileid=' + fileid + ' datatype=' + datatype + ' column=' + feature + ' id="changebuttoncont" class="dropdown-item">Change to Categorical</a><div class="dropdown-divider"></div>                <a fileid=' + fileid + ' datatype="continuous" datarow=' + t + ' data-id=' + feature + ' id="OpenAnalytics" class="dropdown-item" href="#">Open Analytics</a></div></div></td><td data-id=' + feature + ' fileid=' + fileid + ' datatype="continuous" datarow=' + t + ' id="clickable">                   </td>';
+      tr.appendChild(td);
+      $('#continuoustable tr:last').after(tr);
+    } else {
+      console.log("adding to categorical table");
+      td.innerHTML = '<div class="btn-group"><button id="editbutton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><div class="dropdown-menu"><a fileid=' + fileid + ' column=' + feature + ' id="dropfeaturebutton" class="dropdown-item">Drop</a><div class="dropdown-divider"></div><a fileid=' + fileid + ' datatype=' + datatype + ' column=' + feature + ' id="changebuttoncont" class="dropdown-item">Change to Categorical</a><div class="dropdown-divider"></div>                <a fileid=' + fileid + ' datatype="cat" datarow=' + t + ' data-id=' + feature + ' id="OpenAnalytics" class="dropdown-item" href="#">Open Analytics</a></div></div></td><td data-id=' + feature + ' fileid=' + fileid + ' datatype="cat" datarow=' + t + ' id="clickable">                   </td>';
 
-            tr.appendChild(td);
-            $('#categoricaltable tr:last').after(tr);
-          }
+      tr.appendChild(td);
+      $('#categoricaltable tr:last').after(tr);
+    }
   }
 
 
@@ -606,9 +650,7 @@
     });
 
 
-    $("#tablebutton").on("click", function (e) {
-      $("#exampleModalCenter1").modal("show");
-    });
+
     function displayfeatureData(e) {
       var data = $(this).attr("datarow");
     }
@@ -623,7 +665,7 @@
       var datatype = $(this).attr("datatype");
       var datatype2 = datatype;
       $(".modal-body #hideoptions").empty();
-      console.log(datatype);
+      console.log("Datatype at this stage 2 is",datatype);
       var url = "/filedata/" + fileid + "/" + featurename;
       console.log(featurename, fileid);
       var data = $(this).attr("datarow");
@@ -633,7 +675,7 @@
       var categorydata = [];
       if (datatype === "categorical") {
         $(".modal-body #row3").empty();
-        $(".modal-body #row3").append("		  <div id='optionsdiv' class='row'>  <div class='col-md-4'>    <form id='test'>      <h5>Missing Values</h5>      <p id='advice'>asdasdasd</p>      <div class='form-inline'>        <div class='col-md-12'>          <label for='search'>Drop</label>          <input            type='checkbox'            name='search'            id='removecheckbox'            class='form-control'          />        </div>      </div>      <button datatype='categorigcal' id='imputation' type='button' class='btn buttontest btn-primary'>        Make Change     </button>    </form>  </div>  <div class='col-md-4'>    <form id='test' role='form'>      <h5>Encoding</h5>      <p>asdasdasd</p>      <div id='encoding' class='form-inline'>        <div class='col-md-4'>          <label for='search'>Label Encoding</label>          <input            type='checkbox'            name='search'            id='LabelEncoding'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OneHotEncoder</label>          <input            type='checkbox'            name='search'            id='OneHotEncoder'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OrdinalEncoder</label>          <input            type='checkbox'            name='search'            id='OrdinalEncoder'            class='form-control'          />        </div>      </div>      <button id='encodingbutton' type='button' class='btn btn-primary'>Make Change</button>    </form>  </div></div>")
+        $(".modal-body #row3").append("		  <div id='optionsdiv' class='row'>  <div class='col-md-4'>    <form id='test'>      <h5>Missing Values</h5>      <p id='advice'>asdasdasd</p>      <div class='form-inline'>        <div class='col-md-12'>          <label for='search'>Mode</label>          <input            type='checkbox'            name='search'            id='modecheckbox'            class='form-control'          />        </div>      </div>      <button datatype='categorical' id='imputation' type='button' class='btn buttontest btn-primary'>        Make Change     </button>    </form>  </div>  <div class='col-md-4'>    <form id='test' role='form'>      <h5>Encoding</h5>      <p>asdasdasd</p>      <div id='encoding' class='form-inline'>        <div class='col-md-4'>          <label for='search'>Label Encoding</label>          <input            type='checkbox'            name='search'            id='LabelEncoding'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OneHotEncoder</label>          <input            type='checkbox'            name='search'            id='OneHotEncoder'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OrdinalEncoder</label>          <input            type='checkbox'            name='search'            id='OrdinalEncoder'            class='form-control'          />        </div>      </div>      <button id='encodingbutton' type='button' class='btn btn-primary'>Make Change</button>    </form>  </div></div>")
         categorydata = [
           "Feature",
           "Count",
@@ -648,7 +690,7 @@
         ];
       } else if (datatype === "continuous") {
         $(".modal-body #row3").empty();
-        $(".modal-body #row3").append("		<div id='optionsdiv' class='row'>				<div class='col-md-4'>      <form id='test'>	  <h5>Missing Values</h5>	  <p id='advice'>asdasdasd</p><div class='form-inline'><div class='col-md-3'>    <label for='search'>Drop</label>    <input type='checkbox' name='search' id='removecheckbox' class='form-control' /></div><div class='col-md-3'>    <label for='year'>Median</label>    <input type='checkbox' name='year' id='mediancheckbox' class='form-control' /></div><div class='col-md-3'>    <label for='year'>Mode</label>    <input type='checkbox' name='year' id='modecheckbox' class='form-control' /></div><div  class='col-md-3'>    <label for='year'>Mean</label>    <input type='checkbox' name='year' id='meancheckbox' class='form-control' /></div></div>    	<button datatype = 'Continuous' id='imputation' type='button' class='btn btn-primary'>					Make Change			</button>  </form>		</div>		<div class='col-md-4'>			<form id='test' role='form'>      <h5>      Clamp Transformation      </h5>      <p>      asdasdasd      </p>				<div id='clamptransformation' class='form-inline'>          <div  class='col-md-6'>            <label for='year'>Upper Value</label>            <input type='text' size='3' name='year' id='uppervalue' class='form-control'/>              </div><br>          <div class='col-md-6'>            <label for='year'>Lower Value</label>            <input type='text' size='3' name='year' id='lowervalue' class='form-control' />          </div>				</div>				<button type='button' id='clampButton'class='btn btn-primary'>					Make Change				</button>			</form>		</div></div>")
+        $(".modal-body #row3").append("		<div id='optionsdiv' class='row'>				<div class='col-md-4'>      <form id='test'>	  <h5>Missing Values</h5>	  <p id='advice'>asdasdasd</p><div class='form-inline'><div class='col-md-3'>    <label for='year'>Median</label>    <input type='checkbox' name='year' id='mediancheckbox' class='form-control' /></div><div class='col-md-3'>    <label for='year'>Mode</label>    <input type='checkbox' name='year' id='modecheckbox' class='form-control' /></div><div  class='col-md-3'>    <label for='year'>Mean</label>    <input type='checkbox' name='year' id='meancheckbox' class='form-control' /></div></div>    	<button datatype = 'Continuous' id='imputation' type='button' class='btn btn-primary'>					Make Change			</button>  </form>		</div>		<div class='col-md-4'>			<form id='test' role='form'>      <h5>      Clamp Transformation      </h5>      <p>      asdasdasd      </p>				<div id='clamptransformation' class='form-inline'>          <div  class='col-md-6'>            <label for='year'>Upper Value</label>            <input type='text' size='3' name='year' id='uppervalue' class='form-control'/>              </div><br>          <div class='col-md-6'>            <label for='year'>Lower Value</label>            <input type='text' size='3' name='year' id='lowervalue' class='form-control' />          </div>				</div>				<button type='button' id='clampButton'class='btn btn-primary'>					Make Change				</button>			</form>		</div></div>")
         categorydata = [
           "Feature",
           "Count",
@@ -674,6 +716,7 @@
       $(".modal-header #h1modal").append(data[0]);
       $(".modal-body #img").attr("src", "");
       $(".modal-body #img2").remove();
+      $(".modal-body #row4").css("display", "none");
       $("#summarymodal").empty();
       var quartile1 = 0;
       var quartile3 = 0;
@@ -691,14 +734,27 @@
           if (data[i] == 0.0) {
             $("#advice").text("No imputation required as 0 missing values");
           }
+          //if data[i] is more than 0 but less than 60 imputation is required
+          else if (data[i] > 0.0 && data[i] <= 30.0) {
+            $("#advice").text("Imputation is required.");
+          }
+          else if (data[i] > 0.0 && data[i] <= 30.0) {
+            $("#advice").text("Be reluctant to perform imputation. May lead to reduced performance.");
+          }
+          //if data[i] is equal to or greater than 60
+          else if (data[i] >= 60.0) {
+            $("#advice").text("Highly recommended to drop this feature due to high missing data. ");
+          }
         }
+        
         $("#buttonclickedgraph").css("visibility", "visible");
         $(".modal-body #hideoptions").css("visibility", "visible");
         console.log(data[i]);
 
         if (data[i] != " 'Checkbox'" && data[i] != "'Checkbox'") {
+          
           $("#summarymodal").append(
-            '<p id=' + categorydata[i] + '>' +
+            '<p class=' + categorydata[i] + '>' +
             "<b>" +
             categorydata[i] +
             "</b> : " +
@@ -713,7 +769,8 @@
       console.log(q1);
       console.log(q3);
       var url1 = "/filedata/whiskerValues/Q1/" + q1 + "/Q3/" + q3;
-
+      $(".modal-body #row3").css("display", "block");
+      $(".modal-body #row").css("display", "block");
       console.log(quartile1);
       console.log(quartile3);
       $.ajax({
@@ -727,6 +784,7 @@
 
         },
       });
+      console.log("Datatype at this stage 3 is",datatype);
       if (datatype == "cat") {
         datatype = "categorical";
       } else {
@@ -765,7 +823,8 @@
             }
           }
           $("#exampleModalCenter").modal("show");
-          $("#exampleModalCenter").attr("datatype", datatype);
+          console.log("Datatype at this stage 3 is",datatype);
+          $("#exampleModalCenter").attr("datatype", datatype2);
         },
       });
 
@@ -828,11 +887,65 @@
         data: { fileid: fileid, feature: feature },
         success: function () {
           console.log("feature deleted");
-          location.reload(true);
-        },
-      });
-    });
+          url = "/filedata/" + fileid + "/nullmatrix/";
+          $.ajax({
+            url: url,
+            type: "post",
+            data: { fileid: fileid },
+            success: function (data) {
+          
+                srcvar = "data:image/png;base64," + data;
+                console.log("srcvar",srcvar);
+                $("#nullmatrix").attr("src", srcvar);
+                //remove tr[data-id=' + feature + '] parent
+                $("tr[data-id='" + feature + "']").remove();
+                //count how many trs in continuoustable
+                var continuouscount = $('#continuoustable .clickable-row').length;
+                console.log("Continuoiscount", continuouscount);
+                //get each data-id in .clickablerow and concatenate "," in var
+                var continuousid = "";
+                for (let i = 0; i < continuouscount; i++) {
+                  continuousid = continuousid + $('#continuoustable .clickable-row').eq(i).attr("data-id") + ",";
+                }
+                
+                //count how many trs in categoricaltable
+                var categoricalcount = $('#categoricaltable .clickable-row').length;
+                console.log("Categoricalcount", categoricalcount);
+                var totalcount = continuouscount+categoricalcount;
+                //change totalfeaturecount text to totalcount
+                $("#totalfeaturecount").text("Total Features: "+totalcount);
+                //calculate percentage of continouscount out of totalcount
+                var continuouscountpt = (continuouscount/totalcount)*100;
+                
+                //change continousprogressbar to continuouscount with 2 decimal points
+                $("#continuousprogressbar").attr("aria-valuenow", continuouscount);
+                //change continuousprogressbar  style width to continuouscountpt
+                $("#continuousprogressbar").attr("style", "width: "+continuouscountpt+"%");
+                //change continuousprogressbar span text to continuouscount and continuouscount to 1 decimal place
+                $("#continuousprogressbar span").text(continuouscount+ " (" +continuouscountpt+"%)");
+                //format categoricalcount to 2 decimal places
+                var categoricalcountpt = (categoricalcount/totalcount)*100;
+                
 
+                //change categoricalprogressbar to categoricalcount with 2 decimal points
+                $("#categoricalprogressbar").attr("aria-valuenow", categoricalcount);
+                //change categoricalprogressbar  style width to categoricalcountpt
+                $("#categoricalprogressbar").attr("style", "width: "+categoricalcountpt+"%");
+                //change categoricalprogressbar span text to categoricalcount and categoricalcount to 1 decimal place
+                $("#categoricalprogressbar span").text(categoricalcount + " (" + categoricalcountpt+"%)");
+                var cont = $("#viewrelationships").attr("cont",continuousid);
+
+
+        },
+    });
+        },
+
+      });
+
+    //remove this element from the table
+
+
+  });
     $(document).on('click', '#changebuttoncat,#changebuttoncont', function (e) {
       sessionStorage.setItem('scrollpos', window.scrollY);
       console.log("Changebuttoncat");
@@ -856,7 +969,7 @@
         data: { fileid: fileid, feature: feature },
         success: function (data) {
           var data = JSON.parse(data);
-          replacetablerow(datatype,fileid,feature,data);
+          replacetablerow(datatype, fileid, feature, data);
 
 
           var scrollpos = sessionStorage.getItem('scrollpos');
@@ -973,9 +1086,9 @@
       $.ajax({
         url: url,
         type: "post",
-        data: { datatype:datatype,fileid: fileid, featurename: featurename, change: change },
+        data: { datatype: datatype, fileid: fileid, featurename: featurename, change: change },
         success: function (dataarray) {
-          
+
           var data = JSON.parse(dataarray);
 
 
@@ -990,10 +1103,10 @@
             dataarray[i] = dataarray[i].replace(/\[/g, '');
 
           }
-     
+
 
           console.log(dataarray);
-          replaceSummary(dataarray);
+          replaceSummary(dataarray, datatype);
           srcvar = "data:image/png;base64," + data[1];
           $(".modal-body .imagecontainer").prepend('<div class = "imgages2" id="' + 60 + '"><label>Bins  <input charttype="after changes" id = "' + 60 + '" onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
           console.log("feature deleted");
@@ -1004,6 +1117,7 @@
     $(document).on('click', '#encodingbutton', function (e) {
       var featurename = $("#exampleModalCenter").attr("featurename");
       var fileid = $("#exampleModalCenter").attr("fileid");
+      var datatype = $("#exampleModalCenter").attr("datatype");
       var change = "";
       if ($("#LabelEncoding:checked").val() == "on") {
         change = "LabelEncoding";
@@ -1026,7 +1140,7 @@
           console.log("outliers deleted");
           var data = JSON.parse(data);
           console.log(data);
-          replaceSummary(data);
+          replaceSummary(data, datatype);
 
         },
       });
@@ -1067,7 +1181,7 @@
           console.log("outliers deleted");
           var data = JSON.parse(data);
           console.log(data);
-          replaceSummary(data);
+          replaceSummary(data, datatype);
         },
       });
 
@@ -1078,7 +1192,7 @@
       var cont = $("#viewrelationships").attr("cont");
       var url = "/filedata/" + fileid + "/correlations/" + cont;
       $("#summarymodal").empty();
-      $("#summarymodal").append("<h1>Multivariate Analysis");
+      $("#summarymodal").append("<h1>Multivariate Analysis <span style='color:#007bff;' class='fa fa-question-circle' data-toggle='tooltip' data-placement='right' title='The cardinality is the total unique values'></span></h1>");
       $(".modal-body #img").attr("src", "");
       $(".modal-header #h1modal").text("");
       $(".modal-body #hideoptions").css("visibility", "hidden");
@@ -1086,6 +1200,8 @@
       $("#buttonclickedgraph").remove();
       $(".modal-body .imagecontainer1").empty();
       $(".modal-body #imagerow2 p").remove();
+      $(".modal-body #row3").css("display", "none");
+      $(".modal-body #row4").css("display", "none");
       $("#imagerow2 .selectdiv").remove();
       $(".modal-body #row3 #hideoptions").remove();
       $.ajax({
@@ -1110,6 +1226,7 @@
             $("#dropfeature").hide();
             $("#save").hide();
             $("#exampleModalCenter").modal("show");
+            $('[data-toggle="tooltip"]').tooltip();
           }
         },
       });
@@ -1121,17 +1238,38 @@
       var url = "/filedata/" + fileid + "/bivariate/" + target;
       $("#summarymodal #summaryp").remove();
       $(".modal-body #row3 #hideoptions").remove();
-      $("#summarymodal").append("<h1>BiVariate Analysis");
+      $("#summarymodal").empty();
+      
+      $("#row4").append('<button id="buttongenerate" class="btn btn-success mx-auto d-bloc" style="justify-content:left;"type="button" id="">Generate Graph</button>');
+      //add onclick event to button where onclick event opens exampleModalCenter1 
+      
+      //add onclick attribute where t is value to #buttongenerate
+      $("#buttongenerate").attr("onclick", "$('#exampleModalCenter1').modal('show');");
+      $("#summarymodal").append("<h1>Bivariate Analysis <span style='color:#007bff;' class='fa fa-question-circle' data-toggle='tooltip' data-placement='right' title='The cardinality is the total unique values'></span></h1>");
+        //empty #summarymodal
+
 
 
       $(".modal-body #img").attr("src", "");
       $(".modal-header #h1modal").text("");
       $(".modal-body #hideoptions").css("visibility", "hidden");
       $(".modal-body #img2").remove();
-      $("#buttonclickedgraph").remove();
-
+      
+      $(".modal-body #row4").css("display", "block");
       $(".modal-body #imagerow2 p").remove();
       $("#imagerow2 .selectdiv").remove();
+      //for each 'p' in summarymodal, set css display none
+      $("#summarymodal p").each(function () {
+        $(this).css("display", "none");
+      });
+      
+
+     
+
+
+      $(".modal-body #row3").css("display", "none");
+      $(".modal-body #row").css("display", "none");
+
       $.ajax({
         url: url,
         type: "post",
@@ -1150,16 +1288,18 @@
             srcvar = "data:image/png;base64," + images[i];
 
             if (i < 3) {
-              $(".modal-body .imagecontainer").prepend('<div class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+              $(".modal-body .imagecontainer").prepend('<div style="width:20%;" class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
 
 
             } else {
-              $(".modal-body .imagecontainer").prepend('<div class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
+              $(".modal-body .imagecontainer").prepend('<div style="width:20%;" class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
 
             }
             $("#dropfeature").hide();
             $("#save").hide();
             $("#exampleModalCenter").modal("show");
+            //enable all tooltips
+            $('[data-toggle="tooltip"]').tooltip();
           }
         },
       });
@@ -1175,25 +1315,28 @@
       $("#trainbutton").attr("href", url);
     });
 
-    $("#buttonclickedgraph").click(function () {
+    $("#createchart").click(function () {
       console.log("test");
       var fileid = $("#viewrelationships").attr("fileid");
+      //get #charttype selected value
+      var type = $(".selectdiv #charttype").find(":selected").val();
       var xaxis = $(".selectdiv #xaxis").find(":selected").text();
       var yaxis = $(".selectdiv #yaxis").find(":selected").text();
       console.log("Xaxis", xaxis);
       console.log("Y axis", yaxis);
+      console.log("Y axis", type);
       xaxis = xaxis.trim();
       yaxis = yaxis.trim();
+      type = type.trim();
       $(".modal-body #img2").remove();
-      var url = "/filedata/" + fileid + "/newgraph/" + xaxis + "/" + yaxis;
+      var url = "/filedata/" + fileid + "/newgraph/" + xaxis + "/" + yaxis + "/" + type;
       $.ajax({
         url: url,
         type: "post",
         data: { xaxis: xaxis, yaxis: yaxis, fileid: fileid },
         success: function (plot_url2) {
-          $(".modal-body .imagecontainer > div:last").before(
-            '<div class = "imgages2" "><img src=" ' + "data:image/png;base64," + plot_url2 + '"' + 'id="img ' + '"' + 'alt="Chart"></div>'
-          );
+          srcvar = "data:image/png;base64," + plot_url2;
+          $(".modal-body .imagecontainer").prepend('<div style="width:20%;" class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
 
 
 
@@ -1214,19 +1357,18 @@
 <div class="float-container">
 
   <div class="float-child">
-    <h1>Summary <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
-          data-original-title="Share"></span></a>
+    <h1>Summary
     </h1>
-    <p>Total Features: {{featurecount}}</p>
+    <p id="totalfeaturecount" >Total Features: {{featurecount}}</p>
     <p>Total Rows: {{totalrows}}</p>
     <div class="row">
       <label>Continuous Features</label>
 
       <div class="col-md-8">
         <div class="progress">
-          <div class="progress-bar bg-warning" role="progressbar" style="width: {{contcountpt}}%"
+          <div id="continuousprogressbar" class="progress-bar bg-warning" role="progressbar" style="width: {{contcountpt}}%"
             aria-valuenow="({{'%0.2f'| format(contcountpt|float)}}%)" aria-valuemin="0" aria-valuemax="100">
-            <span>{{contcount}} ({{'%0.1f'| format(contcountpt|float)}}%) %)</span>
+            <span>{{contcount}} ({{'%0.1f'| format(contcountpt|float)}}%) </span>
           </div>
         </div>
       </div>
@@ -1234,10 +1376,10 @@
     <div class="row">
       <label>Categorical Features</label>
       <div class="col-md-8">
-        <div class="progress">
-          <div class="progress-bar bg-danger" role="progressbar" style="width: {{catcountpt}}%"
+        <div  class="progress">
+          <div id="categoricalprogressbar"class="progress-bar bg-danger" role="progressbar" style="width: {{catcountpt}}%"
             aria-valuenow="{{catcountpt|float}}" aria-valuemin="0" aria-valuemax="100">
-            <span>{{catcount}} ({{'%0.1f'| format(catcountpt|float)}}%) %)</span>
+            <span>{{catcount}} ({{'%0.1f'| format(catcountpt|float)}}%)</span>
           </div>
         </div>
       </div>
@@ -1245,7 +1387,7 @@
   </div>
   <div class="float-child">
     <h1>Target Selection <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
-          data-original-title="Share"></span></a>
+          data-original-title="This is the feature you want to predict through the trained model."></span></a>
     </h1>
     <p>
       Select a feature to be the target<br />(what you want your model to
@@ -1278,8 +1420,8 @@
     </div>
     <form id="myform">
       <table id="continuoustable" class="table table-hover">
-        <h1 class="text-center">Continuous Features<a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
-              data-original-title="Share"></span></a></h1>
+        <h1 class="text-center">Continuous Features <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+              data-original-title="Continous features are variables that have an infinte number of possibilities"></span></a></h1>
 
         <tr class="thead-dark">
           {% for col in continouscolumnnames %}
@@ -1357,8 +1499,8 @@
         {% endfor %}
       </table>
       <table id="categoricaltable" class="table table-hover">
-        <h1 class="text-center">Categorical Features<a href="#"><span class="fa fa-question-circle"
-              data-toggle="tooltip" data-original-title="Share"></span></a></h1>
+        <h1 class="text-center">Categorical Features <a href="#"><span class="fa fa-question-circle"
+              data-toggle="tooltip" data-original-title="Categorical features are values that are confined within a particular range."></span></a></h1>
         <tr class="thead-dark">
           {% for col in categoricalcolumnnames %}
           <th title="Tooltip">
@@ -1369,28 +1511,19 @@
             {%elif col == "% Missing" %}
             <div data-toggle="tooltip" data-placement="top" title="Percentage of missing values">{{col}}</div>
             {%elif col == "Cardinality" %}
-            <div data-toggle="tooltip" data-placement="top" title="The cardinality is the total unique values">{{col}}
-            </div>
+            <div data-toggle="tooltip" data-placement="top" title="The cardinality is the total unique values">{{col}}</div>
             {%elif col == "Mode" %}
-            <div data-toggle="tooltip" data-placement="top" title="Most frequently occurring value in a feature">{{col}}
-            </div>
+            <div data-toggle="tooltip" data-placement="top" title="Most frequently occurring value in a feature">{{col}}</div>
             {%elif col == "Mode Freq" %}
-            <div data-toggle="tooltip" data-placement="top" title="The number of instances of the mode value">{{col}}
-            </div>
+            <div data-toggle="tooltip" data-placement="top" title="The number of instances of the mode value">{{col}}</div>
             {%elif col == "Mode %" %}
-            <div data-toggle="tooltip" data-placement="top"
-              title="The percentage of the mode frequency out of the total number of instances in the feature">{{col}}
-            </div>
+            <div data-toggle="tooltip" data-placement="top"title="The percentage of the mode frequency out of the total number of instances in the feature">{{col}}</div>
             {%elif col == "2nd Mode" %}
-            <div data-toggle="tooltip" data-placement="top" title="Second most frequently occurring value in a feature">
-              {{col}}</div>
+            <div data-toggle="tooltip" data-placement="top" title="Second most frequently occurring value in a feature">{{col}}</div>
             {%elif col == "2nd Mode Freq" %}
-            <div data-toggle="tooltip" data-placement="top" title="The number of instances of the second mode value ">
-              {{col}}</div>
+            <div data-toggle="tooltip" data-placement="top" title="The number of instances of the second mode value ">{{col}}</div>
             {%elif col == "2nd Mode %" %}
-            <div data-toggle="tooltip" data-placement="top"
-              title="The percentage of the second mode frequency out of the total number of instances in the feature">
-              {{col}}</div>
+            <div data-toggle="tooltip" data-placement="top"title="The percentage of the second mode frequency out of the total number of instances in the feature">{{col}}</div>
             {%endif%}
           </th>
           {% endfor %}
@@ -1433,10 +1566,12 @@
     </form>
   </div>
   <div class="float-child1">
-    <h1>Row Data<a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
-          data-original-title="Share"></span></a></h1>
+    <h1>Row Data <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
+          data-original-title="Here you can remove rows of data that are missing particular features. It is highly recommened to remove rows that are missing the target feature."></span></a></h1>
     <div id="rowdata"></div>
-    <img src="data:image/png;base64,{{plot_url}}">
+    <h1>Nullity Matrix <span style="color:#007bff;" class="fa fa-question-circle" data-toggle="tooltip"
+      data-original-title="Nullity matrices can be useful for determining the distribution of missing values across features and rows."></span></a></h1>
+    <img id="nullmatrix" src="data:image/png;base64,{{plot_url}}">
 
   </div>
 
@@ -1447,8 +1582,9 @@
   aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document" id="featuremodalcontainer">
     <div class="modal-content">
-      <div class="modal-header">
-
+      
+      <div id="header1" class="modal-header">
+       
         <h3 featurename="" class="modal-title w-100 text-center" id="h1modal">I'm centered title</h3>
 
         <button type="button" id="dropfeature" class="btn btn-danger ">
@@ -1464,39 +1600,15 @@
             <div id="summarymodal" class="col-sm-12 align-self-center"></div>
           </div>
           <div id="row3"></div>
-
+          <div id="row4">
+          </div>
 
           <div class="row" id="row1">
             <div class="imagecontainer ">
 
 
-              <div id="selectdiv">
-                <p>Compare with other features</p>
-                <div class="selectdiv">
-                  <p>X Axis:</p>
-                  <select id="xaxis" name="target">
-                    <option value="{{target[0]}}" selected>
-                      {{target[0]}}
-                    </option>
-                    {% for target in target[1:] %}
-                    <option value="{{target}}">{{target}}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="selectdiv">
-                  <p>Y Axis:</p>
-                  <select id="yaxis" name="target">
-                    <option value="{{target[0]}}" selected>
-                      {{target[0]}}
-                    </option>
-                    {% for target in target[1:] %}
-                    <option value="{{target}}">{{target}}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <button type="button" id="buttonclickedgraph">Click!</button>
-              </div>
-              
+
+
 
             </div>
             <div class="imagecontainer1"></div>
@@ -1542,6 +1654,66 @@
 
         </script>
         </body>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      
+        <form>
+          <div class="form-group row">   
+            <label for="charttype" class="text-center col-sm-12 col-form-label">Type <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+              data-original-title=""></span></a></label>  
+          <div class="col-sm-10 selectdiv">
+            <select id="charttype" name="target">
+              <option value="boxplot" selected>Box Plot</option>
+              <option value="scatter" >Scatter</option>
+              <option value="violin" >Violin</option>
+              <option value="hist" >Histogram</option>
+            </select>
+          </div>
+          </div>
+          <div class="form-group row">   
+            <label for="charttype" class="text-center col-sm-12 col-form-label">X Axis <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+              data-original-title=""></span></a></label>  
+          <div class="col-sm-10 selectdiv">
+            <select id="xaxis" name="target">
+              <option value="{{target[0]}}" selected>
+                {{target[0]}}
+              </option>
+              {% for target in target[1:] %}
+              <option value="{{target}}">{{target}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          </div>
+          <div class="form-group row">   
+            <label for="charttype" class="text-center col-sm-12 col-form-label">Y Axis <a style='color:#007bff;' style="font-size:20px;"><span data-placement="right" class=" fa fa-question-circle" data-toggle="tooltip"
+              data-original-title=""></span></a></label>  
+          <div class="col-sm-10 selectdiv">
+            <select id="yaxis" name="target">
+              <option value="{{target[0]}}" selected>
+                {{target[0]}}
+              </option>
+              {% for target in target[1:] %}
+              <option value="{{target}}">{{target}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          </div>
+          </form>
+      <div class="modal-footer">
+
+        <button class="btn btn-success btn-large btn-block" id="createchart">Create Chart</button>
       </div>
     </div>
   </div>

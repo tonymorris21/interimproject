@@ -42,7 +42,7 @@ def predict_values(modelid,predict_values):
      data = pickle.load(modelfile)
 
      dtest = data.predict([test])
-     print(classnames1)
+     print(json.loads(classnames1))
      print("prediction",dtest)
      
      return json.dumps(dtest.tolist())

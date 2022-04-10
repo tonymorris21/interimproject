@@ -107,6 +107,9 @@
 
 </style>
 <script>
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
     $(document).ready(function () {
       $("#predict").click(function () {
       var modelid = $("#predict").attr("modelid");

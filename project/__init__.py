@@ -5,22 +5,17 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from sqlalchemy import *
 from waitress import serve
-from dask.distributed import Client, LocalCluster
 
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__,template_folder='./templates',static_folder='./static')
-
     app.config['SECRET_KEY'] = 'secret-key'
 
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
     db.init_app(app)
 
-
- 
-    
     from auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
@@ -68,5 +63,6 @@ if __name__ == '__main__':
     
     app = create_app()
     app.jinja_env.cache = {}
-    #app.run(threaded=True,debug=True)
-    serve(app)
+    
+    app.run(threaded=True,debug=True)
+    #serve(app)
