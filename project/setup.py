@@ -10,6 +10,15 @@ setup(
         'python-dotenv',
         'Flask-Migrate',
         'zipp>=3.1.0',
-        'waitress'
+        'waitress',
+        'Flask-login',
+        'json2html',
+        'pandas',
+        'sklearn',
+        'matplotlib',
+        'seaborn',
+        'missingno',
+        'pyarrow',
+        'bs4'
     ],
 )
