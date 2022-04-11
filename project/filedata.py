@@ -1,14 +1,9 @@
-from locale import normalize
-import os
-from flask import Blueprint,render_template, redirect, url_for, request, flash, session
-from pydantic import Json
-from werkzeug.security import generate_password_hash, check_password_hash
-from models import User
-from __init__ import db
+
+from flask import Blueprint,render_template, redirect, url_for, request, session
+
 from models import File
-from flask_login import login_user, logout_user, login_required, current_user
-from werkzeug.utils import secure_filename
-from flask import current_app
+
+
 import numpy as np
 import pandas as pd
 from pandas.plotting import scatter_matrix
@@ -21,7 +16,6 @@ import matplotlib.pyplot as plt
 matplotlib.use('Agg')
 import base64
 import collections
-from collections import Counter
 from sklearn.preprocessing import OrdinalEncoder
 import seaborn as sn
 from flask import send_file
@@ -29,16 +23,9 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 from numpy import array
 import missingno as msno
-import vaex
 import time
 import pyarrow.feather as feather
-import random
 import json
-from random import sample
-from numba import jit
-from timeit import default_timer as timer
-from datetime import timedelta
-import profile
 
 filedata = Blueprint('filedata', __name__)
 

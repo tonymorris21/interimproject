@@ -2,9 +2,8 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_migrate import Migrate
 from sqlalchemy import *
-from waitress import serve
+
 
 db = SQLAlchemy()
 

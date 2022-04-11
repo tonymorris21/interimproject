@@ -1,40 +1,35 @@
 import os
-from flask import Blueprint,render_template, redirect, url_for, request, flash, session
-from werkzeug.security import generate_password_hash, check_password_hash
-from models import User
+from flask import Blueprint,render_template, request, session
+
 from __init__ import db
 from models import File,Model
-from flask_login import login_user, logout_user, login_required, current_user
-from werkzeug.utils import secure_filename
+
 from flask import current_app
 import numpy as np
 import pandas as pd
-import sklearn
+
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix, plot_confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix, plot_confusion_matrix
 import matplotlib.pyplot as plt
 import pickle
 from io import BytesIO
 import base64
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
 import uuid
 from sklearn.naive_bayes import GaussianNB
 from sklearn import preprocessing,metrics
-import json 
+
 from datetime import date
 from urllib import parse
-import json
+
 from flask import send_file
 from bs4 import BeautifulSoup
 import seaborn as sn
 from sklearn import preprocessing
-import time
+
 train = Blueprint('train', __name__)
 
 

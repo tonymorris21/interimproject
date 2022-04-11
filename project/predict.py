@@ -1,12 +1,8 @@
 import pickle
-from __init__ import db
 import json
-from models import File,Model
-from flask import Blueprint,render_template, redirect, url_for, request, flash, session
+from models import Model
+from flask import Blueprint,render_template
 import numpy as np
-import pandas as pd
-from flask import jsonify
-from flask_login import login_required, current_user
 
 predict = Blueprint('predict', __name__)
 

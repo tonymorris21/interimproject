@@ -1,6 +1,0 @@
-"filename", "language", "SQL", "Python", "Ini", "comment", "blank", "total"
-"c:\Users\Tony\Desktop\interimproject\flask_profiler.sql", "SQL", -22, 0, 0, -2, 0, -24
-"c:\Users\Tony\Desktop\interimproject\migrations\alembic.ini", "Ini", 0, 0, -38, 0, -13, -51
-"c:\Users\Tony\Desktop\interimproject\migrations\env.py", "Python", 0, -41, 0, -32, -19, -92
-"c:\Users\Tony\Desktop\interimproject\migrations\versions\fdaf0cb70533_initial_migration.py", "Python", 0, -10, 0, -12, -7, -29
-"Total", "-", -22, -51, -38, -46, -39, -196
