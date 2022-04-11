@@ -9,5 +9,7 @@ setup(
         'Flask',
         'python-dotenv',
         'Flask-Migrate',
+        'zipp>=3.1.0',
+        'waitress'
     ],
 )
