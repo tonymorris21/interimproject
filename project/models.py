@@ -1,3 +1,4 @@
+from flask import current_app as app
 from flask_login import UserMixin
 from __init__ import db
 
@@ -28,6 +29,7 @@ class Model(db.Model):
     target = db.Column(db.String(100))
     location = db.Column(db.String(10000))
     classnames = db.Column(db.String(10000))
+    feature_names = db.Column(db.String(1000))
     createddate = db.Column(db.Date)
     accuracy = db.Column(db.Integer)
     confusion_matrix = db.Column(db.String(10000))

@@ -443,7 +443,7 @@ def newgraph(fileid,xaxis,yaxis,type):
         plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
         plt.close('all')
     if type == "boxplot":
-        sn.boxplot(y=df[yaxis], data=df)
+        sn.boxplot(y=df[yaxis], x=df[xaxis], data=df)
         plt.xlabel(xaxis)
         plt.ylabel(yaxis)
         plt.title("Box Plot")
@@ -481,7 +481,7 @@ def generatebivariate(target,fileid):
             img.seek(0)
             plt.close()
             plot_url2 = base64.b64encode(img.getvalue()).decode('utf8')
-            images = images + "," + plot_url
+            images = images + "," + plot_url2
                
     plt.close('all')
     return str(images)

@@ -29,6 +29,7 @@ from flask import send_file
 from bs4 import BeautifulSoup
 import seaborn as sn
 from sklearn import preprocessing
+import json
 
 train = Blueprint('train', __name__)
 
@@ -39,23 +40,17 @@ def trainpage(fileid,target):
 
 @train.route('/train/<fileid>/algorithm/<algorithm>/target/<target>/param/<param>', methods=['POST','GET'])
 def train_data(fileid,algorithm,target,param):
-    print("test train")
-    
-    print(request.get_data())
     
     parsed = parse.unquote(param)
-    print(parsed)
     parsed= parsed.replace("{","")
     parsed= parsed.replace("}","")
     parsed= parsed.replace('"','')
     parsed = parsed.split(",")
 
-    print(parsed)
     elem = dict()
     for parsed in parsed:
         elem1 = parsed.split(":")
         elem[elem1[0]] = elem1[1]
-    print(elem)
 
     file = File.query.filter_by(fileid=fileid).first()
     dfd = pd.read_csv(file.location)
@@ -86,7 +81,7 @@ def train_data(fileid,algorithm,target,param):
     else:
         split = 0.25
     print("Split is",split)
-    X_train,X_test,y_train,y_test=train_test_split(X,Y,test_size=split,shuffle=True, random_state=int(randomstate))
+    X_train,X_test,y_train,y_test=train_test_split(X,Y,test_size=split, random_state=int(randomstate))
 
     # if key 'Kernel' is present in elem, then use it as kernel
     if 'Kernel' in elem:
@@ -118,26 +113,28 @@ def train_data(fileid,algorithm,target,param):
         max_features = 'auto'
 
 
-    if algorithm == "RF" : modelid, plot_url, accuracy, tables = RFC(max_features,ntree,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
-    elif algorithm == "NB" : modelid, plot_url, accuracy, tables = naivebayes(var_smoothing,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
-    elif algorithm == "KNN" : modelid, plot_url, accuracy, tables = KNN(k,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
-    elif algorithm == "SVC" : modelid, plot_url, accuracy, tables = svc(Kernel,dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+    if algorithm == "RF" : modelid, plot_url, accuracy, tables = RFC(max_features,ntree,
+    dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+    elif algorithm == "NB" : modelid, plot_url, accuracy, tables = naivebayes(var_smoothing,
+    dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+    elif algorithm == "KNN" : modelid, plot_url, accuracy, tables = KNN(k,
+    dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
+    elif algorithm == "SVC" : modelid, plot_url, accuracy, tables = svc(Kernel,
+    dfd[target],X_train,X_test,y_train,y_test,fileid,target,featurenames)
 
     return render_template('modelinfo.html', modelid=modelid,confusion_matrix=plot_url,accuracy=accuracy,tables=tables,algorithm=algorithm,target=target)
 
 
 
 def naivebayes(var_smoothing,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
- 
-
     gaussian = GaussianNB(var_smoothing=var_smoothing)
     gaussian.fit(X_train, y_train)
-    gaussian.feature_names = feature_names
     Y_pred = gaussian.predict(X_test) 
     accuracy = accuracy_score(y_test,Y_pred)
     algorithm = "NB"
     classnames = targetdf.unique()
-    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,classnames,gaussian,accuracy,y_test,X_test,Y_pred)
+    modelid, plot_url, accuracy, tables = toDatabase(feature_names,
+    target,algorithm,classnames,gaussian,accuracy,y_test,X_test,Y_pred)
     return modelid, plot_url, accuracy, tables
 
 def KNN(k,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
@@ -153,14 +150,13 @@ def KNN(k,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
 
 
     algorithm = "KNN"
-    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),knn,accuracy,y_test,X_test,Y_pred)
+    modelid, plot_url, accuracy, tables = toDatabase(feature_names,target,algorithm,targetdf.unique(),knn,accuracy,y_test,X_test,Y_pred)
     return modelid, plot_url, accuracy, tables
 def RFC (max_features,ntree,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
 
 
     rf = RandomForestClassifier(max_features=max_features,n_estimators=ntree)
     rf.fit(X_train, y_train)
-    rf.feature_names = feature_names
     rf.score(X_test, y_test)
     rf.score(X_train,y_train)
     Y_pred = rf.predict(X_test) 
@@ -168,7 +164,7 @@ def RFC (max_features,ntree,targetdf,X_train,X_test,y_train,y_test,fileid,target
     accuracy = accuracy_score(y_test,Y_pred)
 
     algorithm = "RF"
-    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),rf,accuracy,y_test,X_test,Y_pred)
+    modelid, plot_url, accuracy, tables = toDatabase(feature_names,target,algorithm,targetdf.unique(),rf,accuracy,y_test,X_test,Y_pred)
     return modelid, plot_url, accuracy, tables
 
 def svc(Kernel,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_names):
@@ -186,17 +182,14 @@ def svc(Kernel,targetdf,X_train,X_test,y_train,y_test,fileid,target,feature_name
 
     plt.show()
     algorithm = "SVC"
-    modelid, plot_url, accuracy, tables = toDatabase(target,algorithm,targetdf.unique(),svc,accuracy,y_test,X_test,Y_pred)
+    modelid, plot_url, accuracy, tables = toDatabase(feature_names,target,algorithm,targetdf.unique(),svc,accuracy,y_test,X_test,Y_pred)
     return modelid, plot_url, accuracy, tables
 
-def toDatabase(target,algorithm,classnames,model,accuracy,y_test,X_test,Y_pred):
+def toDatabase(feature_names,target,algorithm,classnames,model,accuracy,y_test,X_test,Y_pred):
 
     cv = classification_report(y_test, Y_pred)
-    print(cv)
     classreport = report_to_df(cv)
-    metrics.plot_roc_curve(model, X_test, y_test) 
     cm = confusion_matrix(y_test, Y_pred)
-    print(f1_score(y_test, Y_pred, average="macro"))
     ax= plt.subplot()
     sn.heatmap(cm, annot=True, fmt='g', ax=ax) #annot=True to annotate cells, ftm='g' to disable scientific notation
     ax.set_xlabel('Predicted labels')
@@ -205,8 +198,6 @@ def toDatabase(target,algorithm,classnames,model,accuracy,y_test,X_test,Y_pred):
     ax.xaxis.set_ticklabels(classnames)
     ax.yaxis.set_ticklabels(np.flip(classnames))
     img = BytesIO()
-
-
     plt.title('Confusion matrix for our classifier')
     plt.savefig(img, format='png')
     plt.close()
@@ -217,28 +208,22 @@ def toDatabase(target,algorithm,classnames,model,accuracy,y_test,X_test,Y_pred):
 
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
     projectid = session['projectid']
-
-
-
     createddate = date.today()
-
-
     tables=[classreport.to_html(index=False,classes='table table-sm')]
-
-
-
     class_report = str(tables)
     projectid = session['projectid']
     filename = os.path.join(current_app.config['UPLOAD_FOLDER'], 'models\\', str(uuid.uuid4())+'_model.sav')
-
     with open(filename, 'wb') as f:
         pickle.dump(model, f)
 
-    model = Model(projectid=projectid, location = filename,target=target,algorithm=algorithm,classnames=classnames,createddate=createddate,accuracy=accuracy,confusion_matrix=plot_url,class_report=class_report)
-
+    classnames = list(classnames)
+    classnames = json.dumps(classnames)
+    feature_names = json.dumps(feature_names)
+    model = Model(projectid=projectid, location = filename,
+    feature_names=feature_names,target=target,algorithm=algorithm,classnames=classnames,
+    createddate=createddate,accuracy=accuracy,confusion_matrix=plot_url,class_report=class_report)
     db.session.add(model)
     db.session.commit()
-
     modelid = model.modelid
 
 

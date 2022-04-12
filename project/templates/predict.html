@@ -42,13 +42,12 @@
         var url = "/predict/" + modelid + "/values/" + predict_values;
         $.ajax({
           url: url,
-          type: "post",
+          type: "get",
           data: { modelid: modelid, predict_values: predict_values },
-          success: function (data) {
-            data= JSON.parse(data);
-            console.log(data);
-            //append data to output div in p tag
-            $('#output').append('<p class="text-center"><b>Predicted value is: <span style="color:green;">' + data + '</b></span></p>');
+          success: function (prediction) {
+           
+            console.log(prediction);
+            $('#output').append('<p class="text-center"><b>Predicted value is: <span style="color:green;">' + prediction + '</b></span></p>');
           },
       });
 });

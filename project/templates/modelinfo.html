@@ -134,7 +134,7 @@
     <h1>Summary <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
           data-original-title="Share"></span></a>
     </h1>
-    <p>Total Rows Tested: </p>
+
     <p>Algorithm: {{algorithm}}</p>
     <p>Target: {{target}}</p>
     <P>Accuracy: {{ "%.2f"|format(accuracy|float) }}</P>
@@ -152,16 +152,10 @@
 
 <div class="float-container1">
     <div class="column is-4 is-offset-4">
-
         <div class="box">
-               
-    
                 <img src="data:image/png;base64, {{ confusion_matrix }}">
-              
-              
         </div>
     </div>
-    
 </div>
 
 {% endblock %}

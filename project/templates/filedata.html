@@ -349,7 +349,7 @@
 
   #outlierdiv input {}
 
-  #advice {
+  #advice,#outlieradvice {
     color: red;
   }
 
@@ -486,12 +486,6 @@
     Object.keys(data).forEach(function (key) {
       cols.push(key);
     });
-
-    console.log(data);
-
-
-
-
 
     Object.keys(data).forEach(function (key) {
       $("#rowdata").append("<div id = 'ptags" + key + "'></div>");
@@ -675,7 +669,7 @@
       var categorydata = [];
       if (datatype === "categorical") {
         $(".modal-body #row3").empty();
-        $(".modal-body #row3").append("		  <div id='optionsdiv' class='row'>  <div class='col-md-4'>    <form id='test'>      <h5>Missing Values</h5>      <p id='advice'>asdasdasd</p>      <div class='form-inline'>        <div class='col-md-12'>          <label for='search'>Mode</label>          <input            type='checkbox'            name='search'            id='modecheckbox'            class='form-control'          />        </div>      </div>      <button datatype='categorical' id='imputation' type='button' class='btn buttontest btn-primary'>        Make Change     </button>    </form>  </div>  <div class='col-md-4'>    <form id='test' role='form'>      <h5>Encoding</h5>      <p>asdasdasd</p>      <div id='encoding' class='form-inline'>        <div class='col-md-4'>          <label for='search'>Label Encoding</label>          <input            type='checkbox'            name='search'            id='LabelEncoding'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OneHotEncoder</label>          <input            type='checkbox'            name='search'            id='OneHotEncoder'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OrdinalEncoder</label>          <input            type='checkbox'            name='search'            id='OrdinalEncoder'            class='form-control'          />        </div>      </div>      <button id='encodingbutton' type='button' class='btn btn-primary'>Make Change</button>    </form>  </div></div>")
+        $(".modal-body #row3").append("		  <div id='optionsdiv' class='row'>  <div class='col-md-4'>    <form id='test'>      <h5>Missing Values</h5>      <p id='advice'>asdasdasd</p>      <div class='form-inline'>   <div class='col-md-6'>          <label for='search'>Remove</label>          <input            type='checkbox'            name='search'            id='removecheckbox'            class='form-control'          />        </div>     <div class='col-md-6'>          <label for='search'>Mode</label>          <input            type='checkbox'            name='search'            id='modecheckbox'            class='form-control'          />        </div>      </div>      <button datatype='categorical' id='imputation' type='button' class='btn buttontest btn-primary'>        Make Change     </button>    </form>  </div>  <div class='col-md-4'>    <form id='test' role='form'>      <h5>Encoding</h5>      <p>asdasdasd</p>      <div id='encoding' class='form-inline'>        <div class='col-md-4'>          <label for='search'>Label Encoding</label>          <input            type='checkbox'            name='search'            id='LabelEncoding'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OneHotEncoder</label>          <input            type='checkbox'            name='search'            id='OneHotEncoder'            class='form-control'          />        </div>        <div class='col-md-4'>          <label for='search'>OrdinalEncoder</label>          <input            type='checkbox'            name='search'            id='OrdinalEncoder'            class='form-control'          />        </div>      </div>      <button id='encodingbutton' type='button' class='btn btn-primary'>Make Change</button>    </form>  </div></div>")
         categorydata = [
           "Feature",
           "Count",
@@ -690,7 +684,7 @@
         ];
       } else if (datatype === "continuous") {
         $(".modal-body #row3").empty();
-        $(".modal-body #row3").append("		<div id='optionsdiv' class='row'>				<div class='col-md-4'>      <form id='test'>	  <h5>Missing Values</h5>	  <p id='advice'>asdasdasd</p><div class='form-inline'><div class='col-md-3'>    <label for='year'>Median</label>    <input type='checkbox' name='year' id='mediancheckbox' class='form-control' /></div><div class='col-md-3'>    <label for='year'>Mode</label>    <input type='checkbox' name='year' id='modecheckbox' class='form-control' /></div><div  class='col-md-3'>    <label for='year'>Mean</label>    <input type='checkbox' name='year' id='meancheckbox' class='form-control' /></div></div>    	<button datatype = 'Continuous' id='imputation' type='button' class='btn btn-primary'>					Make Change			</button>  </form>		</div>		<div class='col-md-4'>			<form id='test' role='form'>      <h5>      Clamp Transformation      </h5>      <p>      asdasdasd      </p>				<div id='clamptransformation' class='form-inline'>          <div  class='col-md-6'>            <label for='year'>Upper Value</label>            <input type='text' size='3' name='year' id='uppervalue' class='form-control'/>              </div><br>          <div class='col-md-6'>            <label for='year'>Lower Value</label>            <input type='text' size='3' name='year' id='lowervalue' class='form-control' />          </div>				</div>				<button type='button' id='clampButton'class='btn btn-primary'>					Make Change				</button>			</form>		</div></div>")
+        $(".modal-body #row3").append("		<div id='optionsdiv' class='row'><div class='col-md-4'>form id='test'>	  <h5>Missing Values</h5>	  <p id='advice'>asdasdasd</p><div class='form-inline'><div class='col-md-3'>          <label for='search'>Remove</label>          <input            type='checkbox'            name='search'            id='removecheckbox'            class='form-control'          />        </div><div class='col-md-3'>    <label for='year'>Median</label>    <input type='checkbox' name='year' id='mediancheckbox' class='form-control' /></div><div class='col-md-3'>    <label for='year'>Mode</label>    <input type='checkbox' name='year' id='modecheckbox' class='form-control' /></div><div  class='col-md-3'>    <label for='year'>Mean</label>    <input type='checkbox' name='year' id='meancheckbox' class='form-control' /></div></div>    	<button datatype = 'Continuous' id='imputation' type='button' class='btn btn-primary'>					Make Change			</button>  </form>		</div>		<div class='col-md-4'>			<form id='test' role='form'>      <h5>      Clamp Transformation      </h5>      <p id='outlieradvice'>      asdasdasd      </p>				<div id='clamptransformation' class='form-inline'>          <div  class='col-md-6'>            <label for='year'>Upper Value</label>            <input type='text' size='3' name='year' id='uppervalue' class='form-control'/>              </div><br>          <div class='col-md-6'>            <label for='year'>Lower Value</label>            <input type='text' size='3' name='year' id='lowervalue' class='form-control' />          </div>				</div>				<button type='button' id='clampButton'class='btn btn-primary'>					Make Change				</button>			</form>		</div></div>")
         categorydata = [
           "Feature",
           "Count",
@@ -734,15 +728,13 @@
           if (data[i] == 0.0) {
             $("#advice").text("No imputation required as 0 missing values");
           }
-          //if data[i] is more than 0 but less than 60 imputation is required
           else if (data[i] > 0.0 && data[i] <= 30.0) {
             $("#advice").text("Imputation is required.");
           }
           else if (data[i] > 0.0 && data[i] <= 30.0) {
             $("#advice").text("Be reluctant to perform imputation. May lead to reduced performance.");
           }
-          //if data[i] is equal to or greater than 60
-          else if (data[i] >= 60.0) {
+          else if (data[i] >= 50.0) {
             $("#advice").text("Highly recommended to drop this feature due to high missing data. ");
           }
         }
@@ -781,9 +773,10 @@
           var values = values.split(",");
           $(".modal-body #clamptransformation #uppervalue").attr("value", values[0]);
           $(".modal-body #clamptransformation #lowervalue").attr("value", values[1]);
-
         },
       });
+      $("#outlieradvice").text("Outliers can be removed by applying the Clamp Transformation.");
+
       console.log("Datatype at this stage 3 is",datatype);
       if (datatype == "cat") {
         datatype = "categorical";
@@ -1322,9 +1315,6 @@
       var type = $(".selectdiv #charttype").find(":selected").val();
       var xaxis = $(".selectdiv #xaxis").find(":selected").text();
       var yaxis = $(".selectdiv #yaxis").find(":selected").text();
-      console.log("Xaxis", xaxis);
-      console.log("Y axis", yaxis);
-      console.log("Y axis", type);
       xaxis = xaxis.trim();
       yaxis = yaxis.trim();
       type = type.trim();
@@ -1337,8 +1327,6 @@
         success: function (plot_url2) {
           srcvar = "data:image/png;base64," + plot_url2;
           $(".modal-body .imagecontainer").prepend('<div style="width:20%;" class="imgages2"><label style="visibility:hidden">Bins  <input style="visibility:hidden"  onchange="binsize($(this));"id="binsize" placeholder="10"type="text"></label><img id="img1" src=" ' + srcvar + '"' + 'alt="Chart"></div>');
-
-
 
         },
       });
@@ -1363,7 +1351,6 @@
     <p>Total Rows: {{totalrows}}</p>
     <div class="row">
       <label>Continuous Features</label>
-
       <div class="col-md-8">
         <div class="progress">
           <div id="continuousprogressbar" class="progress-bar bg-warning" role="progressbar" style="width: {{contcountpt}}%"
@@ -1426,41 +1413,58 @@
         <tr class="thead-dark">
           {% for col in continouscolumnnames %}
           <th title="Tooltip">
-
             {% if col == "Feature" %}
-            <div data-toggle="tooltip" data-placement="top" title="Features name">{{col}}</div>
+            <div data-toggle="tooltip" data-placement="top"
+             title="Features name">{{col}}
+            </div>
             {%elif col == "Count" %}
-            <div data-toggle="tooltip" data-placement="top" title="Features count">{{col}}</div>
+            <div data-toggle="tooltip" data-placement="top" 
+            title="Features count">{{col}}
+          </div>
             {%elif col == "% Missing" %}
-            <div data-toggle="tooltip" data-placement="top" title="Percentage of missing values">{{col}}</div>
+            <div data-toggle="tooltip" data-placement="top" 
+            title="Percentage of missing values">{{col}}
+          </div>
             {%elif col == "Cardinality" %}
-            <div data-toggle="tooltip" data-placement="top" title="The cardinality is the total unique values">{{col}}
+            <div data-toggle="tooltip" data-placement="top" 
+            title="The cardinality is the total unique values">{{col}}
             </div>
             {%elif col == "Min" %}
-            <div data-toggle="tooltip" data-placement="top" title="Smallest numeric value in the feature">{{col}}</div>
+            <div data-toggle="tooltip" data-placement="top" 
+            title="Smallest numeric value in the feature">{{col}}
+          </div>
             {%elif col == "1st Quartile" %}
-            <div data-toggle="tooltip" data-placement="top" title="Middle number between the min and the median">{{col}}
+            <div data-toggle="tooltip" data-placement="top" 
+            title="Middle number between the min and the median">{{col}}
+
+
             </div>
             {%elif col == "Mean" %}
-            <div data-toggle="tooltip" data-placement="top" title="Average of a values in feature">{{col}}</div>
+            <div data-toggle="tooltip" data-placement="top" 
+            title="Average of a values in feature">{{col}}
+          </div>
             {%elif col == "Median" %}
             <div data-toggle="tooltip" data-placement="top"
-              title="Middle value in a set of given numbers(ordered from smallest to biggest)">{{col}}</div>
+              title="Middle value in a set of given numbers(ordered from smallest to biggest)">{{col}}
+            </div>
             {%elif col == "3rd Quartile" %}
-            <div data-toggle="tooltip" data-placement="top" title="Middle value between the median and the max ">{{col}}
+            <div data-toggle="tooltip" data-placement="top" 
+            title="Middle value between the median and the max ">{{col}}
             </div>
             {%elif col == "Max" %}
-            <div data-toggle="tooltip" data-placement="top" title="Biggest numeric value in the feature">{{col}}</div>
+            <div data-toggle="tooltip" data-placement="top" 
+            title="Biggest numeric value in the feature">{{col}}
+          </div>
             {%elif col == "Std. Deviation" %}
             <div data-toggle="tooltip" data-placement="top"
               title="A low standard deviation indicates that the values tend to be close to the mean.A high standard deviation indicates that the values are spread out over a wider range">
-              {{col}}</div>
+              {{col}}
+            </div>
             {%endif%}
           </th>
           {% endfor %}
         </tr>
         {% for row in continousrow_data %}
-
         <tr class="clickable-row" datarow="{{row}}" datatype="continuous" fileid="{{fileid}}" feature-name="{{row[0]}}"
           data-id="{{row[0]}}">
           {% for col, row_ in zip(continouscolumnnames, row) %}
@@ -1566,11 +1570,16 @@
     </form>
   </div>
   <div class="float-child1">
-    <h1>Row Data <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
-          data-original-title="Here you can remove rows of data that are missing particular features. It is highly recommened to remove rows that are missing the target feature."></span></a></h1>
+    <h1>Row Data <a href="#"><span class="fa fa-question-circle" 
+      data-toggle="tooltip"
+          data-original-title="Here you can remove rows of data that are 
+          missing particular features. It is highly recommened to remove 
+          rows that are missing the target feature."></span></a></h1>
     <div id="rowdata"></div>
-    <h1>Nullity Matrix <span style="color:#007bff;" class="fa fa-question-circle" data-toggle="tooltip"
-      data-original-title="Nullity matrices can be useful for determining the distribution of missing values across features and rows."></span></a></h1>
+    <h1>Nullity Matrix <span style="color:#007bff;" 
+      class="fa fa-question-circle" data-toggle="tooltip"
+      data-original-title="Nullity matrices can be useful for determining 
+      the distribution of missing values across features and rows."></span></a></h1>
     <img id="nullmatrix" src="data:image/png;base64,{{plot_url}}">
 
   </div>
@@ -1662,7 +1671,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Generate Visualisation</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

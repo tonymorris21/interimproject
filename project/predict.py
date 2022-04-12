@@ -9,36 +9,24 @@ predict = Blueprint('predict', __name__)
 
 @predict.route('/predict/<modelid>')
 def prediction(modelid):
-# open a file, where you stored the pickled data
     modelfile = Model.query.filter_by(modelid=modelid).first()
-    print("Modelfile location",modelfile.location)
     classnames1 = modelfile.classnames
-    
+    feature_names = modelfile.feature_names
     modelfile = open(modelfile.location, 'rb')
-    
-    model = pickle.load(modelfile)
-    print(model)
-    columnnames = model.feature_names_in_
-    print(columnnames[0])
-  
-    
+    feature_names = json.loads(feature_names)
+    json.loads(classnames1)
+    return render_template('predict.html',columnnames=feature_names,classnames=classnames1,modelid=modelid)
 
-    return render_template('predict.html',columnnames=columnnames,classnames=classnames1,modelid=modelid)
-
-@predict.route('/predict/<modelid>/values/<predict_values>', methods=['GET','POST'])
+@predict.route('/predict/<modelid>/values/<predict_values>', methods=['GET'])
 def predict_values(modelid,predict_values):
      modelfile = Model.query.filter_by(modelid=modelid).first()
-     #print("Modelfile location",modelfile.location)
      classnames1 = modelfile.classnames
+     classnames1 = json.loads(classnames1)
+     classnames1 = list(classnames1)
      modelfile = open(modelfile.location, 'rb')
-     test =predict_values.split(",")
-     test = np.array(test)
-
-     #print("Predict values",test)
+     predictv =predict_values.split(",")
+     predictv = np.array(predictv)
      data = pickle.load(modelfile)
-
-     dtest = data.predict([test])
-     print(json.loads(classnames1))
-     print("prediction",dtest)
+     dtest = data.predict([predictv])
      
-     return json.dumps(dtest.tolist())
+     return json.dumps(classnames1[int(dtest)])

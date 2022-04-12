@@ -3,16 +3,19 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from sqlalchemy import *
-
+from flask_migrate import Migrate
+from models import *
 
 db = SQLAlchemy()
-
 def create_app():
     app = Flask(__name__,template_folder='./templates',static_folder='./static')
     app.config['SECRET_KEY'] = 'secret-key'
 
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    
+    
+    migrate = Migrate(app, db)
     db.init_app(app)
 
     from auth import auth as auth_blueprint

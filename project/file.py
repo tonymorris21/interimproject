@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from flask import current_app
 from datetime import date
 import pandas as pd
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
 
 file = Blueprint('file', __name__)
 
@@ -52,6 +53,7 @@ def upload_file():
             new_file = File(projectid=projectid, name=filename, featherlocation = featherlocation,
             location=os.path.join(current_app.config['UPLOAD_FOLDER'], filename),fileuploaddate = fileuploaddate)
 
+            
             db.session.add(new_file)
             db.session.commit()
 
