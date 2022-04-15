@@ -3,8 +3,8 @@ Python version = 3.9.1
 
 To run this application there are a few steps.
 
-First Clone this repository to your PC using git clone https://github.com/tonymorris21/interimproject.git
-Navigate to the project folder by typing cd inteirmproject/project
+First Clone this repository to your PC using git clone https://github.com/tonymorris21/MLFinalProject.git
+Navigate to the project folder by typing cd MLFinalProject/project
 Next run python setup.py build followed by python setup.py install * You must have administrative permissions to run this command*
 Now all of the dependencies should be installed
 Run python __init__.py 
