@@ -132,7 +132,7 @@
 
   <div class="float-child">
     <h1>Summary <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
-          data-original-title="Share"></span></a>
+          data-original-title="Summary of model"></span></a>
     </h1>
 
     <p>Algorithm: {{algorithm}}</p>
@@ -141,7 +141,7 @@
   </div>
   <div class="float-child">
     <h1>Classification Summary <a href="#"><span class="fa fa-question-circle" data-toggle="tooltip"
-        data-original-title="Share"></span></a>
+        data-original-title="Accuracy - Fraction of predictions the model got right. F1-Score - harmonic mean of precision and recall. Precision - Quality of positive predictions. Recall - how many of true postives were recalled. "></span></a>
   </h1>
     {% for table in tables %}
     {{ table |safe }}

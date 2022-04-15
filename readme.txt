@@ -12,4 +12,7 @@ After running this command you should see "Running on http://127.0.0.1:5000/" in
 
 To use this application go to http://127.0.0.1:5000/
 You can log in with an account already made with email as admin@admin.com and password as admin
-There is a project already created you can click on that and see the datasets and models created. From there you can click on the dataset and view the data anyltics page or go to the model evaluation page by clicking on view evaluation
+There is already a project created. You can click upload to upload a dataset. There are datasets already in the upload folder(one of these can be selected). 
+The water potability csv can be uploaded and the three features with missing values can be imputed using the median. The potability feature can be encoded using label encoding.
+The target feature must be set to potability before clicking train. On the training configuration apge you can select any algorithm without filling in the additional parameters and click train. 
+This will load a model evaluation page. 
